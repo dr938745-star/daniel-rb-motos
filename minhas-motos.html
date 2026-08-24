@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Minhas Motos - DANIEL RB MOTOS</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #2b2b2b;
+    color: #111;
+}
+
+header {
+    background: #111;
+    color: white;
+    padding: 25px 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 27px;
+}
+
+header p {
+    color: #ccc;
+    margin-bottom: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+    background: white;
+}
+
+.botao {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-top: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #111;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+}
+
+.editar {
+    background: #444;
+}
+
+.excluir {
+    background: #b00000;
+}
+
+.moto {
+    border-top: 1px solid #ddd;
+    padding-top: 18px;
+    margin-top: 18px;
+}
+
+.vazio {
+    color: #666;
+    text-align: center;
+    padding: 15px;
+}
+
+.voltar {
+    display: block;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    margin-top: 20px;
+    padding: 15px;
+}
+
+.oculto {
+    display: none;
+}
+
+.info-cliente {
+    background: #f3f3f3;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<header>
+
+<h1>
+🏍️ Minhas Motos
+</h1>
+
+<p>
+DANIEL RB MOTOS
+</p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- INFORMAÇÃO DO CLIENTE -->
+
+<div
+id="infoCliente"
+class="card oculto"
+>
+
+<h2>
+👤 Cliente
+</h2>
+
+<div
+id="nomeCliente"
+class="info-cliente"
+></div>
+
+</div>
+
+
+<!-- CADASTRO DE MOTO -->
+
+<div
+id="cardCadastro"
+class="card"
+>
+
+<h2>
+➕ Cadastrar moto
+</h2>
+
+
+<label>
+Proprietário
+</label>
+
+<select id="cliente">
+
+<option value="">
+Selecione o cliente
+</option>
+
+</select>
+
+
+<label>
+Marca
+</label>
+
+<input
+type="text"
+id="marca"
+placeholder="Ex: Honda"
+>
+
+
+<label>
+Modelo
+</label>
+
+<input
+type="text"
+id="modelo"
+placeholder="Ex: Bros 160"
+>
+
+
+<label>
+Ano
+</label>
+
+<input
+type="number"
+id="ano"
+placeholder="Ex: 2020"
+>
+
+
+<label>
+Placa
+</label>
+
+<input
+type="text"
+id="placa"
+placeholder="ABC1D23"
+>
+
+
+<label>
+Quilometragem
+</label>
+
+<input
+type="number"
+id="km"
+placeholder="Ex: 35000"
+>
+
+
+<button
+class="botao"
+onclick="salvarMoto()"
+>
+
+💾 Cadastrar moto
+
+</button>
+
+</div>
+
+
+<!-- LISTA DE MOTOS -->
+
+<div class="card">
+
+<h2>
+📋 Motos cadastradas
+</h2>
+
+<div id="listaMotos"></div>
+
+</div>
+
+
+<a
+id="botaoVoltar"
+href="oficina.html"
+class="voltar"
+>
+
+← Voltar
+
+</a>
+
+
+</div>
+
+
+<script>
+
+
+/* =========================
+   DADOS
+========================= */
+
+function carregarClientes() {
+
+    return JSON.parse(
+        localStorage.getItem("clientes")
+    ) || [];
+
+}
+
+
+function carregarMotos() {
+
+    return JSON.parse(
+        localStorage.getItem("motos")
+    ) || [];
+
+}
+
+
+/* =========================
+   VERIFICAR ORIGEM
+========================= */
+
+const clienteLogado =
+    sessionStorage.getItem("clienteLogado");
+
+
+const clienteSelecionado =
+    localStorage.getItem("clienteSelecionado");
+
+
+let modoCliente = false;
+
+let clienteAtual = null;
+
+
+/*
+   PRIMEIRO:
+   verifica se existe cliente logado
+*/
+
+if (clienteLogado) {
+
+    const clientes =
+        carregarClientes();
+
+
+    clienteAtual =
+        clientes.find(
+            function(cliente) {
+
+                return String(
+                    cliente.id
+                ) === String(
+                    clienteLogado
+                );
+
+            }
+        );
+
+
+    if (clienteAtual) {
+
+        modoCliente = true;
+
+    }
+
+}
+
+
+/*
+   SEGUNDO:
+   se não for cliente logado,
+   verifica se veio da área da oficina
+*/
+
+if (!modoCliente && clienteSelecionado) {
+
+    const clientes =
+        carregarClientes();
+
+
+    clienteAtual =
+        clientes.find(
+            function(cliente) {
+
+                return String(
+                    cliente.id
+                ) === String(
+                    clienteSelecionado
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================
+   CONFIGURAR TELA
+========================= */
+
+function configurarTela() {
+
+    const select =
+        document.getElementById("cliente");
+
+
+    const cardCadastro =
+        document.getElementById("cardCadastro");
+
+
+    const infoCliente =
+        document.getElementById("infoCliente");
+
+
+    const nomeCliente =
+        document.getElementById("nomeCliente");
+
+
+    const botaoVoltar =
+        document.getElementById("botaoVoltar");
+
+
+    /*
+       MODO CLIENTE
+    */
+
+    if (modoCliente && clienteAtual) {
+
+        infoCliente.classList.remove(
+            "oculto"
+        );
+
+
+        nomeCliente.innerHTML =
+
+            "👤 <strong>" +
+            clienteAtual.nome +
+            "</strong>";
+
+
+        /*
+           Cliente não escolhe proprietário.
+           O proprietário já é ele mesmo.
+        */
+
+        select.innerHTML = `
+
+            <option value="${clienteAtual.id}">
+                ${clienteAtual.nome}
+            </option>
+
+        `;
+
+
+        select.value =
+            String(clienteAtual.id);
+
+
+        select.disabled = true;
+
+
+        /*
+           Cliente pode cadastrar sua própria moto.
+        */
+
+        botaoVoltar.href =
+            "index.html";
+
+
+        botaoVoltar.textContent =
+            "← Voltar para o início";
+
+    }
+
+
+    /*
+       MODO OFICINA
+    */
+
+    else {
+
+        carregarClientes();
+
+
+        botaoVoltar.href =
+            "clientes.html";
+
+
+        botaoVoltar.textContent =
+            "← Voltar para Clientes";
+
+    }
+
+
+    mostrarMotos();
+
+}
+
+
+/* =========================
+   CARREGAR CLIENTES
+========================= */
+
+function carregarClientesNoSelect() {
+
+    const clientes =
+        carregarClientes();
+
+
+    const select =
+        document.getElementById("cliente");
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Selecione o cliente
+        </option>
+
+    `;
+
+
+    clientes.forEach(
+        function(cliente) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                cliente.id;
+
+
+            option.textContent =
+                cliente.nome;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    if (clienteSelecionado) {
+
+        select.value =
+            clienteSelecionado;
+
+    }
+
+}
+
+
+/* =========================
+   SALVAR MOTO
+========================= */
+
+function salvarMoto() {
+
+    let clienteId;
+
+
+    if (
+        modoCliente &&
+        clienteAtual
+    ) {
+
+        clienteId =
+            String(
+                clienteAtual.id
+            );
+
+    } else {
+
+        clienteId =
+            document.getElementById(
+                "cliente"
+            ).value;
+
+    }
+
+
+    const marca =
+        document.getElementById(
+            "marca"
+        ).value.trim();
+
+
+    const modelo =
+        document.getElementById(
+            "modelo"
+        ).value.trim();
+
+
+    const ano =
+        document.getElementById(
+            "ano"
+        ).value;
+
+
+    const placa =
+        document.getElementById(
+            "placa"
+        ).value.trim().toUpperCase();
+
+
+    const km =
+        document.getElementById(
+            "km"
+        ).value;
+
+
+    if (!clienteId) {
+
+        alert(
+            "⚠️ Selecione o proprietário."
+        );
+
+        return;
+
+    }
+
+
+    if (!marca) {
+
+        alert(
+            "⚠️ Informe a marca."
+        );
+
+        return;
+
+    }
+
+
+    if (!modelo) {
+
+        alert(
+            "⚠️ Informe o modelo."
+        );
+
+        return;
+
+    }
+
+
+    if (!placa) {
+
+        alert(
+            "⚠️ Informe a placa."
+        );
+
+        return;
+
+    }
+
+
+    let motos =
+        carregarMotos();
+
+
+    const moto = {
+
+        id:
+            Date.now(),
+
+        clienteId:
+            String(clienteId),
+
+        marca:
+            marca,
+
+        modelo:
+            modelo,
+
+        ano:
+            ano,
+
+        placa:
+            placa,
+
+        km:
+            km,
+
+        dataCadastro:
+            new Date()
+            .toLocaleDateString(
+                "pt-BR"
+            )
+
+    };
+
+
+    motos.push(
+        moto
+    );
+
+
+    localStorage.setItem(
+        "motos",
+        JSON.stringify(
+            motos
+        )
+    );
+
+
+    document.getElementById(
+        "marca"
+    ).value = "";
+
+
+    document.getElementById(
+        "modelo"
+    ).value = "";
+
+
+    document.getElementById(
+        "ano"
+    ).value = "";
+
+
+    document.getElementById(
+        "placa"
+    ).value = "";
+
+
+    document.getElementById(
+        "km"
+    ).value = "";
+
+
+    mostrarMotos();
+
+
+    alert(
+        "✅ Moto cadastrada com sucesso!"
+    );
+
+}
+
+
+/* =========================
+   NOME DO CLIENTE
+========================= */
+
+function nomeDoCliente(id) {
+
+    const clientes =
+        carregarClientes();
+
+
+    const cliente =
+        clientes.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) === String(
+                    id
+                );
+
+            }
+        );
+
+
+    return cliente
+        ? cliente.nome
+        : "Cliente não encontrado";
+
+}
+
+
+/* =========================
+   MOSTRAR MOTOS
+========================= */
+
+function mostrarMotos() {
+
+    const todasAsMotos =
+        carregarMotos();
+
+
+    const lista =
+        document.getElementById(
+            "listaMotos"
+        );
+
+
+    lista.innerHTML = "";
+
+
+    let motosParaMostrar;
+
+
+    /*
+       CLIENTE:
+       mostra SOMENTE as motos dele
+    */
+
+    if (
+        modoCliente &&
+        clienteAtual
+    ) {
+
+        motosParaMostrar =
+            todasAsMotos.filter(
+                function(moto) {
+
+                    return String(
+                        moto.clienteId
+                    ) === String(
+                        clienteAtual.id
+                    );
+
+                }
+            );
+
+    }
+
+
+    /*
+       OFICINA:
+       se veio pela tela de clientes,
+       mostra somente as motos daquele cliente
+    */
+
+    else if (clienteSelecionado) {
+
+        motosParaMostrar =
+            todasAsMotos.filter(
+                function(moto) {
+
+                    return String(
+                        moto.clienteId
+                    ) === String(
+                        clienteSelecionado
+                    );
+
+                }
+            );
+
+    }
+
+
+    /*
+       OFICINA:
+       se abriu diretamente,
+       mostra todas
+    */
+
+    else {
+
+        motosParaMostrar =
+            todasAsMotos;
+
+    }
+
+
+    if (
+        motosParaMostrar.length === 0
+    ) {
+
+        lista.innerHTML = `
+
+            <div class="vazio">
+
+                🏍️ Nenhuma moto cadastrada.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    motosParaMostrar
+        .slice()
+        .reverse()
+        .forEach(
+            function(moto) {
+
+                lista.innerHTML += `
+
+                    <div class="moto">
+
+                        <h3>
+
+                            🏍️
+                            ${moto.marca || ""}
+                            ${moto.modelo || ""}
+
+                        </h3>
+
+
+                        <p>
+
+                            👤
+
+                            <strong>
+                                Proprietário:
+                            </strong>
+
+                            ${nomeDoCliente(
+                                moto.clienteId
+                            )}
+
+                        </p>
+
+
+                        <p>
+
+                            🔢
+
+                            <strong>
+                                Placa:
+                            </strong>
+
+                            ${moto.placa || "Sem placa"}
+
+                        </p>
+
+
+                        <p>
+
+                            📆
+
+                            <strong>
+                                Ano:
+                            </strong>
+
+                            ${moto.ano || "Não informado"}
+
+                        </p>
+
+
+                        <p>
+
+                            🛣️
+
+                            <strong>
+                                KM:
+                            </strong>
+
+                            ${moto.km || "Não informado"}
+
+                        </p>
+
+
+                        <p>
+
+                            📅
+
+                            <strong>
+                                Cadastro:
+                            </strong>
+
+                            ${moto.dataCadastro || "Não informado"}
+
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+}
+
+
+/* =========================
+   INICIAR
+========================= */
+
+if (!modoCliente) {
+
+    carregarClientesNoSelect();
+
+}
+
+
+configurarTela();
+
+
+/*
+   IMPORTANTE:
+   depois de abrir a página,
+   apagamos o cliente selecionado
+   da oficina para não ficar preso
+   na próxima navegação.
+*/
+
+if (clienteSelecionado) {
+
+    localStorage.removeItem(
+        "clienteSelecionado"
+    );
+
+}
+
+
+</script>
+
+</body>
+
+</html>

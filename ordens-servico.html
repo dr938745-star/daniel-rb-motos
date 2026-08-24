@@ -1,0 +1,3063 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Ordens de Serviço - DANIEL RB MOTOS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #3a3a3a 0%,
+            #181818 55%,
+            #080808 100%
+        );
+
+    color: #111;
+    min-height: 100vh;
+}
+
+header {
+    background:
+        linear-gradient(
+            135deg,
+            #050505,
+            #260000,
+            #080808
+        );
+
+    color: white;
+
+    padding: 25px 18px;
+
+    text-align: center;
+
+    border-bottom: 2px solid #8b0000;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.45);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 900;
+}
+
+header p {
+    margin: 7px 0 0;
+    color: #d6d6d6;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 22px 15px 45px;
+}
+
+.topo {
+    color: white;
+    margin-bottom: 20px;
+}
+
+.topo h2 {
+    margin: 0 0 6px;
+    font-size: 24px;
+}
+
+.topo p {
+    margin: 0;
+    color: #bbb;
+    font-size: 14px;
+}
+
+.botoes-topo {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.botao-topo {
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #111,
+            #3b0000
+        );
+
+    color: white;
+
+    transition: 0.2s;
+}
+
+.botao-topo:hover {
+    transform: translateY(-1px);
+}
+
+.resumo {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.resumo-card {
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 15px;
+    padding: 17px;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.25);
+
+    border: 1px solid #ddd;
+}
+
+.resumo-icone {
+    font-size: 25px;
+    margin-bottom: 7px;
+}
+
+.resumo-numero {
+    font-size: 26px;
+    font-weight: 900;
+}
+
+.resumo-texto {
+    margin-top: 3px;
+    color: #666;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.lista {
+    display: grid;
+    gap: 15px;
+}
+
+.card-os {
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 17px;
+    padding: 18px;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.28);
+
+    border: 1px solid #ddd;
+}
+
+.cabecalho-os {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.numero-os {
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.status {
+    display: inline-block;
+    padding: 7px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 900;
+    background: #ddd;
+    color: #333;
+}
+
+.status-aberta {
+    background: #e8e8e8;
+    color: #333;
+}
+
+.status-servico {
+    background: #fff0c2;
+    color: #795500;
+}
+
+.status-pronta {
+    background: #dff5e5;
+    color: #176b2c;
+}
+
+.status-entregue {
+    background: #d8ebff;
+    color: #12538a;
+}
+
+.status-cancelada {
+    background: #ffe1e1;
+    color: #a00000;
+}
+
+.grid-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.info {
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.info strong {
+    display: block;
+    color: #777;
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+.info span {
+    font-size: 14px;
+    font-weight: bold;
+    word-break: break-word;
+}
+
+.acoes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.acao {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 8px;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.abrir {
+    background:
+        linear-gradient(
+            135deg,
+            #111,
+            #3b0000
+        );
+
+    color: white;
+}
+
+.imprimir {
+    background: #222;
+    color: white;
+}
+
+.excluir {
+    background: #ffe1e1;
+    color: #a00000;
+}
+
+.acao:hover {
+    transform: translateY(-1px);
+}
+
+.acao:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.carregando {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.vazio {
+    background: white;
+    border-radius: 17px;
+    padding: 35px 20px;
+    text-align: center;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.25);
+}
+
+.vazio-icone {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+.vazio h3 {
+    margin: 0 0 8px;
+}
+
+.vazio p {
+    color: #666;
+    font-size: 14px;
+}
+
+.erro {
+    background: #ffe1e1;
+    color: #a00000;
+    border-left: 5px solid #c00000;
+    border-radius: 12px;
+    padding: 18px;
+    font-weight: bold;
+}
+
+.mensagem {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+
+    width: calc(100% - 30px);
+    max-width: 500px;
+
+    padding: 15px;
+    border-radius: 12px;
+
+    color: white;
+    text-align: center;
+    font-weight: bold;
+
+    display: none;
+
+    z-index: 9999;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.4);
+
+    white-space: pre-line;
+}
+
+.sucesso {
+    background: #137333;
+}
+
+.erro-msg {
+    background: #a00000;
+}
+
+.voltar {
+    display: block;
+    text-align: center;
+    color: #ccc;
+    text-decoration: none;
+    margin-top: 22px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.voltar:hover {
+    color: white;
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.75);
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 15px;
+
+    z-index: 9998;
+}
+
+.modal.ativo {
+    display: flex;
+}
+
+.modal-conteudo {
+    width: 100%;
+    max-width: 650px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: white;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.5);
+}
+
+.modal-cabecalho {
+    background:
+        linear-gradient(
+            135deg,
+            #050505,
+            #3b0000,
+            #080808
+        );
+
+    color: white;
+
+    padding: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.modal-cabecalho h2 {
+    margin: 0;
+
+    font-size: 20px;
+}
+
+.fechar-modal {
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 25px;
+
+    cursor: pointer;
+
+    line-height: 1;
+}
+
+.modal-corpo {
+    padding: 20px;
+}
+
+.visualizacao-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+}
+
+.visualizacao-item {
+    background: #f3f3f3;
+
+    border-radius: 10px;
+
+    padding: 12px;
+}
+
+.visualizacao-item.full {
+    grid-column: 1 / -1;
+}
+
+.visualizacao-item strong {
+    display: block;
+
+    font-size: 11px;
+
+    color: #777;
+
+    margin-bottom: 5px;
+}
+
+.visualizacao-item span {
+    font-size: 14px;
+
+    font-weight: bold;
+
+    white-space: pre-wrap;
+
+    word-break: break-word;
+}
+
+.modal-acoes {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+
+    margin-top: 18px;
+}
+
+.modal-botao {
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 13px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.modal-imprimir {
+    background: #222;
+
+    color: white;
+}
+
+.modal-fechar {
+    background: #ddd;
+
+    color: #222;
+}
+
+
+/* =====================================================
+   IMPRESSÃO
+===================================================== */
+
+.area-impressao {
+    display: none;
+}
+
+
+@media print {
+
+    body {
+        background: white !important;
+        color: black !important;
+    }
+
+    header,
+    .container,
+    .mensagem,
+    .modal {
+        display: none !important;
+    }
+
+    .area-impressao {
+        display: block !important;
+
+        padding: 20px;
+
+        font-family: Arial, sans-serif;
+    }
+
+    .impressao-titulo {
+        text-align: center;
+
+        font-size: 22px;
+
+        font-weight: bold;
+
+        margin-bottom: 5px;
+    }
+
+    .impressao-subtitulo {
+        text-align: center;
+
+        font-size: 13px;
+
+        margin-bottom: 20px;
+    }
+
+    .impressao-linha {
+        border-bottom: 1px solid #333;
+
+        padding: 8px 0;
+
+        font-size: 14px;
+    }
+
+    .impressao-linha strong {
+        display: inline-block;
+
+        min-width: 150px;
+    }
+
+    .impressao-servico {
+        margin-top: 15px;
+
+        border: 1px solid #333;
+
+        padding: 12px;
+
+        min-height: 80px;
+    }
+
+    .impressao-total {
+        margin-top: 15px;
+
+        text-align: right;
+
+        font-size: 18px;
+
+        font-weight: bold;
+    }
+
+}
+
+
+/* =====================================================
+   RESPONSIVO
+===================================================== */
+
+@media (max-width: 750px) {
+
+    .resumo {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    header h1 {
+        font-size: 24px;
+    }
+
+    .container {
+        padding:
+            18px 12px 35px;
+    }
+
+    .botoes-topo {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-info {
+        grid-template-columns: 1fr;
+    }
+
+    .acoes {
+        grid-template-columns: 1fr;
+    }
+
+    .cabecalho-os {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .visualizacao-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .visualizacao-item.full {
+        grid-column: auto;
+    }
+
+    .modal-acoes {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>
+        🔧 DANIEL RB MOTOS
+    </h1>
+
+    <p>
+        ORDENS DE SERVIÇO
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <div class="topo">
+
+        <h2>
+            📋 Ordens de Serviço
+        </h2>
+
+        <p>
+            Consulte todas as ordens de serviço da oficina.
+        </p>
+
+
+        <div class="botoes-topo">
+
+            <button
+                type="button"
+                class="botao-topo"
+                onclick="carregarOS()"
+            >
+                🔄 Atualizar
+            </button>
+
+
+            <a
+                href="ordem-servico.html"
+                class="botao-topo"
+            >
+                ➕ Nova OS
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="resumo">
+
+
+        <div class="resumo-card">
+
+            <div class="resumo-icone">
+                🧾
+            </div>
+
+            <div
+                class="resumo-numero"
+                id="totalOS"
+            >
+                0
+            </div>
+
+            <div class="resumo-texto">
+                Total de OS
+            </div>
+
+        </div>
+
+
+        <div class="resumo-card">
+
+            <div class="resumo-icone">
+                🔧
+            </div>
+
+            <div
+                class="resumo-numero"
+                id="totalServico"
+            >
+                0
+            </div>
+
+            <div class="resumo-texto">
+                Em serviço
+            </div>
+
+        </div>
+
+
+        <div class="resumo-card">
+
+            <div class="resumo-icone">
+                ✅
+            </div>
+
+            <div
+                class="resumo-numero"
+                id="totalPronta"
+            >
+                0
+            </div>
+
+            <div class="resumo-texto">
+                Prontas
+            </div>
+
+        </div>
+
+
+        <div class="resumo-card">
+
+            <div class="resumo-icone">
+                💰
+            </div>
+
+            <div
+                class="resumo-numero"
+                id="valorTotal"
+            >
+                R$ 0,00
+            </div>
+
+            <div class="resumo-texto">
+                Valor das OS
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="listaOS"
+        class="lista"
+    >
+
+        <div class="carregando">
+
+            🔄 Carregando ordens de serviço...
+
+        </div>
+
+    </div>
+
+
+    <a
+        href="oficina.html"
+        class="voltar"
+    >
+        ← Voltar para o Painel da Oficina
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL DE VISUALIZAÇÃO
+===================================================== -->
+
+<div
+    id="modalOS"
+    class="modal"
+>
+
+    <div class="modal-conteudo">
+
+
+        <div class="modal-cabecalho">
+
+            <h2 id="modalTitulo">
+                🧾 Ordem de Serviço
+            </h2>
+
+            <button
+                type="button"
+                class="fechar-modal"
+                onclick="fecharModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div
+            id="modalCorpo"
+            class="modal-corpo"
+        >
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ÁREA DE IMPRESSÃO
+===================================================== -->
+
+<div
+    id="areaImpressao"
+    class="area-impressao"
+>
+</div>
+
+
+<div
+    id="mensagem"
+    class="mensagem"
+></div>
+
+
+<script>
+
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+    "https://niffgrhjmnizvusnrqyg.supabase.co";
+
+
+const SUPABASE_KEY =
+    "sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
+
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =====================================================
+   VARIÁVEIS
+===================================================== */
+
+let ordens = [];
+
+let clientes = {};
+
+let motos = {};
+
+let osVisualizacao = null;
+
+
+/* =====================================================
+   ESCAPAR HTML
+===================================================== */
+
+function escaparHTML(valor) {
+
+    return String(valor ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =====================================================
+   MOEDA
+===================================================== */
+
+function numero(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+
+        return 0;
+
+    }
+
+
+    let texto =
+        String(valor)
+            .trim();
+
+
+    if (
+        texto.includes(",") &&
+        texto.includes(".")
+    ) {
+
+        texto =
+            texto.replace(
+                /\./g,
+                ""
+            );
+
+        texto =
+            texto.replace(
+                ",",
+                "."
+            );
+
+    }
+
+    else if (
+        texto.includes(",")
+    ) {
+
+        texto =
+            texto.replace(
+                ",",
+                "."
+            );
+
+    }
+
+
+    const n =
+        parseFloat(
+            texto
+        );
+
+
+    return isNaN(n)
+        ? 0
+        : n;
+
+}
+
+
+function moeda(valor) {
+
+    return numero(valor)
+        .toLocaleString(
+            "pt-BR",
+            {
+                style: "currency",
+                currency: "BRL"
+            }
+        );
+
+}
+
+
+/* =====================================================
+   DATA
+===================================================== */
+
+function formatarData(data) {
+
+    if (!data) {
+
+        return "Não informada";
+
+    }
+
+
+    const texto =
+        String(data);
+
+
+    const somenteData =
+        texto.split("T")[0];
+
+
+    const partes =
+        somenteData.split("-");
+
+
+    if (
+        partes.length === 3
+    ) {
+
+        return (
+            partes[2] +
+            "/" +
+            partes[1] +
+            "/" +
+            partes[0]
+        );
+
+    }
+
+
+    return texto;
+
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function classeStatus(status) {
+
+    const valor =
+        String(status || "")
+            .trim()
+            .toLowerCase();
+
+
+    if (
+        valor === "em serviço" ||
+        valor === "em servico"
+    ) {
+
+        return "status-servico";
+
+    }
+
+
+    if (
+        valor === "pronta" ||
+        valor === "pronto"
+    ) {
+
+        return "status-pronta";
+
+    }
+
+
+    if (
+        valor === "entregue"
+    ) {
+
+        return "status-entregue";
+
+    }
+
+
+    if (
+        valor === "cancelada" ||
+        valor === "cancelado"
+    ) {
+
+        return "status-cancelada";
+
+    }
+
+
+    return "status-aberta";
+
+}
+
+
+/* =====================================================
+   MENSAGEM
+===================================================== */
+
+function mostrarMensagem(
+    texto,
+    sucesso = true
+) {
+
+    const elemento =
+        document.getElementById(
+            "mensagem"
+        );
+
+
+    elemento.textContent =
+        texto;
+
+
+    elemento.className =
+        "mensagem " +
+        (
+            sucesso
+            ? "sucesso"
+            : "erro-msg"
+        );
+
+
+    elemento.style.display =
+        "block";
+
+
+    clearTimeout(
+        mostrarMensagem.timer
+    );
+
+
+    mostrarMensagem.timer =
+        setTimeout(
+            function() {
+
+                elemento.style.display =
+                    "none";
+
+            },
+            3500
+        );
+
+}
+
+
+/* =====================================================
+   CARREGAR OS
+===================================================== */
+
+async function carregarOS() {
+
+    const lista =
+        document.getElementById(
+            "listaOS"
+        );
+
+
+    lista.innerHTML = `
+
+        <div class="carregando">
+
+            🔄 Carregando ordens de serviço...
+
+        </div>
+
+    `;
+
+
+    try {
+
+        const resposta =
+            await supabaseClient
+                .from("ordens_servico")
+                .select("*")
+                .order(
+                    "id",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (
+            resposta.error
+        ) {
+
+            console.error(
+                "Erro ao carregar OS:",
+                resposta.error
+            );
+
+
+            lista.innerHTML = `
+
+                <div class="erro">
+
+                    ❌ Erro ao carregar as Ordens de Serviço.
+
+                    <br><br>
+
+                    ${escaparHTML(
+                        resposta.error.message
+                    )}
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        ordens =
+            resposta.data || [];
+
+
+        atualizarResumo(
+            ordens
+        );
+
+
+        if (
+            ordens.length === 0
+        ) {
+
+            clientes = {};
+
+            motos = {};
+
+
+            lista.innerHTML = `
+
+                <div class="vazio">
+
+                    <div class="vazio-icone">
+                        🧾
+                    </div>
+
+                    <h3>
+                        Nenhuma Ordem de Serviço
+                    </h3>
+
+                    <p>
+                        As OS que você salvar aparecerão aqui.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        const clientesMap =
+            await carregarClientes(
+                ordens
+            );
+
+
+        const motosMap =
+            await carregarMotos(
+                ordens
+            );
+
+
+        clientes =
+            clientesMap;
+
+
+        motos =
+            motosMap;
+
+
+        montarLista(
+            ordens,
+            clientesMap,
+            motosMap
+        );
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "Erro inesperado:",
+            erro
+        );
+
+
+        lista.innerHTML = `
+
+            <div class="erro">
+
+                ❌ Erro inesperado ao carregar as OS.
+
+                <br><br>
+
+                ${escaparHTML(
+                    erro.message ||
+                    String(erro)
+                )}
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   CARREGAR CLIENTES
+===================================================== */
+
+async function carregarClientes(
+    listaOS
+) {
+
+    const mapa = {};
+
+
+    const ids =
+        [
+            ...new Set(
+                listaOS
+                    .map(
+                        function(os) {
+
+                            return os.cliente_id;
+
+                        }
+                    )
+                    .filter(
+                        function(id) {
+
+                            return id !== null &&
+                                   id !== undefined &&
+                                   id !== "";
+
+                        }
+                    )
+            )
+        ];
+
+
+    if (
+        ids.length === 0
+    ) {
+
+        return mapa;
+
+    }
+
+
+    try {
+
+        const resposta =
+            await supabaseClient
+                .from("clientes_nova")
+                .select("*")
+                .in(
+                    "id",
+                    ids
+                );
+
+
+        if (
+            resposta.error
+        ) {
+
+            console.warn(
+                "Erro ao carregar clientes:",
+                resposta.error
+            );
+
+            return mapa;
+
+        }
+
+
+        (
+            resposta.data || []
+        )
+        .forEach(
+            function(cliente) {
+
+                mapa[
+                    String(cliente.id)
+                ] =
+                    cliente;
+
+            }
+        );
+
+    }
+
+    catch (erro) {
+
+        console.warn(
+            "Erro nos clientes:",
+            erro
+        );
+
+    }
+
+
+    return mapa;
+
+}
+
+
+/* =====================================================
+   CARREGAR MOTOS
+===================================================== */
+
+async function carregarMotos(
+    listaOS
+) {
+
+    const mapa = {};
+
+
+    const ids =
+        [
+            ...new Set(
+                listaOS
+                    .map(
+                        function(os) {
+
+                            return os.moto_id;
+
+                        }
+                    )
+                    .filter(
+                        function(id) {
+
+                            return id !== null &&
+                                   id !== undefined &&
+                                   id !== "";
+
+                        }
+                    )
+            )
+        ];
+
+
+    if (
+        ids.length === 0
+    ) {
+
+        return mapa;
+
+    }
+
+
+    try {
+
+        const resposta =
+            await supabaseClient
+                .from("motos")
+                .select("*")
+                .in(
+                    "id",
+                    ids
+                );
+
+
+        if (
+            resposta.error
+        ) {
+
+            console.warn(
+                "Erro ao carregar motos:",
+                resposta.error
+            );
+
+            return mapa;
+
+        }
+
+
+        (
+            resposta.data || []
+        )
+        .forEach(
+            function(moto) {
+
+                mapa[
+                    String(moto.id)
+                ] =
+                    moto;
+
+            }
+        );
+
+    }
+
+    catch (erro) {
+
+        console.warn(
+            "Erro nas motos:",
+            erro
+        );
+
+    }
+
+
+    return mapa;
+
+}
+
+
+/* =====================================================
+   RESUMO
+===================================================== */
+
+function atualizarResumo(
+    lista
+) {
+
+    let emServico = 0;
+
+    let prontas = 0;
+
+    let totalValor = 0;
+
+
+    lista.forEach(
+        function(os) {
+
+            const status =
+                String(
+                    os.status || ""
+                )
+                .trim()
+                .toLowerCase();
+
+
+            if (
+                status === "em serviço" ||
+                status === "em servico"
+            ) {
+
+                emServico++;
+
+            }
+
+
+            if (
+                status === "pronta" ||
+                status === "pronto"
+            ) {
+
+                prontas++;
+
+            }
+
+
+            totalValor +=
+                numero(
+                    os.valor_total
+                );
+
+        }
+    );
+
+
+    document.getElementById(
+        "totalOS"
+    ).textContent =
+        lista.length;
+
+
+    document.getElementById(
+        "totalServico"
+    ).textContent =
+        emServico;
+
+
+    document.getElementById(
+        "totalPronta"
+    ).textContent =
+        prontas;
+
+
+    document.getElementById(
+        "valorTotal"
+    ).textContent =
+        moeda(
+            totalValor
+        );
+
+}
+
+
+/* =====================================================
+   MONTAR LISTA
+===================================================== */
+
+function montarLista(
+    listaOS,
+    clientesMap,
+    motosMap
+) {
+
+    const lista =
+        document.getElementById(
+            "listaOS"
+        );
+
+
+    lista.innerHTML = "";
+
+
+    listaOS.forEach(
+        function(os, indice) {
+
+            const cliente =
+                clientesMap[
+                    String(
+                        os.cliente_id
+                    )
+                ] || {};
+
+
+            const moto =
+                motosMap[
+                    String(
+                        os.moto_id
+                    )
+                ] || {};
+
+
+            const status =
+                os.status ||
+                "Aberta";
+
+
+            const numeroOS =
+                os.id ||
+                (
+                    indice + 1
+                );
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "card-os";
+
+
+            card.innerHTML = `
+
+                <div class="cabecalho-os">
+
+                    <div class="numero-os">
+
+                        🧾 OS #${escaparHTML(
+                            numeroOS
+                        )}
+
+                    </div>
+
+
+                    <span
+                        class="status ${classeStatus(status)}"
+                    >
+
+                        ${escaparHTML(
+                            status
+                        )}
+
+                    </span>
+
+                </div>
+
+
+                <div class="grid-info">
+
+
+                    <div class="info">
+
+                        <strong>
+                            👤 CLIENTE
+                        </strong>
+
+                        <span>
+
+                            ${escaparHTML(
+                                cliente.nome ||
+                                "Não informado"
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="info">
+
+                        <strong>
+                            🏍️ MOTO
+                        </strong>
+
+                        <span>
+
+                            ${escaparHTML(
+                                (
+                                    moto.marca ||
+                                    ""
+                                ) +
+                                " " +
+                                (
+                                    moto.modelo ||
+                                    "Não informada"
+                                )
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="info">
+
+                        <strong>
+                            🔢 PLACA
+                        </strong>
+
+                        <span>
+
+                            ${escaparHTML(
+                                moto.placa ||
+                                "Não informada"
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="info">
+
+                        <strong>
+                            🔧 SERVIÇO
+                        </strong>
+
+                        <span>
+
+                            ${escaparHTML(
+                                os.servicos_realizados ||
+                                "Não informado"
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="info">
+
+                        <strong>
+                            📅 DATA DE ENTRADA
+                        </strong>
+
+                        <span>
+
+                            ${escaparHTML(
+                                formatarData(
+                                    os.data_entrada
+                                )
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="info">
+
+                        <strong>
+                            💰 VALOR TOTAL
+                        </strong>
+
+                        <span>
+
+                            ${escaparHTML(
+                                moeda(
+                                    os.valor_total
+                                )
+                            )}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="acoes">
+
+
+                    <button
+                        type="button"
+                        class="acao abrir"
+                        onclick="abrirOSPorIndice(${indice})"
+                    >
+
+                        👁️ Ver OS
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="acao imprimir"
+                        onclick="imprimirOSPorIndice(${indice})"
+                    >
+
+                        🖨️ Imprimir
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="acao excluir"
+                        data-os-id="${escaparHTML(os.id)}"
+                        onclick="excluirOSPorId('${escaparHTML(os.id)}')"
+                    >
+
+                        🗑️ Excluir
+
+                    </button>
+
+
+                </div>
+
+            `;
+
+
+            lista.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ABRIR OS
+===================================================== */
+
+function abrirOSPorIndice(
+    indice
+) {
+
+    const os =
+        ordens[indice];
+
+
+    if (!os) {
+
+        mostrarMensagem(
+            "❌ Ordem de Serviço não encontrada.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    abrirOS(
+        os
+    );
+
+}
+
+
+function abrirOS(
+    os
+) {
+
+    if (!os) {
+
+        mostrarMensagem(
+            "❌ Ordem de Serviço não encontrada.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    osVisualizacao =
+        os;
+
+
+    localStorage.setItem(
+        "ordemServicoAtual",
+        JSON.stringify(
+            os
+        )
+    );
+
+
+    mostrarVisualizacao(
+        os
+    );
+
+}
+
+
+/* =====================================================
+   VISUALIZAÇÃO DA OS
+===================================================== */
+
+function mostrarVisualizacao(
+    os
+) {
+
+    const modal =
+        document.getElementById(
+            "modalOS"
+        );
+
+
+    const corpo =
+        document.getElementById(
+            "modalCorpo"
+        );
+
+
+    const cliente =
+        clientes[
+            String(
+                os.cliente_id
+            )
+        ] || {};
+
+
+    const moto =
+        motos[
+            String(
+                os.moto_id
+            )
+        ] || {};
+
+
+    const status =
+        os.status ||
+        "Aberta";
+
+
+    const numeroOS =
+        os.id ||
+        "Não informado";
+
+
+    const servicos =
+        os.servicos_realizados ||
+        "Não informado";
+
+
+    const observacoes =
+        os.observacoes ||
+        os.observacao ||
+        os.defeito_reclamado ||
+        "Nenhuma observação informada";
+
+
+    corpo.innerHTML = `
+
+        <div class="visualizacao-grid">
+
+
+            <div class="visualizacao-item">
+
+                <strong>
+                    🧾 NÚMERO DA OS
+                </strong>
+
+                <span>
+                    OS #${escaparHTML(numeroOS)}
+                </span>
+
+            </div>
+
+
+            <div class="visualizacao-item">
+
+                <strong>
+                    📌 STATUS
+                </strong>
+
+                <span>
+                    ${escaparHTML(status)}
+                </span>
+
+            </div>
+
+
+            <div class="visualizacao-item">
+
+                <strong>
+                    👤 CLIENTE
+                </strong>
+
+                <span>
+                    ${escaparHTML(
+                        cliente.nome ||
+                        "Não informado"
+                    )}
+                </span>
+
+            </div>
+
+
+            <div class="visualizacao-item">
+
+                <strong>
+                    📱 TELEFONE
+                </strong>
+
+                <span>
+                    ${escaparHTML(
+                        cliente.telefone ||
+                        cliente.celular ||
+                        "Não informado"
+                    )}
+                </span>
+
+            </div>
+
+
+            <div class="visualizacao-item">
+
+                <strong>
+                    🏍️ MARCA
+                </strong>
+
+                <span>
+                    ${escaparHTML(
+                        moto.marca ||
+                        "Não informada"
+                    )}
+                </span>
+
+            </div>
+
+
+            <div class="visualizacao-item">
+
+                <strong>
+                    🏍️ MODELO
+                </strong>
+
+                <span>
+                    ${escaparHTML(
+                        moto.modelo ||
+                        "Não informado"
+                    )}
+                </span>
+
+            </div>
+
+
+            <div class="visualizacao-item">
+
+                <strong>
+                    🔢 PLACA
+                </strong>
+
+                <span>
+                    ${escaparHTML(
+                        moto.placa ||
+                        "Não informada"
+                    )}
+                </span>
+
+            </div>
+
+
+            <div class="visualizacao-item">
+
+                <strong>
+                    📅 DATA DE ENTRADA
+                </strong>
+
+                <span>
+                    ${escaparHTML(
+                        formatarData(
+                            os.data_entrada
+                        )
+                    )}
+                </span>
+
+            </div>
+
+
+            <div
+                class="visualizacao-item full"
+            >
+
+                <strong>
+                    🔧 SERVIÇOS REALIZADOS
+                </strong>
+
+                <span>
+                    ${escaparHTML(
+                        servicos
+                    )}
+                </span>
+
+            </div>
+
+
+            <div
+                class="visualizacao-item full"
+            >
+
+                <strong>
+                    📝 OBSERVAÇÕES
+                </strong>
+
+                <span>
+                    ${escaparHTML(
+                        observacoes
+                    )}
+                </span>
+
+            </div>
+
+
+            <div
+                class="visualizacao-item full"
+            >
+
+                <strong>
+                    💰 VALOR TOTAL
+                </strong>
+
+                <span>
+                    ${escaparHTML(
+                        moeda(
+                            os.valor_total
+                        )
+                    )}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-acoes">
+
+
+            <button
+                type="button"
+                class="modal-botao modal-imprimir"
+                onclick="imprimirOSAtual()"
+            >
+
+                🖨️ Imprimir OS
+
+            </button>
+
+
+            <button
+                type="button"
+                class="modal-botao modal-fechar"
+                onclick="fecharModal()"
+            >
+
+                Fechar
+
+            </button>
+
+        </div>
+
+    `;
+
+
+    document.getElementById(
+        "modalTitulo"
+    ).textContent =
+        "🧾 OS #" +
+        numeroOS;
+
+
+    modal.classList.add(
+        "ativo"
+    );
+
+}
+
+
+/* =====================================================
+   FECHAR MODAL
+===================================================== */
+
+function fecharModal() {
+
+    const modal =
+        document.getElementById(
+            "modalOS"
+        );
+
+
+    modal.classList.remove(
+        "ativo"
+    );
+
+}
+
+
+/* =====================================================
+   PREPARAR IMPRESSÃO
+===================================================== */
+
+function prepararImpressao(
+    os
+) {
+
+    const area =
+        document.getElementById(
+            "areaImpressao"
+        );
+
+
+    const cliente =
+        clientes[
+            String(
+                os.cliente_id
+            )
+        ] || {};
+
+
+    const moto =
+        motos[
+            String(
+                os.moto_id
+            )
+        ] || {};
+
+
+    const numeroOS =
+        os.id ||
+        "Não informado";
+
+
+    const status =
+        os.status ||
+        "Aberta";
+
+
+    const servicos =
+        os.servicos_realizados ||
+        "Não informado";
+
+
+    const observacoes =
+        os.observacoes ||
+        os.observacao ||
+        os.defeito_reclamado ||
+        "Nenhuma observação informada";
+
+
+    area.innerHTML = `
+
+        <div class="impressao-titulo">
+
+            DANIEL RB MOTOS
+
+        </div>
+
+
+        <div class="impressao-subtitulo">
+
+            ORDEM DE SERVIÇO
+
+        </div>
+
+
+        <div class="impressao-linha">
+
+            <strong>
+                Número da OS:
+            </strong>
+
+            OS #${escaparHTML(
+                numeroOS
+            )}
+
+        </div>
+
+
+        <div class="impressao-linha">
+
+            <strong>
+                Status:
+            </strong>
+
+            ${escaparHTML(
+                status
+            )}
+
+        </div>
+
+
+        <div class="impressao-linha">
+
+            <strong>
+                Cliente:
+            </strong>
+
+            ${escaparHTML(
+                cliente.nome ||
+                "Não informado"
+            )}
+
+        </div>
+
+
+        <div class="impressao-linha">
+
+            <strong>
+                Telefone:
+            </strong>
+
+            ${escaparHTML(
+                cliente.telefone ||
+                cliente.celular ||
+                "Não informado"
+            )}
+
+        </div>
+
+
+        <div class="impressao-linha">
+
+            <strong>
+                Moto:
+            </strong>
+
+            ${escaparHTML(
+                (
+                    moto.marca ||
+                    ""
+                ) +
+                " " +
+                (
+                    moto.modelo ||
+                    ""
+                )
+            )}
+
+        </div>
+
+
+        <div class="impressao-linha">
+
+            <strong>
+                Placa:
+            </strong>
+
+            ${escaparHTML(
+                moto.placa ||
+                "Não informada"
+            )}
+
+        </div>
+
+
+        <div class="impressao-linha">
+
+            <strong>
+                Data de entrada:
+            </strong>
+
+            ${escaparHTML(
+                formatarData(
+                    os.data_entrada
+                )
+            )}
+
+        </div>
+
+
+        <div class="impressao-servico">
+
+            <strong>
+                SERVIÇOS REALIZADOS
+            </strong>
+
+            <br><br>
+
+            ${escaparHTML(
+                servicos
+            )}
+
+        </div>
+
+
+        <div class="impressao-servico">
+
+            <strong>
+                OBSERVAÇÕES
+            </strong>
+
+            <br><br>
+
+            ${escaparHTML(
+                observacoes
+            )}
+
+        </div>
+
+
+        <div class="impressao-total">
+
+            TOTAL:
+            ${escaparHTML(
+                moeda(
+                    os.valor_total
+                )
+            )}
+
+        </div>
+
+
+        <br><br>
+
+
+        <div
+            style="
+                text-align:center;
+                font-size:12px;
+                margin-top:40px;
+            "
+        >
+
+            DANIEL RB MOTOS
+
+            <br>
+
+            Obrigado pela preferência!
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   IMPRIMIR OS
+===================================================== */
+
+function imprimirOSPorIndice(
+    indice
+) {
+
+    const os =
+        ordens[indice];
+
+
+    if (!os) {
+
+        mostrarMensagem(
+            "❌ Ordem de Serviço não encontrada.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    imprimirOS(
+        os
+    );
+
+}
+
+
+function imprimirOS(
+    os
+) {
+
+    if (!os) {
+
+        mostrarMensagem(
+            "❌ Ordem de Serviço não encontrada.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    osVisualizacao =
+        os;
+
+
+    prepararImpressao(
+        os
+    );
+
+
+    setTimeout(
+        function() {
+
+            window.print();
+
+        },
+        100
+    );
+
+}
+
+
+/* =====================================================
+   IMPRIMIR OS ATUAL
+===================================================== */
+
+function imprimirOSAtual() {
+
+    if (!osVisualizacao) {
+
+        mostrarMensagem(
+            "❌ Nenhuma OS selecionada.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    prepararImpressao(
+        osVisualizacao
+    );
+
+
+    setTimeout(
+        function() {
+
+            window.print();
+
+        },
+        100
+    );
+
+}
+
+
+/* =====================================================
+   EXCLUIR OS PELO ID REAL
+===================================================== */
+
+async function excluirOSPorId(
+    id
+) {
+
+    if (
+        id === null ||
+        id === undefined ||
+        id === ""
+    ) {
+
+        mostrarMensagem(
+            "❌ ID da OS não encontrado.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Procura a OS pelo ID real.
+     */
+
+    const os =
+        ordens.find(
+            function(item) {
+
+                return String(item.id) === String(id);
+
+            }
+        );
+
+
+    const numeroOS =
+        os?.id ||
+        id;
+
+
+    /*
+     * Confirmação.
+     */
+
+    const confirmar =
+        confirm(
+            "⚠️ ATENÇÃO!\n\n" +
+            "Você realmente deseja excluir a OS #" +
+            numeroOS +
+            "?\n\n" +
+            "Essa ação não poderá ser desfeita."
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    /*
+     * Localiza o botão para impedir
+     * vários cliques enquanto exclui.
+     */
+
+    const botoes =
+        document.querySelectorAll(
+            ".excluir"
+        );
+
+
+    botoes.forEach(
+        function(botao) {
+
+            if (
+                String(
+                    botao.dataset.osId
+                ) === String(id)
+            ) {
+
+                botao.disabled = true;
+
+                botao.textContent =
+                    "⏳ Excluindo...";
+
+            }
+
+        }
+    );
+
+
+    try {
+
+        mostrarMensagem(
+            "⏳ Excluindo OS..."
+        );
+
+
+        /*
+         * EXCLUSÃO PELO ID REAL.
+         *
+         * O .select() faz o Supabase
+         * devolver a linha que foi excluída.
+         *
+         * Isso permite confirmar que
+         * realmente houve exclusão.
+         */
+
+        const resposta =
+            await supabaseClient
+                .from("ordens_servico")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                )
+                .select();
+
+
+        /*
+         * Verifica erro do Supabase.
+         */
+
+        if (
+            resposta.error
+        ) {
+
+            console.error(
+                "Erro ao excluir OS:",
+                resposta.error
+            );
+
+
+            mostrarMensagem(
+                "❌ Não foi possível excluir a OS.\n\n" +
+                resposta.error.message,
+                false
+            );
+
+
+            restaurarBotaoExcluir(
+                id
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+         * Se não retornou nenhuma linha,
+         * normalmente significa que o DELETE
+         * não pôde afetar aquela linha.
+         *
+         * Isso pode acontecer por causa
+         * das políticas RLS.
+         */
+
+        if (
+            !resposta.data ||
+            resposta.data.length === 0
+        ) {
+
+            console.warn(
+                "Nenhuma linha foi excluída.",
+                {
+                    id: id,
+                    resposta: resposta
+                }
+            );
+
+
+            mostrarMensagem(
+                "❌ A OS não foi excluída.\n\n" +
+                "O Supabase provavelmente está bloqueando a exclusão por uma política de segurança (RLS).",
+                false
+            );
+
+
+            restaurarBotaoExcluir(
+                id
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+         * Remove imediatamente da lista
+         * local.
+         */
+
+        ordens =
+            ordens.filter(
+                function(item) {
+
+                    return String(item.id) !== String(id);
+
+                }
+            );
+
+
+        /*
+         * Se a OS excluída estava aberta
+         * no modal, fecha o modal.
+         */
+
+        if (
+            osVisualizacao &&
+            String(
+                osVisualizacao.id
+            ) === String(id)
+        ) {
+
+            fecharModal();
+
+            osVisualizacao =
+                null;
+
+        }
+
+
+        /*
+         * Atualiza os números do resumo.
+         */
+
+        atualizarResumo(
+            ordens
+        );
+
+
+        /*
+         * Reconstrói a lista.
+         */
+
+        montarLista(
+            ordens,
+            clientes,
+            motos
+        );
+
+
+        /*
+         * Confirma para o usuário.
+         */
+
+        mostrarMensagem(
+            "✅ OS #" +
+            numeroOS +
+            " excluída com sucesso!"
+        );
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "Erro inesperado ao excluir OS:",
+            erro
+        );
+
+
+        mostrarMensagem(
+            "❌ Erro inesperado ao excluir a OS.\n\n" +
+            (
+                erro.message ||
+                String(erro)
+            ),
+            false
+        );
+
+
+        restaurarBotaoExcluir(
+            id
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   RESTAURAR BOTÃO EXCLUIR
+===================================================== */
+
+function restaurarBotaoExcluir(
+    id
+) {
+
+    const botoes =
+        document.querySelectorAll(
+            ".excluir"
+        );
+
+
+    botoes.forEach(
+        function(botao) {
+
+            if (
+                String(
+                    botao.dataset.osId
+                ) === String(id)
+            ) {
+
+                botao.disabled = false;
+
+                botao.textContent =
+                    "🗑️ Excluir";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   COMPATIBILIDADE
+===================================================== */
+
+function excluirOS(
+    indice
+) {
+
+    /*
+     * Mantemos esta função para evitar
+     * problemas caso alguma outra parte
+     * do sistema ainda chame excluirOS().
+     */
+
+    const os =
+        ordens[indice];
+
+
+    if (!os) {
+
+        mostrarMensagem(
+            "❌ Ordem de Serviço não encontrada.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    excluirOSPorId(
+        os.id
+    );
+
+}
+
+
+/* =====================================================
+   FECHAR MODAL CLICANDO FORA
+===================================================== */
+
+document.getElementById(
+    "modalOS"
+).addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target === this
+        ) {
+
+            fecharModal();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   TECLA ESC
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            fecharModal();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   CARREGAR AO ABRIR A PÁGINA
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        carregarOS();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

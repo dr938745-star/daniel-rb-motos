@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Histórico da Moto - DANIEL RB MOTOS</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #2b2b2b;
+            color: #111;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        header p {
+            color: #ccc;
+            margin-bottom: 0;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .botao {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #111;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .servico {
+            border-top: 1px solid #ddd;
+            padding-top: 18px;
+            margin-top: 18px;
+        }
+
+        .servico h3 {
+            margin-top: 0;
+        }
+
+        .excluir {
+            background: #b00000;
+            color: white;
+            border: none;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .editar {
+            background: #444;
+            color: white;
+            border: none;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .info {
+            background: #f1f1f1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .vazio {
+            color: #666;
+        }
+
+        .voltar {
+            display: block;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>📋 Histórico da Moto</h1>
+
+    <p>DANIEL RB MOTOS</p>
+
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>🏍️ Selecionar moto</h2>
+
+        <label>Moto</label>
+
+        <select
+            id="moto"
+            onchange="mostrarMoto()"
+        >
+
+            <option value="">
+                Selecione uma moto
+            </option>
+
+        </select>
+
+        <div
+            id="dadosMoto"
+            style="display:none;"
+        >
+
+            <div class="info">
+
+                <p>
+                    👤 <strong>Proprietário:</strong>
+                    <span id="proprietario"></span>
+                </p>
+
+                <p>
+                    🏍️ <strong>Moto:</strong>
+                    <span id="nomeMoto"></span>
+                </p>
+
+                <p>
+                    🔢 <strong>Placa:</strong>
+                    <span id="placaMoto"></span>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div
+        class="card"
+        id="cardServico"
+        style="display:none;"
+    >
+
+        <h2 id="tituloServico">
+            ➕ Registrar serviço
+        </h2>
+
+        <label>Data do serviço</label>
+
+        <input
+            type="date"
+            id="data"
+        >
+
+        <label>Quilometragem</label>
+
+        <input
+            type="number"
+            id="km"
+            placeholder="Ex: 38200"
+        >
+
+        <label>Serviço realizado</label>
+
+        <input
+            type="text"
+            id="servico"
+            placeholder="Ex: Revisão completa"
+        >
+
+        <label>Peças / materiais</label>
+
+        <textarea
+            id="pecas"
+            placeholder="Ex: óleo, filtro, pastilha..."
+        ></textarea>
+
+        <label>Valor</label>
+
+        <input
+            type="number"
+            step="0.01"
+            id="valor"
+            placeholder="Ex: 280.00"
+        >
+
+        <label>Observações</label>
+
+        <textarea
+            id="observacoes"
+            placeholder="Observações sobre o serviço"
+        ></textarea>
+
+        <button
+            class="botao"
+            id="botaoSalvar"
+            onclick="salvarServico()"
+        >
+
+            💾 Salvar serviço
+
+        </button>
+
+        <button
+            class="botao"
+            id="botaoCancelar"
+            onclick="cancelarEdicao()"
+            style="display:none;"
+        >
+
+            ❌ Cancelar edição
+
+        </button>
+
+    </div>
+
+    <div
+        class="card"
+        id="cardHistorico"
+        style="display:none;"
+    >
+
+        <h2>📜 Histórico de serviços</h2>
+
+        <div id="listaHistorico"></div>
+
+    </div>
+
+    <a
+        href="minhas-motos.html"
+        class="voltar"
+    >
+
+        ← Voltar para Motos
+
+    </a>
+
+</div>
+
+<script>
+
+let servicoEditando = null;
+
+
+/* =========================
+   DATA ATUAL
+========================= */
+
+function colocarDataAtual() {
+
+    const hoje = new Date();
+
+    const ano = hoje.getFullYear();
+
+    const mes =
+        String(hoje.getMonth() + 1)
+        .padStart(2, "0");
+
+    const dia =
+        String(hoje.getDate())
+        .padStart(2, "0");
+
+    document.getElementById("data").value =
+        `${ano}-${mes}-${dia}`;
+
+}
+
+
+/* =========================
+   CARREGAR MOTOS
+========================= */
+
+function carregarMotos() {
+
+    const motos =
+        JSON.parse(
+            localStorage.getItem("motos")
+        ) || [];
+
+    const select =
+        document.getElementById("moto");
+
+    select.innerHTML = `
+        <option value="">
+            Selecione uma moto
+        </option>
+    `;
+
+    motos.forEach(function(moto) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = moto.id;
+
+        option.textContent =
+            `${moto.marca} ${moto.modelo} - ${moto.placa}`;
+
+        select.appendChild(option);
+
+    });
+
+}
+
+
+/* =========================
+   MOSTRAR MOTO
+========================= */
+
+function mostrarMoto() {
+
+    const motoId =
+        document.getElementById("moto").value;
+
+    const dados =
+        document.getElementById("dadosMoto");
+
+    const card =
+        document.getElementById("cardServico");
+
+    const cardHistorico =
+        document.getElementById("cardHistorico");
+
+    if (!motoId) {
+
+        dados.style.display = "none";
+        card.style.display = "none";
+        cardHistorico.style.display = "none";
+
+        return;
+
+    }
+
+    const motos =
+        JSON.parse(
+            localStorage.getItem("motos")
+        ) || [];
+
+    const moto =
+        motos.find(function(item) {
+
+            return String(item.id) ===
+                   String(motoId);
+
+        });
+
+    if (!moto) {
+
+        return;
+
+    }
+
+    document.getElementById("nomeMoto").textContent =
+        `${moto.marca} ${moto.modelo}`;
+
+    document.getElementById("placaMoto").textContent =
+        moto.placa || "Não informada";
+
+    document.getElementById("proprietario").textContent =
+        nomeCliente(moto.clienteId);
+
+    dados.style.display = "block";
+    card.style.display = "block";
+    cardHistorico.style.display = "block";
+
+    cancelarEdicao();
+
+    carregarHistorico();
+
+}
+
+
+/* =========================
+   NOME DO CLIENTE
+========================= */
+
+function nomeCliente(id) {
+
+    const clientes =
+        JSON.parse(
+            localStorage.getItem("clientes")
+        ) || [];
+
+    const cliente =
+        clientes.find(function(item) {
+
+            return String(item.id) ===
+                   String(id);
+
+        });
+
+    return cliente
+        ? cliente.nome
+        : "Cliente não encontrado";
+
+}
+
+
+/* =========================
+   SALVAR SERVIÇO
+========================= */
+
+function salvarServico() {
+
+    const motoId =
+        document.getElementById("moto").value;
+
+    const data =
+        document.getElementById("data").value;
+
+    const km =
+        document.getElementById("km").value;
+
+    const servico =
+        document.getElementById("servico")
+        .value
+        .trim();
+
+    const pecas =
+        document.getElementById("pecas")
+        .value
+        .trim();
+
+    const valor =
+        document.getElementById("valor").value;
+
+    const observacoes =
+        document.getElementById("observacoes")
+        .value
+        .trim();
+
+    if (!motoId) {
+
+        alert("⚠️ Selecione uma moto.");
+
+        return;
+
+    }
+
+    if (!data) {
+
+        alert("⚠️ Informe a data.");
+
+        return;
+
+    }
+
+    if (!servico) {
+
+        alert(
+            "⚠️ Informe o serviço realizado."
+        );
+
+        return;
+
+    }
+
+    let historico =
+        JSON.parse(
+            localStorage.getItem("historico")
+        ) || [];
+
+
+    /* EDITANDO */
+
+    if (servicoEditando !== null) {
+
+        const indice =
+            historico.findIndex(function(item) {
+
+                return String(item.id) ===
+                       String(servicoEditando);
+
+            });
+
+        if (indice !== -1) {
+
+            historico[indice].motoId =
+                motoId;
+
+            historico[indice].data =
+                data;
+
+            historico[indice].km =
+                km;
+
+            historico[indice].servico =
+                servico;
+
+            historico[indice].pecas =
+                pecas;
+
+            historico[indice].valor =
+                valor;
+
+            historico[indice].observacoes =
+                observacoes;
+
+        }
+
+        localStorage.setItem(
+            "historico",
+            JSON.stringify(historico)
+        );
+
+        alert(
+            "✅ Serviço atualizado!"
+        );
+
+        cancelarEdicao();
+
+        carregarHistorico();
+
+        return;
+
+    }
+
+
+    /* NOVO SERVIÇO */
+
+    const novoServico = {
+
+        id: Date.now(),
+
+        motoId: motoId,
+
+        data: data,
+
+        km: km,
+
+        servico: servico,
+
+        pecas: pecas,
+
+        valor: valor,
+
+        observacoes: observacoes
+
+    };
+
+    historico.push(novoServico);
+
+    localStorage.setItem(
+        "historico",
+        JSON.stringify(historico)
+    );
+
+    limparFormulario();
+
+    carregarHistorico();
+
+    alert(
+        "✅ Serviço registrado!"
+    );
+
+}
+
+
+/* =========================
+   CARREGAR HISTÓRICO
+========================= */
+
+function carregarHistorico() {
+
+    const motoId =
+        document.getElementById("moto").value;
+
+    if (!motoId) {
+
+        return;
+
+    }
+
+    const historico =
+        JSON.parse(
+            localStorage.getItem("historico")
+        ) || [];
+
+    const lista =
+        document.getElementById(
+            "listaHistorico"
+        );
+
+    const registros =
+        historico
+            .filter(function(item) {
+
+                return String(item.motoId) ===
+                       String(motoId);
+
+            })
+            .sort(function(a, b) {
+
+                return new Date(b.data) -
+                       new Date(a.data);
+
+            });
+
+    lista.innerHTML = "";
+
+    if (registros.length === 0) {
+
+        lista.innerHTML = `
+            <p class="vazio">
+                📭 Nenhum serviço registrado
+                para esta moto ainda.
+            </p>
+        `;
+
+        return;
+
+    }
+
+    registros.forEach(function(item) {
+
+        let valorFormatado =
+            "Não informado";
+
+        if (
+            item.valor !== "" &&
+            item.valor !== null &&
+            item.valor !== undefined
+        ) {
+
+            valorFormatado =
+                Number(item.valor)
+                .toLocaleString(
+                    "pt-BR",
+                    {
+                        style: "currency",
+                        currency: "BRL"
+                    }
+                );
+
+        }
+
+        lista.innerHTML += `
+
+            <div class="servico">
+
+                <h3>
+                    🔧 ${item.servico}
+                </h3>
+
+                <p>
+                    📅 <strong>Data:</strong>
+                    ${formatarData(item.data)}
+                </p>
+
+                <p>
+                    🛣️ <strong>Quilometragem:</strong>
+                    ${item.km || "Não informada"}
+                </p>
+
+                <p>
+                    🔩 <strong>Peças / materiais:</strong>
+                    ${item.pecas || "Nenhum informado"}
+                </p>
+
+                <p>
+                    💰 <strong>Valor:</strong>
+                    ${valorFormatado}
+                </p>
+
+                <p>
+                    📝 <strong>Observações:</strong>
+                    ${item.observacoes || "Nenhuma"}
+                </p>
+
+                <button
+                    class="editar"
+                    onclick="editarServico(${item.id})"
+                >
+                    ✏️ Editar
+                </button>
+
+                <button
+                    class="excluir"
+                    onclick="excluirServico(${item.id})"
+                >
+                    🗑️ Excluir
+                </button>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+/* =========================
+   EDITAR SERVIÇO
+========================= */
+
+function editarServico(id) {
+
+    const historico =
+        JSON.parse(
+            localStorage.getItem("historico")
+        ) || [];
+
+    const item =
+        historico.find(function(servico) {
+
+            return String(servico.id) ===
+                   String(id);
+
+        });
+
+    if (!item) {
+
+        alert(
+            "Serviço não encontrado."
+        );
+
+        return;
+
+    }
+
+    servicoEditando = item.id;
+
+    document.getElementById("data").value =
+        item.data;
+
+    document.getElementById("km").value =
+        item.km || "";
+
+    document.getElementById("servico").value =
+        item.servico;
+
+    document.getElementById("pecas").value =
+        item.pecas || "";
+
+    document.getElementById("valor").value =
+        item.valor || "";
+
+    document.getElementById("observacoes").value =
+        item.observacoes || "";
+
+    document.getElementById("tituloServico").textContent =
+        "✏️ Editando serviço";
+
+    document.getElementById("botaoSalvar").textContent =
+        "💾 Salvar alterações";
+
+    document.getElementById("botaoCancelar").style.display =
+        "block";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =========================
+   CANCELAR EDIÇÃO
+========================= */
+
+function cancelarEdicao() {
+
+    servicoEditando = null;
+
+    limparFormulario();
+
+    document.getElementById("tituloServico").textContent =
+        "➕ Registrar serviço";
+
+    document.getElementById("botaoSalvar").textContent =
+        "💾 Salvar serviço";
+
+    document.getElementById("botaoCancelar").style.display =
+        "none";
+
+}
+
+
+/* =========================
+   EXCLUIR SERVIÇO
+========================= */
+
+function excluirServico(id) {
+
+    if (
+        !confirm(
+            "Tem certeza que deseja excluir este serviço?"
+        )
+    ) {
+
+        return;
+
+    }
+
+    let historico =
+        JSON.parse(
+            localStorage.getItem("historico")
+        ) || [];
+
+    historico =
+        historico.filter(function(item) {
+
+            return String(item.id) !==
+                   String(id);
+
+        });
+
+    localStorage.setItem(
+        "historico",
+        JSON.stringify(historico)
+    );
+
+    carregarHistorico();
+
+}
+
+
+/* =========================
+   LIMPAR FORMULÁRIO
+========================= */
+
+function limparFormulario() {
+
+    colocarDataAtual();
+
+    document.getElementById("km").value = "";
+
+    document.getElementById("servico").value = "";
+
+    document.getElementById("pecas").value = "";
+
+    document.getElementById("valor").value = "";
+
+    document.getElementById("observacoes").value = "";
+
+}
+
+
+/* =========================
+   FORMATAR DATA
+========================= */
+
+function formatarData(data) {
+
+    if (!data) {
+
+        return "Não informada";
+
+    }
+
+    const partes =
+        data.split("-");
+
+    if (partes.length !== 3) {
+
+        return data;
+
+    }
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+}
+
+
+/* =========================
+   INICIAR
+========================= */
+
+carregarMotos();
+
+colocarDataAtual();
+
+</script>
+
+</body>
+
+</html>

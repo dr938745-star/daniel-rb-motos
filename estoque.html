@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Estoque - DANIEL RB MOTOS</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #2b2b2b;
+            color: #111;
+        }
+
+
+        header {
+            background: #111;
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+
+        header h1 {
+            margin: 0;
+            font-size: 27px;
+        }
+
+
+        header p {
+            color: #ccc;
+            margin: 8px 0 0;
+        }
+
+
+        .container {
+            max-width: 650px;
+            margin: auto;
+            padding: 20px;
+        }
+
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+
+        input {
+            width: 100%;
+            padding: 13px;
+            margin-top: 7px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #111;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+
+        .editar {
+            background: #444;
+        }
+
+
+        .excluir {
+            background: #b00000;
+        }
+
+
+        .peca {
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+            padding-top: 15px;
+        }
+
+
+        .preco-nao-informado {
+            color: #777;
+        }
+
+
+        .estoque-baixo {
+            color: #b00000;
+            font-weight: bold;
+        }
+
+
+        .voltar {
+            display: block;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 10px;
+            background: #444;
+            font-weight: bold;
+        }
+
+
+        .voltar:hover {
+            background: #555;
+        }
+
+
+        .vazio {
+            text-align: center;
+            color: #777;
+            padding: 20px 0;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>📦 Estoque</h1>
+
+    <p>DANIEL RB MOTOS</p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- =========================
+         CADASTRO / EDIÇÃO
+    ========================== -->
+
+    <div class="card">
+
+        <h2 id="titulo">
+            ➕ Cadastrar peça
+        </h2>
+
+
+        <label>
+            Nome da peça
+        </label>
+
+        <input
+            type="text"
+            id="nome"
+            placeholder="Ex: Pastilha de freio"
+            autocomplete="off"
+        >
+
+
+        <label>
+            Quantidade
+        </label>
+
+        <input
+            type="number"
+            id="quantidade"
+            placeholder="Ex: 5"
+            min="0"
+            step="1"
+        >
+
+
+        <label>
+            Preço de venda
+        </label>
+
+        <input
+            type="number"
+            id="precoVenda"
+            step="0.01"
+            min="0"
+            placeholder="Pode deixar vazio"
+        >
+
+
+        <button
+            type="button"
+            onclick="salvarPeca()"
+        >
+
+            💾 Salvar peça
+
+        </button>
+
+
+        <button
+            type="button"
+            id="botaoCancelar"
+            class="editar"
+            onclick="cancelarEdicao()"
+            style="display:none;"
+        >
+
+            ❌ Cancelar edição
+
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         LISTA
+    ========================== -->
+
+    <div class="card">
+
+        <h2>
+            📋 Peças cadastradas
+        </h2>
+
+
+        <div id="lista">
+
+            <div class="vazio">
+                Nenhuma peça cadastrada.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         VOLTAR
+    ========================== -->
+
+    <a
+        href="oficina.html"
+        class="voltar"
+    >
+
+        ← Voltar para a Área da Oficina
+
+    </a>
+
+
+</div>
+
+
+<script>
+
+
+/* =========================
+   PROTEÇÃO DA ÁREA DA OFICINA
+========================= */
+
+(function () {
+
+    const autorizada =
+        sessionStorage.getItem("oficinaAutorizada");
+
+
+    if (autorizada !== "true") {
+
+        window.location.replace(
+            "login-oficina.html"
+        );
+
+    }
+
+})();
+
+
+/* =========================
+   VARIÁVEL DE EDIÇÃO
+========================= */
+
+let idEditando = null;
+
+
+/* =========================
+   CARREGAR ESTOQUE
+========================= */
+
+function carregarEstoque() {
+
+    try {
+
+        const dados =
+            JSON.parse(
+                localStorage.getItem("estoque")
+            );
+
+        return Array.isArray(dados)
+            ? dados
+            : [];
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "Erro ao carregar estoque:",
+            erro
+        );
+
+        return [];
+
+    }
+
+}
+
+
+/* =========================
+   SALVAR ESTOQUE
+========================= */
+
+function salvarEstoque(estoque) {
+
+    localStorage.setItem(
+        "estoque",
+        JSON.stringify(estoque)
+    );
+
+}
+
+
+/* =========================
+   SALVAR / EDITAR PEÇA
+========================= */
+
+function salvarPeca() {
+
+
+    const nome =
+        document
+            .getElementById("nome")
+            .value
+            .trim();
+
+
+    const quantidadeTexto =
+        document
+            .getElementById("quantidade")
+            .value
+            .trim();
+
+
+    const precoTexto =
+        document
+            .getElementById("precoVenda")
+            .value
+            .trim();
+
+
+    /* =========================
+       VALIDAÇÕES
+    ========================== */
+
+    if (!nome) {
+
+        alert(
+            "⚠️ Digite o nome da peça."
+        );
+
+        document
+            .getElementById("nome")
+            .focus();
+
+        return;
+
+    }
+
+
+    if (
+        quantidadeTexto === "" ||
+        Number(quantidadeTexto) < 0 ||
+        !Number.isInteger(
+            Number(quantidadeTexto)
+        )
+    ) {
+
+        alert(
+            "⚠️ Digite uma quantidade válida."
+        );
+
+        document
+            .getElementById("quantidade")
+            .focus();
+
+        return;
+
+    }
+
+
+    if (
+        precoTexto !== "" &&
+        (
+            Number(precoTexto) < 0 ||
+            !Number.isFinite(
+                Number(precoTexto)
+            )
+        )
+    ) {
+
+        alert(
+            "⚠️ Digite um preço válido."
+        );
+
+        document
+            .getElementById("precoVenda")
+            .focus();
+
+        return;
+
+    }
+
+
+    const quantidade =
+        Number(quantidadeTexto);
+
+
+    const precoVenda =
+        precoTexto === ""
+            ? ""
+            : Number(precoTexto);
+
+
+    let estoque =
+        carregarEstoque();
+
+
+    /* =========================
+       EDITANDO
+    ========================== */
+
+    if (idEditando !== null) {
+
+
+        const peca =
+            estoque.find(
+                function(item) {
+
+                    return String(item.id) ===
+                        String(idEditando);
+
+                }
+            );
+
+
+        if (!peca) {
+
+            alert(
+                "❌ Peça não encontrada."
+            );
+
+            cancelarEdicao();
+
+            return;
+
+        }
+
+
+        peca.nome =
+            nome;
+
+
+        peca.quantidade =
+            quantidade;
+
+
+        peca.precoVenda =
+            precoVenda;
+
+
+        salvarEstoque(
+            estoque
+        );
+
+
+        alert(
+            "✅ Peça atualizada com sucesso!"
+        );
+
+    }
+
+
+    /* =========================
+       NOVA PEÇA
+    ========================== */
+
+    else {
+
+
+        const novaPeca = {
+
+            id:
+                Date.now(),
+
+            nome:
+                nome,
+
+            quantidade:
+                quantidade,
+
+            precoVenda:
+                precoVenda
+
+        };
+
+
+        estoque.push(
+            novaPeca
+        );
+
+
+        salvarEstoque(
+            estoque
+        );
+
+
+        alert(
+            "✅ Peça cadastrada com sucesso!"
+        );
+
+    }
+
+
+    cancelarEdicao();
+
+    mostrarEstoque();
+
+}
+
+
+/* =========================
+   MOSTRAR ESTOQUE
+========================= */
+
+function mostrarEstoque() {
+
+
+    const estoque =
+        carregarEstoque();
+
+
+    const lista =
+        document.getElementById(
+            "lista"
+        );
+
+
+    if (estoque.length === 0) {
+
+        lista.innerHTML = `
+
+            <div class="vazio">
+
+                📦 Nenhuma peça cadastrada.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    lista.innerHTML = "";
+
+
+    estoque.forEach(
+        function(peca) {
+
+
+            let preco;
+
+
+            if (
+                peca.precoVenda === "" ||
+                peca.precoVenda === undefined ||
+                peca.precoVenda === null
+            ) {
+
+                preco = `
+
+                    <span class="preco-nao-informado">
+
+                        Ainda não informado
+
+                    </span>
+
+                `;
+
+            }
+
+            else {
+
+                preco =
+                    Number(
+                        peca.precoVenda
+                    ).toLocaleString(
+                        "pt-BR",
+                        {
+                            style: "currency",
+                            currency: "BRL"
+                        }
+                    );
+
+            }
+
+
+            let avisoQuantidade = "";
+
+
+            if (
+                Number(peca.quantidade) <= 0
+            ) {
+
+                avisoQuantidade = `
+
+                    <span class="estoque-baixo">
+
+                        ⚠️ Sem estoque
+
+                    </span>
+
+                `;
+
+            }
+
+            else if (
+                Number(peca.quantidade) <= 2
+            ) {
+
+                avisoQuantidade = `
+
+                    <span class="estoque-baixo">
+
+                        ⚠️ Estoque baixo
+
+                    </span>
+
+                `;
+
+            }
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "peca";
+
+
+            div.innerHTML = `
+
+                <h3>
+                    🔩 ${escaparHTML(peca.nome)}
+                </h3>
+
+
+                <p>
+
+                    📦 <strong>Quantidade:</strong>
+
+                    ${Number(peca.quantidade)}
+
+                    ${avisoQuantidade}
+
+                </p>
+
+
+                <p>
+
+                    💵 <strong>Preço de venda:</strong>
+
+                    ${preco}
+
+                </p>
+
+
+                <button
+                    type="button"
+                    class="editar"
+                    onclick="editarPeca('${String(peca.id)}')"
+                >
+
+                    ✏️ Editar
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="excluir"
+                    onclick="excluirPeca('${String(peca.id)}')"
+                >
+
+                    🗑️ Excluir
+
+                </button>
+
+            `;
+
+
+            lista.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   PROTEGER TEXTO HTML
+========================= */
+
+function escaparHTML(texto) {
+
+    return String(texto)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================
+   EDITAR
+========================= */
+
+function editarPeca(id) {
+
+
+    const estoque =
+        carregarEstoque();
+
+
+    const peca =
+        estoque.find(
+            function(item) {
+
+                return String(item.id) ===
+                    String(id);
+
+            }
+        );
+
+
+    if (!peca) {
+
+        alert(
+            "❌ Peça não encontrada."
+        );
+
+        return;
+
+    }
+
+
+    idEditando =
+        peca.id;
+
+
+    document.getElementById(
+        "nome"
+    ).value =
+        peca.nome || "";
+
+
+    document.getElementById(
+        "quantidade"
+    ).value =
+        peca.quantidade ?? "";
+
+
+    document.getElementById(
+        "precoVenda"
+    ).value =
+        peca.precoVenda === "" ||
+        peca.precoVenda === undefined
+            ? ""
+            : peca.precoVenda;
+
+
+    document.getElementById(
+        "titulo"
+    ).textContent =
+        "✏️ Editando peça";
+
+
+    document.getElementById(
+        "botaoCancelar"
+    ).style.display =
+        "block";
+
+
+    window.scrollTo(
+        {
+            top: 0,
+            behavior: "smooth"
+        }
+    );
+
+
+    document
+        .getElementById("nome")
+        .focus();
+
+}
+
+
+/* =========================
+   CANCELAR EDIÇÃO
+========================= */
+
+function cancelarEdicao() {
+
+
+    idEditando =
+        null;
+
+
+    document.getElementById(
+        "nome"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "quantidade"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "precoVenda"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "titulo"
+    ).textContent =
+        "➕ Cadastrar peça";
+
+
+    document.getElementById(
+        "botaoCancelar"
+    ).style.display =
+        "none";
+
+}
+
+
+/* =========================
+   EXCLUIR
+========================= */
+
+function excluirPeca(id) {
+
+
+    const estoque =
+        carregarEstoque();
+
+
+    const peca =
+        estoque.find(
+            function(item) {
+
+                return String(item.id) ===
+                    String(id);
+
+            }
+        );
+
+
+    if (!peca) {
+
+        alert(
+            "❌ Peça não encontrada."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !confirm(
+            "Tem certeza que deseja excluir a peça \"" +
+            peca.nome +
+            "\"?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const novoEstoque =
+        estoque.filter(
+            function(item) {
+
+                return String(item.id) !==
+                    String(id);
+
+            }
+        );
+
+
+    salvarEstoque(
+        novoEstoque
+    );
+
+
+    if (
+        String(idEditando) ===
+        String(id)
+    ) {
+
+        cancelarEdicao();
+
+    }
+
+
+    mostrarEstoque();
+
+
+    alert(
+        "🗑️ Peça excluída com sucesso."
+    );
+
+}
+
+
+/* =========================
+   INICIAR
+========================= */
+
+mostrarEstoque();
+
+
+</script>
+
+
+</body>
+
+</html>

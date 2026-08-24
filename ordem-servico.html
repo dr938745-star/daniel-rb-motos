@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Ordem de Serviço - DANIEL RB MOTOS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #3a3a3a 0%,
+            #181818 55%,
+            #080808 100%
+        );
+
+    color: #111;
+    min-height: 100vh;
+}
+
+header {
+    background:
+        linear-gradient(
+            135deg,
+            #050505,
+            #260000,
+            #080808
+        );
+
+    color: white;
+    padding: 25px 18px;
+    text-align: center;
+
+    border-bottom: 2px solid #8b0000;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.45);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 900;
+}
+
+header p {
+    margin: 7px 0 0;
+    color: #d6d6d6;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.container {
+    width: 100%;
+    max-width: 950px;
+    margin: auto;
+    padding: 22px 15px 45px;
+}
+
+.titulo {
+    color: white;
+    margin-bottom: 18px;
+}
+
+.titulo h2 {
+    margin: 0 0 5px;
+    font-size: 23px;
+}
+
+.titulo p {
+    margin: 0;
+    color: #bbb;
+}
+
+.card {
+    background: linear-gradient(145deg, #fff, #eee);
+    border-radius: 17px;
+    padding: 20px;
+    margin-bottom: 18px;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.28);
+
+    border: 1px solid #ddd;
+}
+
+.card h3 {
+    margin: 0 0 15px;
+    font-size: 18px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.info {
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.info strong {
+    display: block;
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 4px;
+}
+
+.info span {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+textarea,
+input,
+select {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 12px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    outline: none;
+    background: white;
+}
+
+textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+textarea:focus,
+input:focus,
+select:focus {
+    border-color: #8b0000;
+    box-shadow: 0 0 0 2px rgba(139,0,0,0.08);
+}
+
+.campo {
+    margin-bottom: 15px;
+}
+
+.valores {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.total {
+    background:
+        linear-gradient(
+            135deg,
+            #111,
+            #3b0000
+        );
+
+    color: white;
+    border-radius: 14px;
+    padding: 18px;
+    margin-top: 15px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total span:first-child {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#valorTotal {
+    font-size: 25px;
+    font-weight: 900;
+}
+
+.botoes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.botao {
+    border: none;
+    border-radius: 11px;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.18s;
+}
+
+.botao:hover {
+    transform: translateY(-1px);
+}
+
+.botao:disabled {
+    opacity: 0.65;
+    cursor: wait;
+    transform: none;
+}
+
+.salvar {
+    background:
+        linear-gradient(
+            135deg,
+            #111,
+            #3b0000
+        );
+
+    color: white;
+}
+
+.imprimir {
+    background: #222;
+    color: white;
+}
+
+.voltar {
+    display: block;
+    text-align: center;
+    color: #ccc;
+    text-decoration: none;
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.voltar:hover {
+    color: white;
+}
+
+.carregando {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.erro {
+    background: #ffe1e1;
+    color: #a00000;
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 5px solid #c00000;
+    font-weight: bold;
+}
+
+.aviso {
+    background: #fff4d6;
+    color: #795500;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    border-left: 5px solid #d99a00;
+}
+
+.mensagem {
+    position: fixed;
+
+    left: 50%;
+    bottom: 20px;
+
+    transform: translateX(-50%);
+
+    width: calc(100% - 30px);
+    max-width: 500px;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+    color: white;
+    text-align: center;
+    font-weight: bold;
+
+    display: none;
+
+    z-index: 9999;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.4);
+}
+
+.sucesso {
+    background: #137333;
+}
+
+.erro-msg {
+    background: #a00000;
+}
+
+@media (max-width: 650px) {
+
+    .info-grid,
+    .valores,
+    .botoes {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 24px;
+    }
+
+}
+
+@media print {
+
+    body {
+        background: white;
+    }
+
+    header {
+        color: black;
+        background: white;
+        border-bottom: 2px solid #111;
+    }
+
+    header p {
+        color: #333;
+    }
+
+    .botoes,
+    .voltar,
+    .mensagem {
+        display: none !important;
+    }
+
+    .container {
+        max-width: 100%;
+    }
+
+    .card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>🔧 DANIEL RB MOTOS</h1>
+
+    <p>ORDEM DE SERVIÇO</p>
+
+</header>
+
+
+<div class="container">
+
+    <div id="conteudo">
+
+        <div class="carregando">
+
+            🔄 Carregando Ordem de Serviço...
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="mensagem"
+    class="mensagem"
+></div>
+
+
+<script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+    "https://niffgrhjmnizvusnrqyg.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
+
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =====================================================
+   VARIÁVEIS
+===================================================== */
+
+let agendamentoAtual = null;
+
+let motoAtual = null;
+
+let clienteAtual = null;
+
+
+/* =====================================================
+   ESCAPAR HTML
+===================================================== */
+
+function escaparHTML(valor) {
+
+    return String(valor ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =====================================================
+   MENSAGEM
+===================================================== */
+
+function mostrarMensagem(
+    texto,
+    sucesso = true
+) {
+
+    const elemento =
+        document.getElementById(
+            "mensagem"
+        );
+
+    elemento.textContent =
+        texto;
+
+    elemento.className =
+        "mensagem " +
+        (
+            sucesso
+                ? "sucesso"
+                : "erro-msg"
+        );
+
+    elemento.style.display =
+        "block";
+
+
+    setTimeout(
+        function() {
+
+            elemento.style.display =
+                "none";
+
+        },
+        4000
+    );
+
+}
+
+
+/* =====================================================
+   NÚMERO
+===================================================== */
+
+function numero(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+
+        return 0;
+
+    }
+
+
+    const n =
+        parseFloat(
+            String(valor)
+                .replace(",", ".")
+        );
+
+
+    return isNaN(n)
+        ? 0
+        : n;
+
+}
+
+
+/* =====================================================
+   MOEDA
+===================================================== */
+
+function formatarMoeda(valor) {
+
+    return numero(valor)
+        .toLocaleString(
+            "pt-BR",
+            {
+                style: "currency",
+                currency: "BRL"
+            }
+        );
+
+}
+
+
+/* =====================================================
+   TOTAL
+===================================================== */
+
+function calcularTotal() {
+
+    const campoPecas =
+        document.getElementById(
+            "valorPecas"
+        );
+
+    const campoMaoObra =
+        document.getElementById(
+            "valorMaoObra"
+        );
+
+    const campoDesconto =
+        document.getElementById(
+            "desconto"
+        );
+
+    const campoTotal =
+        document.getElementById(
+            "valorTotal"
+        );
+
+
+    if (
+        !campoPecas ||
+        !campoMaoObra ||
+        !campoDesconto ||
+        !campoTotal
+    ) {
+
+        return 0;
+
+    }
+
+
+    const pecas =
+        numero(
+            campoPecas.value
+        );
+
+    const maoObra =
+        numero(
+            campoMaoObra.value
+        );
+
+    const desconto =
+        numero(
+            campoDesconto.value
+        );
+
+
+    const total =
+        Math.max(
+            0,
+            pecas +
+            maoObra -
+            desconto
+        );
+
+
+    campoTotal.textContent =
+        formatarMoeda(
+            total
+        );
+
+
+    return total;
+
+}
+
+
+/* =====================================================
+   MOSTRAR ERRO
+===================================================== */
+
+function mostrarErro(
+    titulo,
+    detalhe = ""
+) {
+
+    const conteudo =
+        document.getElementById(
+            "conteudo"
+        );
+
+
+    conteudo.innerHTML = `
+
+        <div class="erro">
+
+            ❌ ${escaparHTML(titulo)}
+
+            ${
+                detalhe
+                ? `
+                    <br><br>
+                    <small>
+                        ${escaparHTML(detalhe)}
+                    </small>
+                  `
+                : ""
+            }
+
+        </div>
+
+
+        <a
+            href="agendamentos.html"
+            class="voltar"
+        >
+
+            ← Voltar para Agendamentos
+
+        </a>
+
+    `;
+
+}
+
+
+/* =====================================================
+   CARREGAR AGENDAMENTO
+===================================================== */
+
+async function carregarAgendamento() {
+
+    const conteudo =
+        document.getElementById(
+            "conteudo"
+        );
+
+
+    const salvo =
+        localStorage.getItem(
+            "agendamentoParaOS"
+        );
+
+
+    if (!salvo) {
+
+        mostrarErro(
+            "Nenhum agendamento foi selecionado.",
+            "Volte para Agendamentos e clique em Abrir OS."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        agendamentoAtual =
+            JSON.parse(
+                salvo
+            );
+
+    }
+
+    catch (erro) {
+
+        mostrarErro(
+            "Não foi possível ler o agendamento.",
+            erro.message
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !agendamentoAtual ||
+        !agendamentoAtual.id
+    ) {
+
+        mostrarErro(
+            "O agendamento selecionado está incompleto.",
+            "O ID do agendamento não foi encontrado."
+        );
+
+        return;
+
+    }
+
+
+    const motoId =
+        agendamentoAtual.moto_id;
+
+
+    if (!motoId) {
+
+        mostrarErro(
+            "Este agendamento não possui uma moto vinculada."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        /* =============================================
+           BUSCAR MOTO
+        ============================================= */
+
+        const respostaMoto =
+            await supabaseClient
+                .from("motos")
+                .select("*")
+                .eq(
+                    "id",
+                    motoId
+                )
+                .maybeSingle();
+
+
+        if (
+            respostaMoto.error
+        ) {
+
+            mostrarErro(
+                "Erro ao buscar a moto.",
+                respostaMoto.error.message
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !respostaMoto.data
+        ) {
+
+            mostrarErro(
+                "Moto não encontrada.",
+                "A moto vinculada ao agendamento não existe mais no banco."
+            );
+
+            return;
+
+        }
+
+
+        motoAtual =
+            respostaMoto.data;
+
+
+        /* =============================================
+           BUSCAR CLIENTE
+        ============================================= */
+
+        clienteAtual = {};
+
+
+        if (
+            motoAtual.cliente_id
+        ) {
+
+            const respostaCliente =
+                await supabaseClient
+                    .from("clientes_nova")
+                    .select("*")
+                    .eq(
+                        "id",
+                        motoAtual.cliente_id
+                    )
+                    .maybeSingle();
+
+
+            if (
+                respostaCliente.error
+            ) {
+
+                console.warn(
+                    "Cliente não carregado:",
+                    respostaCliente.error
+                );
+
+            }
+
+            else {
+
+                clienteAtual =
+                    respostaCliente.data || {};
+
+            }
+
+        }
+
+
+        montarTela(
+            clienteAtual,
+            motoAtual
+        );
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "Erro ao carregar OS:",
+            erro
+        );
+
+
+        mostrarErro(
+            "Erro ao carregar a Ordem de Serviço.",
+            erro.message || String(erro)
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   MONTAR TELA
+===================================================== */
+
+function montarTela(
+    cliente,
+    moto
+) {
+
+    const conteudo =
+        document.getElementById(
+            "conteudo"
+        );
+
+
+    const servicoAgendado =
+        agendamentoAtual.servico ||
+        agendamentoAtual["serviço"] ||
+        "Não informado";
+
+
+    conteudo.innerHTML = `
+
+        <div class="titulo">
+
+            <h2>
+                Ordem de Serviço
+            </h2>
+
+            <p>
+                Registre o atendimento da oficina.
+            </p>
+
+        </div>
+
+
+        <div class="aviso">
+
+            📋 <strong>Agendamento selecionado:</strong>
+
+            ${escaparHTML(
+                servicoAgendado
+            )}
+
+            &nbsp; • &nbsp;
+
+            ${escaparHTML(
+                agendamentoAtual.data ||
+                ""
+            )}
+
+            &nbsp; • &nbsp;
+
+            ${escaparHTML(
+                agendamentoAtual.horario ||
+                ""
+            )}
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                👤 Cliente
+            </h3>
+
+
+            <div class="info-grid">
+
+                <div class="info">
+
+                    <strong>Nome</strong>
+
+                    <span>
+                        ${escaparHTML(
+                            cliente.nome ||
+                            "Não informado"
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="info">
+
+                    <strong>Telefone</strong>
+
+                    <span>
+                        ${escaparHTML(
+                            cliente.telefone ||
+                            cliente.celular ||
+                            "Não informado"
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="info">
+
+                    <strong>CPF</strong>
+
+                    <span>
+                        ${escaparHTML(
+                            cliente.cpf ||
+                            "Não informado"
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="info">
+
+                    <strong>Endereço</strong>
+
+                    <span>
+                        ${escaparHTML(
+                            cliente.endereco ||
+                            "Não informado"
+                        )}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                🏍️ Motocicleta
+            </h3>
+
+
+            <div class="info-grid">
+
+                <div class="info">
+
+                    <strong>Marca</strong>
+
+                    <span>
+                        ${escaparHTML(
+                            moto.marca ||
+                            "Não informada"
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="info">
+
+                    <strong>Modelo</strong>
+
+                    <span>
+                        ${escaparHTML(
+                            moto.modelo ||
+                            "Não informado"
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="info">
+
+                    <strong>Placa</strong>
+
+                    <span>
+                        ${escaparHTML(
+                            moto.placa ||
+                            "Não informada"
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="info">
+
+                    <strong>Ano</strong>
+
+                    <span>
+                        ${escaparHTML(
+                            moto.ano ||
+                            "Não informado"
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="info">
+
+                    <strong>Quilometragem</strong>
+
+                    <span>
+                        ${escaparHTML(
+                            moto.km ||
+                            "Não informada"
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="info">
+
+                    <strong>Serviço agendado</strong>
+
+                    <span>
+                        ${escaparHTML(
+                            servicoAgendado
+                        )}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                🔧 Atendimento
+            </h3>
+
+
+            <div class="campo">
+
+                <label>
+                    Problema relatado pelo cliente
+                </label>
+
+                <textarea
+                    id="problema"
+                    placeholder="Descreva o que o cliente informou..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Diagnóstico
+                </label>
+
+                <textarea
+                    id="diagnostico"
+                    placeholder="Informe o diagnóstico encontrado..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Serviços realizados
+                </label>
+
+                <textarea
+                    id="servicos"
+                    placeholder="Ex.: Troca de óleo, regulagem de válvulas..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Peças utilizadas
+                </label>
+
+                <textarea
+                    id="pecas"
+                    placeholder="Ex.: Óleo 10W40, filtro de óleo..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                💰 Valores
+            </h3>
+
+
+            <div class="valores">
+
+                <div class="campo">
+
+                    <label>
+                        Valor das peças
+                    </label>
+
+                    <input
+                        type="number"
+                        id="valorPecas"
+                        min="0"
+                        step="0.01"
+                        value="0"
+                        oninput="calcularTotal()"
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label>
+                        Mão de obra
+                    </label>
+
+                    <input
+                        type="number"
+                        id="valorMaoObra"
+                        min="0"
+                        step="0.01"
+                        value="0"
+                        oninput="calcularTotal()"
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label>
+                        Desconto
+                    </label>
+
+                    <input
+                        type="number"
+                        id="desconto"
+                        min="0"
+                        step="0.01"
+                        value="0"
+                        oninput="calcularTotal()"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="total">
+
+                <span>
+                    TOTAL DA OS
+                </span>
+
+                <span id="valorTotal">
+                    R$ 0,00
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                💳 Pagamento e status
+            </h3>
+
+
+            <div class="campo">
+
+                <label>
+                    Forma de pagamento
+                </label>
+
+                <select
+                    id="formaPagamento"
+                >
+
+                    <option value="">
+                        Selecione
+                    </option>
+
+                    <option value="Dinheiro">
+                        Dinheiro
+                    </option>
+
+                    <option value="Pix">
+                        Pix
+                    </option>
+
+                    <option value="Cartão de débito">
+                        Cartão de débito
+                    </option>
+
+                    <option value="Cartão de crédito">
+                        Cartão de crédito
+                    </option>
+
+                    <option value="Transferência">
+                        Transferência
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Status da OS
+                </label>
+
+                <select id="status">
+
+                    <option value="Aberta">
+                        Aberta
+                    </option>
+
+                    <option value="Em serviço">
+                        Em serviço
+                    </option>
+
+                    <option value="Pronta">
+                        Pronta
+                    </option>
+
+                    <option value="Entregue">
+                        Entregue
+                    </option>
+
+                    <option value="Cancelada">
+                        Cancelada
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Observações
+                </label>
+
+                <textarea
+                    id="observacoes"
+                    placeholder="Observações adicionais..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="botoes">
+
+                <button
+                    type="button"
+                    class="botao salvar"
+                    id="botaoSalvar"
+                    onclick="salvarOS()"
+                >
+
+                    💾 Salvar Ordem de Serviço
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="botao imprimir"
+                    onclick="window.print()"
+                >
+
+                    🖨️ Imprimir OS
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="agendamentos.html"
+            class="voltar"
+        >
+
+            ← Voltar para Agendamentos
+
+        </a>
+
+    `;
+
+
+    calcularTotal();
+
+}
+
+
+/* =====================================================
+   SALVAR ORDEM DE SERVIÇO
+===================================================== */
+
+async function salvarOS() {
+
+    const botao =
+        document.getElementById(
+            "botaoSalvar"
+        );
+
+
+    if (!botao) {
+
+        return;
+
+    }
+
+
+    if (!agendamentoAtual) {
+
+        mostrarMensagem(
+            "❌ Agendamento não carregado.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    if (!motoAtual) {
+
+        mostrarMensagem(
+            "❌ Moto não carregada.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    if (botao.disabled) {
+
+        return;
+
+    }
+
+
+    botao.disabled = true;
+
+    botao.textContent =
+        "⏳ Salvando...";
+
+
+    try {
+
+        /* =============================================
+           PEGAR VALORES
+        ============================================= */
+
+        const valorPecas =
+            numero(
+                document.getElementById(
+                    "valorPecas"
+                ).value
+            );
+
+
+        const valorMaoObra =
+            numero(
+                document.getElementById(
+                    "valorMaoObra"
+                ).value
+            );
+
+
+        const desconto =
+            numero(
+                document.getElementById(
+                    "desconto"
+                ).value
+            );
+
+
+        const valorTotal =
+            Math.max(
+                0,
+                valorPecas +
+                valorMaoObra -
+                desconto
+            );
+
+
+        /* =============================================
+           MONTAR DADOS
+        ============================================= */
+
+        const dados = {
+
+            cliente_id:
+                motoAtual.cliente_id || null,
+
+            moto_id:
+                motoAtual.id,
+
+            agendamento_id:
+                agendamentoAtual.id,
+
+            data_entrada:
+                new Date()
+                    .toISOString()
+                    .slice(0, 10),
+
+            problema_relatado:
+                document.getElementById(
+                    "problema"
+                ).value.trim(),
+
+            diagnostico:
+                document.getElementById(
+                    "diagnostico"
+                ).value.trim(),
+
+            servicos_realizados:
+                document.getElementById(
+                    "servicos"
+                ).value.trim(),
+
+            pecas_utilizadas:
+                document.getElementById(
+                    "pecas"
+                ).value.trim(),
+
+            valor_pecas:
+                valorPecas,
+
+            valor_mao_obra:
+                valorMaoObra,
+
+            desconto:
+                desconto,
+
+            valor_total:
+                valorTotal,
+
+            forma_pagamento:
+                document.getElementById(
+                    "formaPagamento"
+                ).value || null,
+
+            status:
+                document.getElementById(
+                    "status"
+                ).value,
+
+            observacoes:
+                document.getElementById(
+                    "observacoes"
+                ).value.trim()
+
+        };
+
+
+        console.log(
+            "Enviando OS:",
+            dados
+        );
+
+
+        /* =============================================
+           SALVAR SOMENTE NA TABELA ordens_servico
+           
+           NÃO ATUALIZA MAIS agendamentos AQUI.
+           
+           Isso é proposital.
+           
+           Se a tabela agendamentos tiver RLS,
+           trigger, problema de permissão ou qualquer
+           outra coisa que faça a requisição travar,
+           isso NÃO vai mais afetar o salvamento da OS.
+        ============================================= */
+
+        const resposta =
+            await supabaseClient
+                .from("ordens_servico")
+                .insert(dados);
+
+
+        console.log(
+            "Resposta do INSERT:",
+            resposta
+        );
+
+
+        /* =============================================
+           SE DEU ERRO
+        ============================================= */
+
+        if (resposta.error) {
+
+            console.error(
+                "ERRO AO SALVAR OS:",
+                resposta.error
+            );
+
+
+            mostrarMensagem(
+                "❌ Erro ao salvar: " +
+                resposta.error.message,
+                false
+            );
+
+
+            botao.disabled = false;
+
+            botao.textContent =
+                "💾 Salvar Ordem de Serviço";
+
+            return;
+
+        }
+
+
+        /* =============================================
+           SALVOU
+        ============================================= */
+
+        try {
+
+            localStorage.setItem(
+                "ordemServicoAtual",
+                JSON.stringify(
+                    dados
+                )
+            );
+
+        }
+
+        catch (erroLocal) {
+
+            console.warn(
+                "Erro no localStorage:",
+                erroLocal
+            );
+
+        }
+
+
+        /* =============================================
+           IMPORTANTE:
+           
+           AQUI NÃO TEMOS MAIS:
+
+           .from("agendamentos")
+           .update(...)
+           .eq(...)
+
+           Portanto o salvamento termina aqui.
+        ============================================= */
+
+
+        mostrarMensagem(
+            "✅ Ordem de Serviço salva com sucesso!",
+            true
+        );
+
+
+        botao.textContent =
+            "✅ OS Salva";
+
+
+        botao.disabled = true;
+
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "ERRO INESPERADO:",
+            erro
+        );
+
+
+        mostrarMensagem(
+            "❌ Erro ao salvar a OS: " +
+            (
+                erro.message ||
+                String(erro)
+            ),
+            false
+        );
+
+
+        botao.disabled = false;
+
+        botao.textContent =
+            "💾 Salvar Ordem de Serviço";
+
+    }
+
+}
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        carregarAgendamento();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

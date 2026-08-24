@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Área da Oficina - DANIEL RB MOTOS</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #2b2b2b;
+            color: #111;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: auto;
+            padding: 25px 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            margin-top: 60px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .icone {
+            font-size: 50px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 17px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #111;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .erro {
+            color: #b00000;
+            font-weight: bold;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .voltar {
+            display: block;
+            margin-top: 20px;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="icone">
+            🔐
+        </div>
+
+        <h1>
+            Área da Oficina
+        </h1>
+
+        <p>
+            DANIEL RB MOTOS
+        </p>
+
+        <p>
+            Digite a senha para continuar.
+        </p>
+
+
+        <input
+            type="password"
+            id="senha"
+            placeholder="Digite sua senha"
+            onkeydown="verificarEnter(event)"
+        >
+
+
+        <button onclick="entrar()">
+            🔧 Entrar na oficina
+        </button>
+
+
+        <div
+            id="erro"
+            class="erro"
+        >
+            ❌ Senha incorreta.
+        </div>
+
+    </div>
+
+
+    <a
+        href="index.html"
+        class="voltar"
+    >
+        ← Voltar para o início
+    </a>
+
+</div>
+
+
+<script>
+
+function entrar() {
+
+    const senha =
+        document.getElementById("senha").value;
+
+
+    /*
+       PEGA A SENHA SALVA NAS CONFIGURAÇÕES
+    */
+
+    const configuracoes =
+        JSON.parse(
+            localStorage.getItem(
+                "configuracoesOficina"
+            )
+        ) || {};
+
+
+    /*
+       SE AINDA NÃO EXISTIR SENHA
+       NAS CONFIGURAÇÕES, USA 1234
+    */
+
+    const senhaCorreta =
+        configuracoes.senha ||
+        "1234";
+
+
+    if (
+        senha ===
+        senhaCorreta
+    ) {
+
+        /*
+           REGISTRA QUE A OFICINA
+           FOI AUTORIZADA
+        */
+
+        sessionStorage.setItem(
+            "oficinaAutorizada",
+            "true"
+        );
+
+
+        /*
+           ENTRA NA ÁREA DA OFICINA
+        */
+
+        window.location.href =
+            "oficina.html";
+
+    } else {
+
+        document.getElementById(
+            "erro"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "senha"
+        ).value = "";
+
+
+        document.getElementById(
+            "senha"
+        ).focus();
+
+    }
+
+}
+
+
+function verificarEnter(event) {
+
+    if (
+        event.key ===
+        "Enter"
+    ) {
+
+        entrar();
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>

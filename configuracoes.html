@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Configurações - DANIEL RB MOTOS</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #2b2b2b;
+    color: #111;
+}
+
+header {
+    background: #111;
+    color: white;
+    padding: 25px 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 27px;
+}
+
+header p {
+    color: #ccc;
+    margin-bottom: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+}
+
+.botao {
+    width: 100%;
+    padding: 16px;
+    margin-top: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #111;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.botao-salvar {
+    background: #147a35;
+}
+
+.botao-senha {
+    background: #555;
+}
+
+.botao-sair {
+    background: #b00000;
+}
+
+.aviso {
+    background: #eee;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.voltar {
+    display: block;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    margin-top: 20px;
+}
+
+.senha-info {
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.sucesso {
+    display: none;
+    background: #dff5e5;
+    color: #176b2c;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+@media (max-width: 500px) {
+
+    .container {
+        padding: 15px;
+    }
+
+    .card {
+        padding: 17px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>
+⚙️ Configurações
+</h1>
+
+<p>
+DANIEL RB MOTOS
+</p>
+
+</header>
+
+<div class="container">
+
+<div id="mensagemSucesso"
+class="sucesso">
+
+✅ Configurações salvas com sucesso!
+
+</div>
+
+<div class="aviso">
+
+⚙️ Aqui você pode configurar os dados da sua oficina e alterar a senha de acesso ao sistema.
+
+</div>
+
+<div class="card">
+
+<h2>
+🏪 Dados da oficina
+</h2>
+
+<label>
+Nome da oficina
+</label>
+
+<input
+type="text"
+id="nomeOficina"
+placeholder="Ex: DANIEL RB MOTOS"
+>
+
+<label>
+Telefone / WhatsApp
+</label>
+
+<input
+type="tel"
+id="telefoneOficina"
+placeholder="Ex: (31) 99999-9999"
+>
+
+<label>
+CNPJ
+</label>
+
+<input
+type="text"
+id="cnpjOficina"
+placeholder="Digite o CNPJ"
+>
+
+<label>
+Endereço
+</label>
+
+<input
+type="text"
+id="enderecoOficina"
+placeholder="Rua, número, bairro..."
+>
+
+<label>
+Cidade
+</label>
+
+<input
+type="text"
+id="cidadeOficina"
+placeholder="Ex: Jeceaba - MG"
+>
+
+<button
+type="button"
+class="botao botao-salvar"
+onclick="salvarConfiguracoes()"
+>
+
+💾 Salvar configurações
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>
+🔐 Alterar senha
+</h2>
+
+<label>
+Senha atual
+</label>
+
+<input
+type="password"
+id="senhaAtual"
+placeholder="Digite sua senha atual"
+>
+
+<label>
+Nova senha
+</label>
+
+<input
+type="password"
+id="novaSenha"
+placeholder="Digite a nova senha"
+>
+
+<label>
+Confirmar nova senha
+</label>
+
+<input
+type="password"
+id="confirmarSenha"
+placeholder="Digite novamente a nova senha"
+>
+
+<div class="senha-info">
+
+🔒 A nova senha precisa ser digitada duas vezes para confirmar a alteração.
+
+</div>
+
+<button
+type="button"
+class="botao botao-senha"
+onclick="alterarSenha()"
+>
+
+🔑 Alterar senha
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>
+🛡️ Segurança
+</h2>
+
+<p>
+
+A senha é armazenada neste navegador para controlar o acesso ao sistema.
+
+</p>
+
+<button
+type="button"
+class="botao botao-sair"
+onclick="sairDoSistema()"
+>
+
+🚪 Sair do sistema
+
+</button>
+
+</div>
+
+<a
+href="oficina.html"
+class="voltar"
+>
+
+← Voltar para a Área da Oficina
+
+</a>
+
+</div>
+
+<script>
+
+function carregarConfiguracoes() {
+
+    const configuracoes =
+        JSON.parse(
+            localStorage.getItem(
+                "configuracoesOficina"
+            )
+        ) || {};
+
+    document.getElementById(
+        "nomeOficina"
+    ).value =
+        configuracoes.nome ||
+        "DANIEL RB MOTOS";
+
+    document.getElementById(
+        "telefoneOficina"
+    ).value =
+        configuracoes.telefone ||
+        "";
+
+    document.getElementById(
+        "cnpjOficina"
+    ).value =
+        configuracoes.cnpj ||
+        "";
+
+    document.getElementById(
+        "enderecoOficina"
+    ).value =
+        configuracoes.endereco ||
+        "";
+
+    document.getElementById(
+        "cidadeOficina"
+    ).value =
+        configuracoes.cidade ||
+        "";
+
+}
+
+function salvarConfiguracoes() {
+
+    const configuracoesAntigas =
+        JSON.parse(
+            localStorage.getItem(
+                "configuracoesOficina"
+            )
+        ) || {};
+
+    const configuracoes = {
+
+        ...configuracoesAntigas,
+
+        nome:
+            document.getElementById(
+                "nomeOficina"
+            ).value.trim(),
+
+        telefone:
+            document.getElementById(
+                "telefoneOficina"
+            ).value.trim(),
+
+        cnpj:
+            document.getElementById(
+                "cnpjOficina"
+            ).value.trim(),
+
+        endereco:
+            document.getElementById(
+                "enderecoOficina"
+            ).value.trim(),
+
+        cidade:
+            document.getElementById(
+                "cidadeOficina"
+            ).value.trim()
+
+    };
+
+    if (!configuracoes.nome) {
+
+        alert(
+            "⚠️ Informe o nome da oficina."
+        );
+
+        return;
+
+    }
+
+    localStorage.setItem(
+        "configuracoesOficina",
+        JSON.stringify(
+            configuracoes
+        )
+    );
+
+    mostrarSucesso();
+
+}
+
+function alterarSenha() {
+
+    const senhaAtual =
+        document.getElementById(
+            "senhaAtual"
+        ).value;
+
+    const novaSenha =
+        document.getElementById(
+            "novaSenha"
+        ).value;
+
+    const confirmarSenha =
+        document.getElementById(
+            "confirmarSenha"
+        ).value;
+
+    const configuracoes =
+        JSON.parse(
+            localStorage.getItem(
+                "configuracoesOficina"
+            )
+        ) || {};
+
+    const senhaCadastrada =
+        configuracoes.senha ||
+        "1234";
+
+    if (!senhaAtual) {
+
+        alert(
+            "⚠️ Digite a senha atual."
+        );
+
+        return;
+
+    }
+
+    if (
+        senhaAtual !==
+        senhaCadastrada
+    ) {
+
+        alert(
+            "❌ A senha atual está incorreta."
+        );
+
+        return;
+
+    }
+
+    if (!novaSenha) {
+
+        alert(
+            "⚠️ Digite uma nova senha."
+        );
+
+        return;
+
+    }
+
+    if (
+        novaSenha.length < 4
+    ) {
+
+        alert(
+            "⚠️ A nova senha deve ter pelo menos 4 caracteres."
+        );
+
+        return;
+
+    }
+
+    if (
+        novaSenha !==
+        confirmarSenha
+    ) {
+
+        alert(
+            "❌ A confirmação da nova senha não confere."
+        );
+
+        return;
+
+    }
+
+    configuracoes.senha =
+        novaSenha;
+
+    localStorage.setItem(
+        "configuracoesOficina",
+        JSON.stringify(
+            configuracoes
+        )
+    );
+
+    document.getElementById(
+        "senhaAtual"
+    ).value = "";
+
+    document.getElementById(
+        "novaSenha"
+    ).value = "";
+
+    document.getElementById(
+        "confirmarSenha"
+    ).value = "";
+
+    alert(
+        "✅ Senha alterada com sucesso!"
+    );
+
+}
+
+function mostrarSucesso() {
+
+    const mensagem =
+        document.getElementById(
+            "mensagemSucesso"
+        );
+
+    mensagem.style.display =
+        "block";
+
+    setTimeout(
+        function() {
+
+            mensagem.style.display =
+                "none";
+
+        },
+        3000
+    );
+
+}
+
+function sairDoSistema() {
+
+    const confirmar =
+        confirm(
+            "🚪 Deseja realmente sair do sistema?"
+        );
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+    localStorage.removeItem(
+        "usuarioLogado"
+    );
+
+    window.location.href =
+        "login.html";
+
+}
+
+carregarConfiguracoes();
+
+</script>
+
+</body>
+
+</html>

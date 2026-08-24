@@ -1,0 +1,1618 @@
+agendamentos.html
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Agendamentos - DANIEL RB MOTOS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #3a3a3a 0%,
+            #181818 55%,
+            #0b0b0b 100%
+        );
+
+    color: #111;
+    min-height: 100vh;
+}
+
+header {
+    background:
+        linear-gradient(
+            135deg,
+            #050505,
+            #240000,
+            #080808
+        );
+
+    color: white;
+    padding: 28px 20px;
+    text-align: center;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.45);
+
+    border-bottom: 2px solid #8b0000;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 29px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 7px 0 0;
+    color: #d6d6d6;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    padding: 24px 16px 40px;
+}
+
+.topo-pagina {
+    color: white;
+    margin-bottom: 20px;
+}
+
+.topo-pagina h2 {
+    margin: 0 0 6px;
+    font-size: 23px;
+}
+
+.topo-pagina p {
+    margin: 0;
+    color: #bdbdbd;
+}
+
+.carregando {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    font-weight: bold;
+
+    box-shadow:
+        0 5px 16px rgba(0,0,0,0.25);
+}
+
+.vazio {
+    background: white;
+    padding: 35px 20px;
+    border-radius: 16px;
+    text-align: center;
+
+    box-shadow:
+        0 5px 16px rgba(0,0,0,0.25);
+}
+
+.vazio h2 {
+    margin-top: 0;
+}
+
+.erro {
+    background: #ffe1e1;
+    color: #a00000;
+
+    padding: 20px;
+    border-radius: 15px;
+
+    font-weight: bold;
+
+    border-left: 5px solid #c00000;
+}
+
+.card-agendamento {
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 17px;
+    padding: 20px;
+    margin-bottom: 16px;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.28);
+
+    border: 1px solid #ddd;
+
+    transition: 0.2s;
+}
+
+.card-agendamento:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,0.35);
+}
+
+.card-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.card-topo h2 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.status {
+    display: inline-block;
+
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: 900;
+
+    white-space: nowrap;
+}
+
+.status-agendado {
+    background: #e5e5e5;
+    color: #111;
+}
+
+.status-servico {
+    background: #ffe082;
+    color: #6b4d00;
+}
+
+.status-pronto {
+    background: #b7e4c7;
+    color: #155724;
+}
+
+.status-cancelado {
+    background: #f5b7b1;
+    color: #721c24;
+}
+
+.informacoes {
+    background: #f7f7f7;
+
+    border-radius: 12px;
+
+    padding: 13px;
+    margin-top: 12px;
+}
+
+.informacao {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.informacao:last-child {
+    margin-bottom: 0;
+}
+
+.informacao strong {
+    color: #222;
+}
+
+.botoes {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 9px;
+
+    margin-top: 18px;
+}
+
+.botao {
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    font-size: 14px;
+    font-weight: 900;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.18s,
+        opacity 0.18s;
+}
+
+.botao:hover {
+    transform: translateY(-1px);
+}
+
+.botao:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+}
+
+.os {
+    background:
+        linear-gradient(
+            135deg,
+            #111,
+            #3b0000
+        );
+
+    color: white;
+}
+
+.servico {
+    background: #222;
+    color: white;
+}
+
+.pronto {
+    background: #dedede;
+    color: #111;
+}
+
+.cancelar {
+    background: #a00000;
+    color: white;
+}
+
+.excluir {
+    background: #700000;
+    color: white;
+}
+
+.voltar {
+    display: block;
+
+    text-align: center;
+
+    color: #ccc;
+
+    text-decoration: none;
+
+    margin-top: 24px;
+
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.voltar:hover {
+    color: white;
+}
+
+.mensagem {
+    position: fixed;
+
+    left: 50%;
+    bottom: 20px;
+
+    transform: translateX(-50%);
+
+    width: calc(100% - 30px);
+    max-width: 500px;
+
+    padding: 15px 18px;
+
+    border-radius: 12px;
+
+    color: white;
+
+    text-align: center;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.4);
+
+    display: none;
+
+    z-index: 9999;
+}
+
+.mensagem.sucesso {
+    background: #137333;
+}
+
+.mensagem.erro-msg {
+    background: #a00000;
+}
+
+@media (max-width: 600px) {
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    .container {
+        padding: 20px 12px 35px;
+    }
+
+    .card-topo {
+        display: block;
+    }
+
+    .card-topo .status {
+        margin-top: 10px;
+    }
+
+    .botoes {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>
+        📋 Agendamentos
+    </h1>
+
+    <p>
+        DANIEL RB MOTOS
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <div class="topo-pagina">
+
+        <h2>
+            Agenda da Oficina
+        </h2>
+
+        <p>
+            Consulte e gerencie os serviços agendados.
+        </p>
+
+    </div>
+
+
+    <div id="listaAgendamentos">
+
+        <div class="carregando">
+            🔄 Carregando agendamentos...
+        </div>
+
+    </div>
+
+
+    <a
+        href="oficina.html"
+        class="voltar"
+    >
+
+        ← Voltar para o Painel da Oficina
+
+    </a>
+
+
+</div>
+
+
+<div
+    id="mensagem"
+    class="mensagem"
+></div>
+
+
+<script>
+
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+    "https://niffgrhjmnizvusnrqyg.supabase.co";
+
+
+const SUPABASE_KEY =
+    "sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
+
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =====================================================
+   MENSAGEM
+===================================================== */
+
+function mostrarMensagem(
+    texto,
+    sucesso = true
+) {
+
+    const mensagem =
+        document.getElementById(
+            "mensagem"
+        );
+
+    mensagem.textContent =
+        texto;
+
+    mensagem.className =
+        "mensagem " +
+        (
+            sucesso
+            ? "sucesso"
+            : "erro-msg"
+        );
+
+    mensagem.style.display =
+        "block";
+
+    setTimeout(
+        function() {
+
+            mensagem.style.display =
+                "none";
+
+        },
+        3000
+    );
+
+}
+
+
+/* =====================================================
+   ESCAPAR HTML
+===================================================== */
+
+function escaparHTML(valor) {
+
+    return String(valor ?? "")
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =====================================================
+   FORMATAR DATA
+===================================================== */
+
+function formatarData(data) {
+
+    if (!data) {
+
+        return "Não informada";
+
+    }
+
+    const partes =
+        String(data).split("-");
+
+    if (
+        partes.length === 3
+    ) {
+
+        return (
+            partes[2] +
+            "/" +
+            partes[1] +
+            "/" +
+            partes[0]
+        );
+
+    }
+
+    return String(data);
+
+}
+
+
+/* =====================================================
+   NORMALIZAR STATUS
+===================================================== */
+
+function normalizarStatus(status) {
+
+    const valor =
+        String(status || "")
+            .trim()
+            .toLowerCase();
+
+    if (
+        valor === "em serviço" ||
+        valor === "em servico"
+    ) {
+
+        return "Em serviço";
+
+    }
+
+    if (
+        valor === "pronto"
+    ) {
+
+        return "Pronto";
+
+    }
+
+    if (
+        valor === "cancelado"
+    ) {
+
+        return "Cancelado";
+
+    }
+
+    return "Agendado";
+
+}
+
+
+/* =====================================================
+   CLASSE STATUS
+===================================================== */
+
+function classeDoStatus(status) {
+
+    const normalizado =
+        normalizarStatus(
+            status
+        );
+
+    if (
+        normalizado === "Em serviço"
+    ) {
+
+        return "status-servico";
+
+    }
+
+    if (
+        normalizado === "Pronto"
+    ) {
+
+        return "status-pronto";
+
+    }
+
+    if (
+        normalizado === "Cancelado"
+    ) {
+
+        return "status-cancelado";
+
+    }
+
+    return "status-agendado";
+
+}
+
+
+/* =====================================================
+   CARREGAR AGENDAMENTOS
+===================================================== */
+
+async function carregarAgendamentos() {
+
+    const lista =
+        document.getElementById(
+            "listaAgendamentos"
+        );
+
+    lista.innerHTML = `
+
+        <div class="carregando">
+            🔄 Carregando agendamentos...
+        </div>
+
+    `;
+
+    try {
+
+        const resposta =
+            await supabaseClient
+                .from("agendamentos")
+                .select("*");
+
+
+        if (
+            resposta.error
+        ) {
+
+            console.error(
+                resposta.error
+            );
+
+            lista.innerHTML = `
+
+                <div class="erro">
+
+                    ❌ Erro ao carregar os agendamentos.
+
+                    <br><br>
+
+                    ${escaparHTML(
+                        resposta.error.message
+                    )}
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        const agendamentos =
+            resposta.data || [];
+
+
+        if (
+            agendamentos.length === 0
+        ) {
+
+            lista.innerHTML = `
+
+                <div class="vazio">
+
+                    <h2>
+                        📭 Nenhum agendamento
+                    </h2>
+
+                    <p>
+                        Ainda não existem serviços agendados.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        /* =================================================
+           BUSCAR MOTOS
+        ================================================= */
+
+        const idsMotos =
+            [
+                ...new Set(
+                    agendamentos
+                        .map(
+                            item =>
+                                item.moto_id
+                        )
+                        .filter(Boolean)
+                )
+            ];
+
+
+        let motos = [];
+
+
+        if (
+            idsMotos.length > 0
+        ) {
+
+            const respostaMotos =
+                await supabaseClient
+                    .from("motos")
+                    .select("*")
+                    .in(
+                        "id",
+                        idsMotos
+                    );
+
+
+            if (
+                !respostaMotos.error
+            ) {
+
+                motos =
+                    respostaMotos.data || [];
+
+            }
+
+        }
+
+
+        mostrarAgendamentos(
+            agendamentos,
+            motos
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+        lista.innerHTML = `
+
+            <div class="erro">
+
+                ❌ Ocorreu um erro ao carregar os agendamentos.
+
+                <br><br>
+
+                ${escaparHTML(
+                    erro.message || erro
+                )}
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   MOSTRAR AGENDAMENTOS
+===================================================== */
+
+function mostrarAgendamentos(
+    agendamentos,
+    motos
+) {
+
+    const lista =
+        document.getElementById(
+            "listaAgendamentos"
+        );
+
+    lista.innerHTML = "";
+
+
+    const ordenados =
+        agendamentos
+            .slice()
+            .sort(
+                function(a, b) {
+
+                    const dataA =
+                        String(
+                            a.data || ""
+                        ) +
+                        "T" +
+                        String(
+                            a["horário"] ||
+                            "00:00"
+                        );
+
+
+                    const dataB =
+                        String(
+                            b.data || ""
+                        ) +
+                        "T" +
+                        String(
+                            b["horário"] ||
+                            "00:00"
+                        );
+
+
+                    return dataA.localeCompare(
+                        dataB
+                    );
+
+                }
+            );
+
+
+    ordenados.forEach(
+        function(agendamento) {
+
+            /*
+             * ESTE É O ID REAL DO AGENDAMENTO.
+             */
+            const idAgendamento =
+                agendamento.id;
+
+
+            const status =
+                normalizarStatus(
+                    agendamento.status
+                );
+
+
+            const moto =
+                motos.find(
+                    function(item) {
+
+                        return String(
+                            item.id
+                        ) ===
+                        String(
+                            agendamento.moto_id
+                        );
+
+                    }
+                ) || {};
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            /*
+             * Guardamos o ID no próprio card.
+             */
+            div.dataset.id =
+                String(
+                    idAgendamento
+                );
+
+
+            div.className =
+                "card-agendamento";
+
+
+            div.innerHTML = `
+
+                <div class="card-topo">
+
+                    <h2>
+
+                        🏍️
+
+                        ${escaparHTML(
+                            (
+                                moto.marca || ""
+                            ) +
+                            " " +
+                            (
+                                moto.modelo ||
+                                "Moto"
+                            )
+                        )}
+
+                    </h2>
+
+
+                    <span
+                        class="status ${classeDoStatus(status)}"
+                    >
+
+                        ${escaparHTML(
+                            status
+                        )}
+
+                    </span>
+
+                </div>
+
+
+                <div class="informacoes">
+
+                    <p class="informacao">
+
+                        🔢
+                        <strong>Placa:</strong>
+
+                        ${escaparHTML(
+                            moto.placa ||
+                            "Não informada"
+                        )}
+
+                    </p>
+
+
+                    <p class="informacao">
+
+                        📆
+                        <strong>Ano:</strong>
+
+                        ${escaparHTML(
+                            moto.ano ||
+                            "Não informado"
+                        )}
+
+                    </p>
+
+
+                    <p class="informacao">
+
+                        🔧
+                        <strong>Serviço:</strong>
+
+                        ${escaparHTML(
+                            agendamento["serviço"] ||
+                            "Não informado"
+                        )}
+
+                    </p>
+
+
+                    <p class="informacao">
+
+                        📅
+                        <strong>Data:</strong>
+
+                        ${formatarData(
+                            agendamento.data
+                        )}
+
+                    </p>
+
+
+                    <p class="informacao">
+
+                        🕐
+                        <strong>Horário:</strong>
+
+                        ${escaparHTML(
+                            agendamento["horário"] ||
+                            "Não informado"
+                        )}
+
+                    </p>
+
+
+                    <p class="informacao">
+
+                        🔢
+                        <strong>ID:</strong>
+
+                        ${escaparHTML(
+                            idAgendamento
+                        )}
+
+                    </p>
+
+                </div>
+
+
+                <div class="botoes">
+
+
+                    <button
+                        type="button"
+                        class="botao os"
+                        onclick="abrirOS(
+                            '${String(idAgendamento)}'
+                        )"
+                    >
+
+                        🔧 Abrir OS
+
+                    </button>
+
+
+                    ${
+                        status !== "Em serviço" &&
+                        status !== "Pronto" &&
+                        status !== "Cancelado"
+
+                        ?
+
+                        `
+
+                        <button
+                            type="button"
+                            class="botao servico"
+                            onclick="alterarStatus(
+                                '${String(idAgendamento)}',
+                                'Em serviço',
+                                this
+                            )"
+                        >
+
+                            🔧 Em serviço
+
+                        </button>
+
+                        `
+
+                        :
+
+                        ""
+                    }
+
+
+                    ${
+                        status !== "Pronto" &&
+                        status !== "Cancelado"
+
+                        ?
+
+                        `
+
+                        <button
+                            type="button"
+                            class="botao pronto"
+                            onclick="alterarStatus(
+                                '${String(idAgendamento)}',
+                                'Pronto',
+                                this
+                            )"
+                        >
+
+                            ✅ Pronto
+
+                        </button>
+
+                        `
+
+                        :
+
+                        ""
+                    }
+
+
+                    ${
+                        status !== "Cancelado"
+
+                        ?
+
+                        `
+
+                        <button
+                            type="button"
+                            class="botao cancelar"
+                            onclick="alterarStatus(
+                                '${String(idAgendamento)}',
+                                'Cancelado',
+                                this
+                            )"
+                        >
+
+                            ❌ Cancelar
+
+                        </button>
+
+                        `
+
+                        :
+
+                        ""
+                    }
+
+
+                    ${
+                        status === "Pronto" ||
+                        status === "Cancelado"
+
+                        ?
+
+                        `
+
+                        <button
+                            type="button"
+                            class="botao excluir"
+                            onclick="excluirAgendamento(
+                                '${String(idAgendamento)}',
+                                this
+                            )"
+                        >
+
+                            🗑️ Excluir
+
+                        </button>
+
+                        `
+
+                        :
+
+                        ""
+                    }
+
+                </div>
+
+            `;
+
+
+            lista.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ALTERAR STATUS
+===================================================== */
+
+async function alterarStatus(
+    id,
+    novoStatus,
+    botao
+) {
+
+    if (
+        novoStatus === "Cancelado"
+    ) {
+
+        if (
+            !confirm(
+                "❌ Tem certeza que deseja cancelar este agendamento?"
+            )
+        ) {
+
+            return;
+
+        }
+
+    }
+
+
+    if (botao) {
+
+        botao.disabled =
+            true;
+
+        botao.textContent =
+            "⏳ Salvando...";
+
+    }
+
+
+    try {
+
+        const resposta =
+            await supabaseClient
+                .from("agendamentos")
+                .update({
+                    status: novoStatus
+                })
+                .eq(
+                    "id",
+                    id
+                )
+                .select();
+
+
+        if (
+            resposta.error
+        ) {
+
+            console.error(
+                "ERRO STATUS:",
+                resposta.error
+            );
+
+
+            alert(
+                "❌ O banco não confirmou a alteração.\n\n" +
+                resposta.error.message
+            );
+
+
+            if (botao) {
+
+                botao.disabled =
+                    false;
+
+            }
+
+            return;
+
+        }
+
+
+        if (
+            !resposta.data ||
+            resposta.data.length === 0
+        ) {
+
+            alert(
+                "❌ O banco não confirmou a alteração.\n\n" +
+                "Nenhuma linha foi alterada."
+            );
+
+
+            if (botao) {
+
+                botao.disabled =
+                    false;
+
+            }
+
+            return;
+
+        }
+
+
+        mostrarMensagem(
+            "✅ Status alterado para " +
+            novoStatus +
+            "!",
+            true
+        );
+
+
+        /*
+         * Recarrega somente depois
+         * da confirmação do banco.
+         */
+
+        await carregarAgendamentos();
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            erro
+        );
+
+
+        alert(
+            "❌ Erro ao alterar o status.\n\n" +
+            (
+                erro.message ||
+                erro
+            )
+        );
+
+
+        if (botao) {
+
+            botao.disabled =
+                false;
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   EXCLUIR AGENDAMENTO
+===================================================== */
+
+async function excluirAgendamento(
+    id,
+    botao
+) {
+
+    if (
+        !confirm(
+            "🗑️ Deseja realmente excluir este agendamento?\n\n" +
+            "Esta ação não poderá ser desfeita."
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+     * Localiza o CARD correspondente
+     * ao ID que será excluído.
+     */
+
+    const card =
+        document.querySelector(
+            '.card-agendamento[data-id="' +
+            CSS.escape(
+                String(id)
+            ) +
+            '"]'
+        );
+
+
+    if (botao) {
+
+        botao.disabled =
+            true;
+
+        botao.textContent =
+            "⏳ Excluindo...";
+
+    }
+
+
+    try {
+
+        /*
+         * EXCLUSÃO PELO ID REAL.
+         */
+
+        const resposta =
+            await supabaseClient
+                .from("agendamentos")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                )
+                .select();
+
+
+        if (
+            resposta.error
+        ) {
+
+            console.error(
+                "ERRO EXCLUSÃO:",
+                resposta.error
+            );
+
+
+            alert(
+                "❌ O banco não permitiu excluir.\n\n" +
+                resposta.error.message
+            );
+
+
+            if (botao) {
+
+                botao.disabled =
+                    false;
+
+                botao.textContent =
+                    "🗑️ Excluir";
+
+            }
+
+            return;
+
+        }
+
+
+        /*
+         * O Supabase precisa devolver
+         * o registro excluído.
+         */
+
+        if (
+            !resposta.data ||
+            resposta.data.length === 0
+        ) {
+
+            alert(
+                "❌ O banco não confirmou a exclusão.\n\n" +
+                "Nenhuma linha foi excluída."
+            );
+
+
+            if (botao) {
+
+                botao.disabled =
+                    false;
+
+                botao.textContent =
+                    "🗑️ Excluir";
+
+            }
+
+            return;
+
+        }
+
+
+        /*
+         * AGORA SIM:
+         * remove o card da tela imediatamente.
+         */
+
+        if (card) {
+
+            card.remove();
+
+        }
+
+
+        /*
+         * Verifica se acabou a lista.
+         */
+
+        const quantidade =
+            document.querySelectorAll(
+                ".card-agendamento"
+            ).length;
+
+
+        if (
+            quantidade === 0
+        ) {
+
+            document.getElementById(
+                "listaAgendamentos"
+            ).innerHTML = `
+
+                <div class="vazio">
+
+                    <h2>
+                        📭 Nenhum agendamento
+                    </h2>
+
+                    <p>
+                        Não existem mais agendamentos.
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+
+        mostrarMensagem(
+            "✅ Agendamento excluído com sucesso!",
+            true
+        );
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "ERRO:",
+            erro
+        );
+
+
+        alert(
+            "❌ Ocorreu um erro ao excluir.\n\n" +
+            (
+                erro.message ||
+                erro
+            )
+        );
+
+
+        if (botao) {
+
+            botao.disabled =
+                false;
+
+            botao.textContent =
+                "🗑️ Excluir";
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   ABRIR OS
+===================================================== */
+
+async function abrirOS(id) {
+
+    try {
+
+        const resposta =
+            await supabaseClient
+                .from("agendamentos")
+                .select("*")
+                .eq(
+                    "id",
+                    id
+                )
+                .single();
+
+
+        if (
+            resposta.error
+        ) {
+
+            alert(
+                "❌ Erro ao buscar o agendamento.\n\n" +
+                resposta.error.message
+            );
+
+            return;
+
+        }
+
+
+        localStorage.setItem(
+            "agendamentoParaOS",
+            JSON.stringify(
+                resposta.data
+            )
+        );
+
+
+        window.location.href =
+            "ordem-servico.html";
+
+    }
+
+    catch (erro) {
+
+        alert(
+            "❌ Erro ao abrir a OS.\n\n" +
+            (
+                erro.message ||
+                erro
+            )
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+carregarAgendamentos();
+
+
+</script>
+
+
+</body>
+
+</html>

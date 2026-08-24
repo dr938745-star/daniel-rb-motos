@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Financeiro - DANIEL RB MOTOS</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #2b2b2b;
+            color: #111;
+        }
+
+
+        header {
+            background: #111;
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+
+        header h1 {
+            margin: 0;
+            font-size: 27px;
+        }
+
+
+        header p {
+            color: #ccc;
+            margin: 8px 0 0;
+        }
+
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+
+
+        .resumo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+
+        .caixa {
+            background: white;
+            border-radius: 15px;
+            padding: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+
+        .caixa h2 {
+            margin: 0;
+            font-size: 15px;
+            color: #555;
+        }
+
+
+        .valor {
+            font-size: 23px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+        }
+
+
+        .botao {
+            width: 100%;
+            padding: 16px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #111;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+
+        .botao:hover {
+            background: #333;
+        }
+
+
+        .lancamento {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+
+        .pago {
+            color: #167a16;
+            font-weight: bold;
+        }
+
+
+        .pendente {
+            color: #b00000;
+            font-weight: bold;
+        }
+
+
+        .excluir {
+            background: #b00000;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+
+        .excluir:hover {
+            background: #8d0000;
+        }
+
+
+        .voltar {
+            display: block;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 10px;
+            background: #444;
+            font-weight: bold;
+        }
+
+
+        .voltar:hover {
+            background: #555;
+        }
+
+
+        .vazio {
+            text-align: center;
+            color: #777;
+            padding: 20px 0;
+        }
+
+
+        @media (max-width: 500px) {
+
+            .resumo {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .valor {
+                font-size: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>💰 Financeiro</h1>
+
+    <p>DANIEL RB MOTOS</p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- =========================
+         RESUMO
+    ========================== -->
+
+    <div class="resumo">
+
+
+        <div class="caixa">
+
+            <h2>
+                💵 Recebido
+            </h2>
+
+            <div
+                class="valor"
+                id="recebido"
+            >
+                R$ 0,00
+            </div>
+
+        </div>
+
+
+        <div class="caixa">
+
+            <h2>
+                🔴 Pendente
+            </h2>
+
+            <div
+                class="valor"
+                id="pendente"
+            >
+                R$ 0,00
+            </div>
+
+        </div>
+
+
+        <div class="caixa">
+
+            <h2>
+                📊 Total
+            </h2>
+
+            <div
+                class="valor"
+                id="total"
+            >
+                R$ 0,00
+            </div>
+
+        </div>
+
+
+        <div class="caixa">
+
+            <h2>
+                🧾 Lançamentos
+            </h2>
+
+            <div
+                class="valor"
+                id="quantidade"
+            >
+                0
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================
+         NOVO LANÇAMENTO
+    ========================== -->
+
+    <div class="card">
+
+        <h2>
+            ➕ Novo lançamento
+        </h2>
+
+
+        <label>
+            Descrição
+        </label>
+
+        <input
+            type="text"
+            id="descricao"
+            placeholder="Ex: Revisão Honda Bros"
+            autocomplete="off"
+        >
+
+
+        <label>
+            Cliente
+        </label>
+
+        <input
+            type="text"
+            id="cliente"
+            placeholder="Nome do cliente"
+            autocomplete="off"
+        >
+
+
+        <label>
+            Valor
+        </label>
+
+        <input
+            type="number"
+            id="valor"
+            placeholder="0.00"
+            step="0.01"
+            min="0"
+        >
+
+
+        <label>
+            Forma de pagamento
+        </label>
+
+        <select id="pagamento">
+
+            <option value="Pix">
+                Pix
+            </option>
+
+            <option value="Dinheiro">
+                Dinheiro
+            </option>
+
+            <option value="Cartão de débito">
+                Cartão de débito
+            </option>
+
+            <option value="Cartão de crédito">
+                Cartão de crédito
+            </option>
+
+            <option value="Outro">
+                Outro
+            </option>
+
+        </select>
+
+
+        <label>
+            Situação
+        </label>
+
+        <select id="situacao">
+
+            <option value="Pago">
+                Pago
+            </option>
+
+            <option value="Pendente">
+                Pendente
+            </option>
+
+        </select>
+
+
+        <label>
+            Data
+        </label>
+
+        <input
+            type="date"
+            id="data"
+        >
+
+
+        <button
+            type="button"
+            class="botao"
+            onclick="salvarLancamento()"
+        >
+
+            💾 Salvar lançamento
+
+        </button>
+
+
+    </div>
+
+
+    <!-- =========================
+         LANÇAMENTOS
+    ========================== -->
+
+    <div class="card">
+
+        <h2>
+            📋 Lançamentos
+        </h2>
+
+        <div id="lista"></div>
+
+    </div>
+
+
+    <!-- =========================
+         VOLTAR
+    ========================== -->
+
+    <a
+        href="oficina.html"
+        class="voltar"
+    >
+
+        ← Voltar para a Área da Oficina
+
+    </a>
+
+
+</div>
+
+
+<script>
+
+
+/* =========================
+   PROTEÇÃO DA ÁREA DA OFICINA
+========================= */
+
+(function () {
+
+    const autorizada =
+        sessionStorage.getItem(
+            "oficinaAutorizada"
+        );
+
+
+    if (autorizada !== "true") {
+
+        window.location.replace(
+            "login-oficina.html"
+        );
+
+    }
+
+})();
+
+
+/* =========================
+   DATA DE HOJE
+========================= */
+
+document.getElementById(
+    "data"
+).valueAsDate = new Date();
+
+
+/* =========================
+   CARREGAR DADOS
+========================= */
+
+function carregarLancamentos() {
+
+    try {
+
+        const dados =
+            JSON.parse(
+                localStorage.getItem(
+                    "financeiro"
+                )
+            );
+
+        return Array.isArray(dados)
+            ? dados
+            : [];
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "Erro ao carregar financeiro:",
+            erro
+        );
+
+        return [];
+
+    }
+
+}
+
+
+/* =========================
+   SALVAR LANÇAMENTO
+========================= */
+
+function salvarLancamento() {
+
+
+    const descricao =
+        document.getElementById(
+            "descricao"
+        ).value.trim();
+
+
+    const cliente =
+        document.getElementById(
+            "cliente"
+        ).value.trim();
+
+
+    const valorTexto =
+        document.getElementById(
+            "valor"
+        ).value.trim();
+
+
+    const pagamento =
+        document.getElementById(
+            "pagamento"
+        ).value;
+
+
+    const situacao =
+        document.getElementById(
+            "situacao"
+        ).value;
+
+
+    const data =
+        document.getElementById(
+            "data"
+        ).value;
+
+
+    /* =========================
+       VALIDAÇÕES
+    ========================== */
+
+    if (!descricao) {
+
+        alert(
+            "⚠️ Informe a descrição."
+        );
+
+        document
+            .getElementById("descricao")
+            .focus();
+
+        return;
+
+    }
+
+
+    if (
+        valorTexto === "" ||
+        !Number.isFinite(
+            Number(valorTexto)
+        ) ||
+        Number(valorTexto) <= 0
+    ) {
+
+        alert(
+            "⚠️ Informe um valor válido."
+        );
+
+        document
+            .getElementById("valor")
+            .focus();
+
+        return;
+
+    }
+
+
+    if (!data) {
+
+        alert(
+            "⚠️ Informe a data."
+        );
+
+        document
+            .getElementById("data")
+            .focus();
+
+        return;
+
+    }
+
+
+    const valor =
+        Number(valorTexto);
+
+
+    const lancamentos =
+        carregarLancamentos();
+
+
+    const lancamento = {
+
+        id:
+            Date.now(),
+
+        descricao:
+            descricao,
+
+        cliente:
+            cliente,
+
+        valor:
+            valor,
+
+        pagamento:
+            pagamento,
+
+        situacao:
+            situacao,
+
+        data:
+            data
+
+    };
+
+
+    lancamentos.push(
+        lancamento
+    );
+
+
+    localStorage.setItem(
+        "financeiro",
+        JSON.stringify(
+            lancamentos
+        )
+    );
+
+
+    /* LIMPAR CAMPOS */
+
+    document.getElementById(
+        "descricao"
+    ).value = "";
+
+
+    document.getElementById(
+        "cliente"
+    ).value = "";
+
+
+    document.getElementById(
+        "valor"
+    ).value = "";
+
+
+    document.getElementById(
+        "descricao"
+    ).focus();
+
+
+    carregarFinanceiro();
+
+
+    alert(
+        "✅ Lançamento salvo com sucesso!"
+    );
+
+}
+
+
+/* =========================
+   CARREGAR FINANCEIRO
+========================= */
+
+function carregarFinanceiro() {
+
+
+    const lancamentos =
+        carregarLancamentos();
+
+
+    let recebido = 0;
+
+    let pendente = 0;
+
+    let total = 0;
+
+
+    lancamentos.forEach(
+        function(item) {
+
+            const valor =
+                Number(item.valor) || 0;
+
+
+            total +=
+                valor;
+
+
+            if (
+                String(
+                    item.situacao
+                ).toLowerCase() ===
+                "pago"
+            ) {
+
+                recebido +=
+                    valor;
+
+            }
+
+            else {
+
+                pendente +=
+                    valor;
+
+            }
+
+        }
+    );
+
+
+    /* RESUMO */
+
+    document.getElementById(
+        "recebido"
+    ).textContent =
+        formatarValor(
+            recebido
+        );
+
+
+    document.getElementById(
+        "pendente"
+    ).textContent =
+        formatarValor(
+            pendente
+        );
+
+
+    document.getElementById(
+        "total"
+    ).textContent =
+        formatarValor(
+            total
+        );
+
+
+    document.getElementById(
+        "quantidade"
+    ).textContent =
+        lancamentos.length;
+
+
+    /* LISTA */
+
+    const lista =
+        document.getElementById(
+            "lista"
+        );
+
+
+    lista.innerHTML = "";
+
+
+    if (
+        lancamentos.length === 0
+    ) {
+
+        lista.innerHTML = `
+
+            <div class="vazio">
+
+                📭 Nenhum lançamento ainda.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    lancamentos
+        .slice()
+        .reverse()
+        .forEach(
+            function(item) {
+
+
+                const situacao =
+                    item.situacao ||
+                    "Pendente";
+
+
+                const classe =
+                    situacao.toLowerCase() ===
+                    "pago"
+                        ? "pago"
+                        : "pendente";
+
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "lancamento";
+
+
+                div.innerHTML = `
+
+                    <strong>
+                        ${escaparHTML(
+                            item.descricao ||
+                            "Sem descrição"
+                        )}
+                    </strong>
+
+
+                    <p>
+
+                        👤 <strong>Cliente:</strong>
+
+                        ${escaparHTML(
+                            item.cliente ||
+                            "Não informado"
+                        )}
+
+                    </p>
+
+
+                    <p>
+
+                        💰 <strong>Valor:</strong>
+
+                        ${formatarValor(
+                            item.valor
+                        )}
+
+                    </p>
+
+
+                    <p>
+
+                        💳 <strong>Pagamento:</strong>
+
+                        ${escaparHTML(
+                            item.pagamento ||
+                            "Não informado"
+                        )}
+
+                    </p>
+
+
+                    <p>
+
+                        📅 <strong>Data:</strong>
+
+                        ${formatarData(
+                            item.data
+                        )}
+
+                    </p>
+
+
+                    <p class="${classe}">
+
+                        ${escaparHTML(
+                            situacao
+                        )}
+
+                    </p>
+
+
+                    <button
+                        type="button"
+                        class="excluir"
+                        onclick="excluirLancamento('${String(item.id)}')"
+                    >
+
+                        🗑️ Excluir
+
+                    </button>
+
+                `;
+
+
+                lista.appendChild(
+                    div
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================
+   EXCLUIR
+========================= */
+
+function excluirLancamento(id) {
+
+
+    const lancamentos =
+        carregarLancamentos();
+
+
+    const lancamento =
+        lancamentos.find(
+            function(item) {
+
+                return String(item.id) ===
+                    String(id);
+
+            }
+        );
+
+
+    if (!lancamento) {
+
+        alert(
+            "❌ Lançamento não encontrado."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !confirm(
+            "Tem certeza que deseja excluir este lançamento?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const novosLancamentos =
+        lancamentos.filter(
+            function(item) {
+
+                return String(item.id) !==
+                    String(id);
+
+            }
+        );
+
+
+    localStorage.setItem(
+        "financeiro",
+        JSON.stringify(
+            novosLancamentos
+        )
+    );
+
+
+    carregarFinanceiro();
+
+}
+
+
+/* =========================
+   FORMATAR VALOR
+========================= */
+
+function formatarValor(valor) {
+
+    return Number(valor || 0)
+        .toLocaleString(
+            "pt-BR",
+            {
+                style: "currency",
+                currency: "BRL"
+            }
+        );
+
+}
+
+
+/* =========================
+   FORMATAR DATA
+========================= */
+
+function formatarData(data) {
+
+
+    if (!data) {
+
+        return "Não informada";
+
+    }
+
+
+    const partes =
+        String(data).split("-");
+
+
+    if (
+        partes.length !== 3
+    ) {
+
+        return data;
+
+    }
+
+
+    return (
+        partes[2] +
+        "/" +
+        partes[1] +
+        "/" +
+        partes[0]
+    );
+
+}
+
+
+/* =========================
+   PROTEGER TEXTO
+========================= */
+
+function escaparHTML(texto) {
+
+    return String(texto)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================
+   INICIAR
+========================= */
+
+carregarFinanceiro();
+
+
+</script>
+
+
+</body>
+
+</html>

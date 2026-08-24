@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Agendar serviço - DANIEL RB MOTOS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #252525, #4b4747);
+    color: #111;
+}
+
+header {
+    background: linear-gradient(135deg, #050505, #250000, #050505);
+    color: white;
+    padding: 28px 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.45);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 27px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 8px 0 0;
+    color: #ffb3b3;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.container {
+    width: 100%;
+    max-width: 520px;
+    margin: auto;
+    padding: 20px 15px 35px;
+}
+
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.28);
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 19px;
+}
+
+.card p {
+    line-height: 1.5;
+}
+
+label {
+    display: block;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+select,
+input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 11px;
+    font-size: 16px;
+    background: white;
+    outline: none;
+}
+
+select:focus,
+input:focus {
+    border-color: #111;
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 13px;
+    border: none;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #090909, #2c0000);
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #222, #4b0000);
+}
+
+.confirmar {
+    padding: 18px;
+    margin-bottom: 18px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #00852b, #005e1f);
+    font-size: 18px;
+}
+
+.confirmar:hover {
+    background: linear-gradient(135deg, #009f34, #007327);
+}
+
+.voltar {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.voltar:hover {
+    color: #ffb3b3;
+}
+
+.erro {
+    background: #ffe1e1;
+    color: #a00000;
+    padding: 15px;
+    border-radius: 11px;
+    margin-top: 13px;
+    font-weight: bold;
+    border-left: 5px solid #d00000;
+}
+
+.sucesso {
+    background: #dff5e5;
+    color: #176b2c;
+    padding: 15px;
+    border-radius: 11px;
+    margin-top: 13px;
+    font-weight: bold;
+    border-left: 5px solid #159447;
+}
+
+.carregando {
+    background: #eeeeee;
+    color: #333;
+    padding: 15px;
+    border-radius: 11px;
+    margin-top: 13px;
+    font-weight: bold;
+}
+
+.info {
+    background: #eeeeee;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 12px;
+    font-size: 14px;
+    color: #444;
+}
+
+.moto-item {
+    border: 2px solid #ddd;
+    border-radius: 13px;
+    padding: 16px;
+    margin-top: 12px;
+    cursor: pointer;
+    background: #fafafa;
+    transition: 0.2s;
+}
+
+.moto-item:hover {
+    background: #f0f0f0;
+    border-color: #999;
+}
+
+.moto-item.selecionada {
+    border: 3px solid #111;
+    background: #eeeeee;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.moto-item h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.moto-item p {
+    margin: 7px 0;
+    font-size: 15px;
+}
+
+#areaAgendamento {
+    display: none;
+}
+
+@media (max-width: 400px) {
+
+    header h1 {
+        font-size: 23px;
+    }
+
+    .container {
+        padding: 15px 10px 30px;
+    }
+
+    .card {
+        padding: 17px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>📅 Agendar serviço</h1>
+    <p>DANIEL RB MOTOS</p>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+    <h2>👤 1. Identifique-se</h2>
+
+    <p>
+        Digite seu CPF para encontrar
+        suas motos cadastradas.
+    </p>
+
+    <label>CPF</label>
+
+    <input
+        type="text"
+        id="cpfCliente"
+        placeholder="000.000.000-00"
+        maxlength="14"
+        inputmode="numeric"
+        oninput="formatarCPF(this)"
+    >
+
+    <button
+        type="button"
+        id="btnBuscar"
+        onclick="buscarCliente()"
+    >
+        🔍 Buscar minhas motos
+    </button>
+
+    <div id="resultadoCliente"></div>
+
+</div>
+
+<div id="areaAgendamento">
+
+<div class="card">
+
+    <h2>🏍️ 2. Escolha sua moto</h2>
+
+    <p>
+        Selecione uma das motos
+        cadastradas no seu CPF.
+    </p>
+
+    <div id="listaMotos"></div>
+
+    <input
+        type="hidden"
+        id="moto"
+    >
+
+</div>
+
+<div class="card">
+
+    <h2>🔧 3. Escolha o serviço</h2>
+
+    <label>Serviço</label>
+
+    <select id="servico">
+
+        <option value="">
+            Selecione o serviço
+        </option>
+
+        <option value="Troca de óleo">
+            Troca de óleo
+        </option>
+
+        <option value="Revisão básica">
+            Revisão básica
+        </option>
+
+        <option value="Revisão completa">
+            Revisão completa
+        </option>
+
+        <option value="Freios">
+            Freios
+        </option>
+
+        <option value="Pneus">
+            Pneus
+        </option>
+
+        <option value="Elétrica">
+            Elétrica
+        </option>
+
+        <option value="Motor">
+            Motor
+        </option>
+
+        <option value="Outro">
+            Outro
+        </option>
+
+    </select>
+
+</div>
+
+<div class="card">
+
+    <h2>📆 4. Escolha o dia</h2>
+
+    <label>Data</label>
+
+    <input
+        type="date"
+        id="data"
+    >
+
+    <div class="info">
+        ℹ️ Escolha uma data a partir de hoje.
+    </div>
+
+</div>
+
+<div class="card">
+
+    <h2>🕐 5. Escolha o horário</h2>
+
+    <label>Horário</label>
+
+    <select id="horario">
+
+        <option value="">
+            Selecione o horário
+        </option>
+
+        <option value="08:00">08:00</option>
+        <option value="09:00">09:00</option>
+        <option value="10:00">10:00</option>
+        <option value="11:00">11:00</option>
+        <option value="13:00">13:00</option>
+        <option value="14:00">14:00</option>
+        <option value="15:00">15:00</option>
+        <option value="16:00">16:00</option>
+        <option value="17:00">17:00</option>
+
+    </select>
+
+</div>
+
+<button
+    type="button"
+    class="confirmar"
+    onclick="confirmarAgendamento()"
+>
+    ✅ Confirmar agendamento
+</button>
+
+</div>
+
+<a
+    class="voltar"
+    href="index.html"
+>
+    ← Voltar para o início
+</a>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+    "https://niffgrhjmnizvusnrqyg.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+function formatarCPF(input) {
+
+    let valor =
+        input.value.replace(/\D/g, "");
+
+    if (valor.length > 11) {
+        valor = valor.substring(0, 11);
+    }
+
+    if (valor.length > 9) {
+
+        valor =
+            valor.substring(0, 3) +
+            "." +
+            valor.substring(3, 6) +
+            "." +
+            valor.substring(6, 9) +
+            "-" +
+            valor.substring(9, 11);
+
+    } else if (valor.length > 6) {
+
+        valor =
+            valor.substring(0, 3) +
+            "." +
+            valor.substring(3, 6) +
+            "." +
+            valor.substring(6);
+
+    } else if (valor.length > 3) {
+
+        valor =
+            valor.substring(0, 3) +
+            "." +
+            valor.substring(3);
+
+    }
+
+    input.value = valor;
+}
+
+
+function limparCPF(cpf) {
+
+    return String(cpf || "")
+        .replace(/\D/g, "");
+
+}
+
+
+async function buscarCliente() {
+
+    const cpf =
+        limparCPF(
+            document.getElementById("cpfCliente").value
+        );
+
+    const resultado =
+        document.getElementById("resultadoCliente");
+
+    const area =
+        document.getElementById("areaAgendamento");
+
+    const botao =
+        document.getElementById("btnBuscar");
+
+
+    if (cpf.length !== 11) {
+
+        resultado.innerHTML = `
+            <div class="erro">
+                ⚠️ Digite um CPF válido com 11 números.
+            </div>
+        `;
+
+        area.style.display = "none";
+
+        return;
+    }
+
+
+    botao.disabled = true;
+    botao.innerText = "🔍 Buscando...";
+
+
+    resultado.innerHTML = `
+        <div class="carregando">
+            🔍 Procurando cliente...
+        </div>
+    `;
+
+
+    try {
+
+        const {
+            data: clientes,
+            error: erroCliente
+        } =
+            await supabaseClient
+            .from("clientes_nova")
+            .select("id,nome,cpf")
+            .eq("cpf", cpf);
+
+
+        if (erroCliente) {
+
+            resultado.innerHTML = `
+                <div class="erro">
+                    ❌ Erro ao consultar cliente.
+                    <br><br>
+                    ${erroCliente.message}
+                </div>
+            `;
+
+            area.style.display = "none";
+            return;
+        }
+
+
+        if (!clientes || clientes.length === 0) {
+
+            resultado.innerHTML = `
+                <div class="erro">
+                    ❌ Cliente não encontrado.
+                    <br><br>
+                    Verifique o CPF informado.
+                </div>
+            `;
+
+            area.style.display = "none";
+            return;
+        }
+
+
+        const cliente = clientes[0];
+
+
+        const {
+            data: motos,
+            error: erroMotos
+        } =
+            await supabaseClient
+            .from("motos")
+            .select(
+                "id,created_at,cliente_id,marca,modelo,placa,ano,km"
+            )
+            .eq("cliente_id", cliente.id);
+
+
+        if (erroMotos) {
+
+            resultado.innerHTML = `
+                <div class="erro">
+                    ❌ Erro ao carregar as motos.
+                    <br><br>
+                    ${erroMotos.message}
+                </div>
+            `;
+
+            area.style.display = "none";
+            return;
+        }
+
+
+        if (!motos || motos.length === 0) {
+
+            resultado.innerHTML = `
+                <div class="erro">
+                    ❌ Nenhuma moto encontrada para este cliente.
+                    <br><br>
+                    👤 ${cliente.nome || "Cliente"}
+                </div>
+            `;
+
+            area.style.display = "none";
+            return;
+        }
+
+
+        resultado.innerHTML = `
+            <div class="sucesso">
+                ✅ Cliente encontrado!
+                <br><br>
+                👤 ${cliente.nome || "Cliente"}
+                <br>
+                🏍️ ${motos.length} moto(s) encontrada(s).
+            </div>
+        `;
+
+
+        mostrarMotos(motos);
+
+        area.style.display = "block";
+
+
+    } catch (erro) {
+
+        resultado.innerHTML = `
+            <div class="erro">
+                ❌ Erro ao conectar ao banco.
+                <br><br>
+                ${erro.message || erro}
+            </div>
+        `;
+
+        area.style.display = "none";
+
+    } finally {
+
+        botao.disabled = false;
+        botao.innerText = "🔍 Buscar minhas motos";
+
+    }
+
+}
+
+
+function mostrarMotos(motos) {
+
+    const lista =
+        document.getElementById("listaMotos");
+
+    lista.innerHTML = "";
+
+
+    motos.forEach(function(moto) {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "moto-item";
+
+        div.dataset.id = moto.id;
+
+
+        div.innerHTML = `
+
+            <h3>
+                🏍️
+                ${moto.marca || ""}
+                ${moto.modelo || "Moto"}
+            </h3>
+
+            <p>
+                <strong>Placa:</strong>
+                ${moto.placa || "Não informada"}
+            </p>
+
+            <p>
+                <strong>Ano:</strong>
+                ${moto.ano || "Não informado"}
+            </p>
+
+            <p>
+                <strong>KM:</strong>
+                ${moto.km || "Não informado"}
+            </p>
+
+            <p>
+                👆 Clique para selecionar.
+            </p>
+
+        `;
+
+
+        div.onclick = function() {
+
+            selecionarMoto(moto.id);
+
+        };
+
+
+        lista.appendChild(div);
+
+    });
+
+}
+
+
+function selecionarMoto(motoId) {
+
+    document.getElementById("moto").value =
+        motoId;
+
+
+    document
+        .querySelectorAll(".moto-item")
+        .forEach(function(item) {
+
+            item.classList.remove("selecionada");
+
+        });
+
+
+    const selecionada =
+        document.querySelector(
+            '.moto-item[data-id="' +
+            motoId +
+            '"]'
+        );
+
+
+    if (selecionada) {
+
+        selecionada.classList.add(
+            "selecionada"
+        );
+
+    }
+
+}
+
+
+function obterDataHoje() {
+
+    const hoje = new Date();
+
+    const ano = hoje.getFullYear();
+
+    const mes =
+        String(hoje.getMonth() + 1)
+        .padStart(2, "0");
+
+    const dia =
+        String(hoje.getDate())
+        .padStart(2, "0");
+
+    return ano + "-" + mes + "-" + dia;
+
+}
+
+
+function formatarData(data) {
+
+    if (!data) return "";
+
+    const partes = data.split("-");
+
+    return partes[2] + "/" +
+           partes[1] + "/" +
+           partes[0];
+
+}
+
+
+async function confirmarAgendamento() {
+
+    const motoId =
+        document.getElementById("moto").value;
+
+    const servico =
+        document.getElementById("servico").value;
+
+    const data =
+        document.getElementById("data").value;
+
+    const horario =
+        document.getElementById("horario").value;
+
+
+    if (!motoId) {
+
+        alert("⚠️ Primeiro selecione sua moto.");
+        return;
+
+    }
+
+
+    if (!servico || !data || !horario) {
+
+        alert("⚠️ Preencha todos os campos.");
+        return;
+
+    }
+
+
+    if (data < obterDataHoje()) {
+
+        alert(
+            "⚠️ Não é possível agendar para uma data passada."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        /* BUSCAR A MOTO */
+
+        const {
+            data: motos,
+            error: erroMoto
+        } =
+            await supabaseClient
+            .from("motos")
+            .select(
+                "id,cliente_id,marca,modelo,placa,ano,km"
+            )
+            .eq("id", motoId)
+            .limit(1);
+
+
+        if (
+            erroMoto ||
+            !motos ||
+            motos.length === 0
+        ) {
+
+            alert("❌ Moto não encontrada.");
+            return;
+
+        }
+
+
+        const moto = motos[0];
+
+
+        /* VERIFICAR HORÁRIO */
+
+        const {
+            data: existentes,
+            error: erroHorario
+        } =
+            await supabaseClient
+            .from("agendamentos")
+            .select("id,status")
+            .eq("data", data)
+            .eq("horario", horario);
+
+
+        if (erroHorario) {
+
+            console.error(
+                "ERRO HORÁRIO:",
+                erroHorario
+            );
+
+            alert(
+                "❌ Erro ao verificar o horário.\n\n" +
+                erroHorario.message
+            );
+
+            return;
+
+        }
+
+
+        const ocupado =
+            (existentes || []).some(function(item) {
+
+                return String(item.status || "")
+                    .toUpperCase() !== "CANCELADO";
+
+            });
+
+
+        if (ocupado) {
+
+            alert(
+                "⚠️ Esse horário já está ocupado."
+            );
+
+            return;
+
+        }
+
+
+        /* SALVAR */
+
+        const novoAgendamento = {
+
+            cliente_id:
+                moto.cliente_id,
+
+            moto_id:
+                moto.id,
+
+            servico:
+                servico,
+
+            data:
+                data,
+
+            horario:
+                horario,
+
+            status:
+                "AGENDADO"
+
+        };
+
+
+        const {
+            error: erroSalvar
+        } =
+            await supabaseClient
+            .from("agendamentos")
+            .insert([
+                novoAgendamento
+            ]);
+
+
+        if (erroSalvar) {
+
+            console.error(
+                "ERRO AO SALVAR:",
+                erroSalvar
+            );
+
+            alert(
+                "❌ Erro ao salvar o agendamento.\n\n" +
+                erroSalvar.message
+            );
+
+            return;
+
+        }
+
+
+        alert(
+
+            "✅ AGENDAMENTO CONFIRMADO!\n\n" +
+
+            "🏍️ " +
+            (moto.marca || "") +
+            " " +
+            (moto.modelo || "") +
+
+            "\n🔢 Placa: " +
+            (moto.placa || "Não informada") +
+
+            "\n\n🔧 Serviço: " +
+            servico +
+
+            "\n📅 Data: " +
+            formatarData(data) +
+
+            "\n🕐 Horário: " +
+            horario
+
+        );
+
+
+        window.location.href =
+            "agendamentos.html";
+
+
+    } catch (erro) {
+
+        console.error(
+            "ERRO GERAL:",
+            erro
+        );
+
+        alert(
+            "❌ Ocorreu um erro.\n\n" +
+            (erro.message || erro)
+        );
+
+    }
+
+}
+
+
+document.getElementById("data").min =
+    obterDataHoje();
+
+</script>
+
+</body>
+
+</html>

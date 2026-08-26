@@ -220,10 +220,6 @@ button:hover {
 <div class="container">
 
 
-<!-- =====================================================
-     1. CLIENTE
-===================================================== -->
-
 <div class="card">
 
     <h2>👤 1. Identifique-se</h2>
@@ -255,16 +251,8 @@ button:hover {
 </div>
 
 
-<!-- =====================================================
-     ÁREA DE AGENDAMENTO
-===================================================== -->
-
 <div id="areaAgendamento">
 
-
-<!-- =====================================================
-     2. MOTO
-===================================================== -->
 
 <div class="card">
 
@@ -283,10 +271,6 @@ button:hover {
 
 </div>
 
-
-<!-- =====================================================
-     3. SERVIÇO
-===================================================== -->
 
 <div class="card">
 
@@ -337,10 +321,6 @@ button:hover {
 </div>
 
 
-<!-- =====================================================
-     4. DATA
-===================================================== -->
-
 <div class="card">
 
     <h2>📆 4. Escolha o dia</h2>
@@ -358,10 +338,6 @@ button:hover {
 
 </div>
 
-
-<!-- =====================================================
-     5. HORÁRIO
-===================================================== -->
 
 <div class="card">
 
@@ -391,10 +367,6 @@ button:hover {
 </div>
 
 
-<!-- =====================================================
-     CONFIRMAR
-===================================================== -->
-
 <button
     type="button"
     class="confirmar"
@@ -420,10 +392,6 @@ button:hover {
 
 <script>
 
-/* =====================================================
-   SUPABASE
-===================================================== */
-
 const SUPABASE_URL =
     "https://niffgrhjmnizvusnrqyg.supabase.co";
 
@@ -436,10 +404,6 @@ const supabaseClient =
         SUPABASE_KEY
     );
 
-
-/* =====================================================
-   CPF
-===================================================== */
 
 function formatarCPF(input) {
 
@@ -490,10 +454,6 @@ function limparCPF(cpf) {
 }
 
 
-/* =====================================================
-   BUSCAR CLIENTE
-===================================================== */
-
 async function buscarCliente() {
 
     const cpf =
@@ -538,13 +498,23 @@ async function buscarCliente() {
 
     try {
 
+        /*
+         * BUSCA TODOS OS CLIENTES
+         * E COMPARA O CPF SOMENTE PELOS NÚMEROS.
+         *
+         * Assim funciona tanto para:
+         * 529.982.247-25
+         *
+         * quanto para:
+         * 52998224725
+         */
+
         const {
             data: clientes,
             error: erroCliente
         } = await supabaseClient
             .from("clientes_nova")
-            .select("id,nome,cpf")
-            .eq("cpf", cpf);
+            .select("id,nome,cpf");
 
 
         if (erroCliente) {
@@ -564,9 +534,20 @@ async function buscarCliente() {
         }
 
 
+        const clientesEncontrados =
+            (clientes || []).filter(
+                function(cliente) {
+
+                    return limparCPF(
+                        cliente.cpf
+                    ) === cpf;
+
+                }
+            );
+
+
         if (
-            !clientes ||
-            clientes.length === 0
+            clientesEncontrados.length === 0
         ) {
 
             resultado.innerHTML = `
@@ -583,7 +564,7 @@ async function buscarCliente() {
 
 
         const cliente =
-            clientes[0];
+            clientesEncontrados[0];
 
 
         const {
@@ -669,10 +650,6 @@ async function buscarCliente() {
 }
 
 
-/* =====================================================
-   MOSTRAR MOTOS
-===================================================== */
-
 function mostrarMotos(motos) {
 
     const lista =
@@ -745,10 +722,6 @@ function mostrarMotos(motos) {
 }
 
 
-/* =====================================================
-   SELECIONAR MOTO
-===================================================== */
-
 function selecionarMoto(motoId) {
 
     document.getElementById(
@@ -789,10 +762,6 @@ function selecionarMoto(motoId) {
 
 }
 
-
-/* =====================================================
-   DATA
-===================================================== */
 
 function obterDataHoje() {
 
@@ -842,10 +811,6 @@ function formatarData(data) {
 
 }
 
-
-/* =====================================================
-   CONFIRMAR AGENDAMENTO
-===================================================== */
 
 async function confirmarAgendamento() {
 
@@ -911,10 +876,6 @@ async function confirmarAgendamento() {
 
     try {
 
-        /* =================================================
-           BUSCAR MOTO
-        ================================================= */
-
         const {
             data: motos,
             error: erroMoto
@@ -948,10 +909,6 @@ async function confirmarAgendamento() {
         const moto =
             motos[0];
 
-
-        /* =================================================
-           VERIFICAR HORÁRIO
-        ================================================= */
 
         const {
             data: existentes,
@@ -1003,10 +960,6 @@ async function confirmarAgendamento() {
         }
 
 
-        /* =================================================
-           DADOS DO AGENDAMENTO
-        ================================================= */
-
         const novoAgendamento = {
 
             cliente_id:
@@ -1035,14 +988,6 @@ async function confirmarAgendamento() {
             novoAgendamento
         );
 
-
-        /* =================================================
-           SALVAR
-           
-           IMPORTANTE:
-           NÃO usamos .select().single()
-           depois do INSERT.
-        ================================================= */
 
         const {
             error: erroSalvar
@@ -1078,10 +1023,6 @@ async function confirmarAgendamento() {
 
         }
 
-
-        /* =================================================
-           SUCESSO
-        ================================================= */
 
         alert(
 
@@ -1137,10 +1078,6 @@ async function confirmarAgendamento() {
 
 }
 
-
-/* =====================================================
-   INICIAR DATA MÍNIMA
-===================================================== */
 
 document.getElementById(
     "data"

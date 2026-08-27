@@ -92,10 +92,6 @@ select {
     text-decoration: none;
 }
 
-.excluir {
-    background: #b00000;
-}
-
 .moto {
     border-top: 1px solid #ddd;
     padding-top: 18px;
@@ -125,7 +121,6 @@ select {
     background: #f3f3f3;
     padding: 12px;
     border-radius: 10px;
-    margin-bottom: 15px;
 }
 
 .mensagem {
@@ -159,20 +154,29 @@ select {
 
 </header>
 
+
 <div class="container">
 
-<div id="infoCliente" class="card oculto">
+
+<div
+id="infoCliente"
+class="card oculto"
+>
 
 <h2>👤 Cliente</h2>
 
-<div id="nomeCliente" class="info-cliente"></div>
+<div
+id="nomeCliente"
+class="info-cliente"
+></div>
 
 </div>
 
 
-<div id="cardCadastro" class="card">
+<div class="card">
 
 <h2>➕ Cadastrar moto</h2>
+
 
 <label>Proprietário</label>
 
@@ -240,6 +244,7 @@ onclick="salvarMoto()"
 
 </button>
 
+
 <div id="mensagem"></div>
 
 </div>
@@ -290,58 +295,22 @@ supabase.createClient(
    ORIGEM
 ===================================================== */
 
-const clienteLogado =
-sessionStorage.getItem("clienteLogado");
-
 const clienteSelecionado =
-localStorage.getItem("clienteSelecionado");
-
-let modoCliente = false;
-
-let clienteAtual = null;
-
-
-/* =====================================================
-   BUSCAR CLIENTE
-===================================================== */
-
-async function buscarCliente(id) {
-
-    if (!id) {
-        return null;
-    }
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("clientes_nova")
-        .select("id,nome,cpf,telefone,email,endereco")
-        .eq("id", id)
-        .single();
-
-    if (error) {
-
-        console.error(
-            "Erro ao buscar cliente:",
-            error
-        );
-
-        return null;
-    }
-
-    return data;
-}
+localStorage.getItem(
+    "clienteSelecionado"
+);
 
 
 /* =====================================================
    CARREGAR CLIENTES
 ===================================================== */
 
-async function carregarClientesNoSelect() {
+async function carregarClientes() {
 
     const select =
-        document.getElementById("cliente");
+        document.getElementById(
+            "cliente"
+        );
 
     select.innerHTML = `
         <option value="">
@@ -349,15 +318,20 @@ async function carregarClientesNoSelect() {
         </option>
     `;
 
+
     const {
         data: clientes,
         error
     } = await supabaseClient
         .from("clientes_nova")
-        .select("id,nome,cpf")
-        .order("id", {
-            ascending: true
-        });
+        .select("id,nome")
+        .order(
+            "id",
+            {
+                ascending: true
+            }
+        );
+
 
     if (error) {
 
@@ -375,11 +349,14 @@ async function carregarClientesNoSelect() {
         return;
     }
 
+
     (clientes || []).forEach(
         function(cliente) {
 
             const option =
-                document.createElement("option");
+                document.createElement(
+                    "option"
+                );
 
             option.value =
                 cliente.id;
@@ -387,88 +364,73 @@ async function carregarClientesNoSelect() {
             option.textContent =
                 cliente.nome;
 
-            select.appendChild(option);
+            select.appendChild(
+                option
+            );
+
         }
     );
+
 
     if (clienteSelecionado) {
 
         select.value =
-            String(clienteSelecionado);
+            String(
+                clienteSelecionado
+            );
+
+        mostrarClienteSelecionado(
+            clienteSelecionado
+        );
+
     }
 
 }
 
 
 /* =====================================================
-   CARREGAR MOTOS
+   MOSTRAR CLIENTE SELECIONADO
 ===================================================== */
 
-async function carregarMotos() {
+async function mostrarClienteSelecionado(id) {
 
-    let consulta =
-        supabaseClient
-            .from("motos")
-            .select(
-                "id,clientes_id,marca,modelo,placa,ano,km"
-            )
-            .order(
-                "id",
-                {
-                    ascending: false
-                }
-            );
-
-
-    /*
-       CLIENTE LOGADO
-    */
-
-    if (
-        modoCliente &&
-        clienteAtual
-    ) {
-
-        consulta =
-            consulta.eq(
-                "clientes_id",
-                clienteAtual.id
-            );
-
-    }
-
-
-    /*
-       CLIENTE SELECIONADO PELA OFICINA
-    */
-
-    else if (
-        clienteSelecionado
-    ) {
-
-        consulta =
-            consulta.eq(
-                "clientes_id",
-                clienteSelecionado
-            );
-
+    if (!id) {
+        return;
     }
 
 
     const {
-        data: motos,
-        error
-    } = await consulta;
+        data: cliente
+    } = await supabaseClient
+        .from("clientes_nova")
+        .select("id,nome")
+        .eq(
+            "id",
+            id
+        )
+        .single();
 
 
-    if (error) {
-
-        throw error;
-
+    if (!cliente) {
+        return;
     }
 
 
-    return motos || [];
+    document
+        .getElementById(
+            "infoCliente"
+        )
+        .classList.remove(
+            "oculto"
+        );
+
+
+    document.getElementById(
+        "nomeCliente"
+    ).innerHTML =
+        "👤 <strong>" +
+        cliente.nome +
+        "</strong>";
 
 }
 
@@ -485,27 +447,10 @@ async function salvarMoto() {
         );
 
 
-    let clienteId;
-
-
-    if (
-        modoCliente &&
-        clienteAtual
-    ) {
-
-        clienteId =
-            clienteAtual.id;
-
-    }
-
-    else {
-
-        clienteId =
-            document.getElementById(
-                "cliente"
-            ).value;
-
-    }
+    const clienteId =
+        document.getElementById(
+            "cliente"
+        ).value;
 
 
     const marca =
@@ -529,7 +474,8 @@ async function salvarMoto() {
     const placa =
         document.getElementById(
             "placa"
-        ).value.trim().toUpperCase();
+        ).value.trim()
+        .toUpperCase();
 
 
     const km =
@@ -589,7 +535,7 @@ async function salvarMoto() {
 
         const novaMoto = {
 
-            clientes_id:
+            cliente_id:
                 Number(clienteId),
 
             marca:
@@ -606,13 +552,8 @@ async function salvarMoto() {
 
             km:
                 km || null
+
         };
-
-
-        console.log(
-            "Salvando moto:",
-            novaMoto
-        );
 
 
         const {
@@ -624,7 +565,7 @@ async function salvarMoto() {
                 novaMoto
             )
             .select(
-                "id,clientes_id,marca,modelo,placa,ano,km"
+                "id,created_at,cliente_id,marca,modelo,placa,ano,km"
             )
             .single();
 
@@ -646,21 +587,17 @@ async function salvarMoto() {
             "marca"
         ).value = "";
 
-
         document.getElementById(
             "modelo"
         ).value = "";
-
 
         document.getElementById(
             "ano"
         ).value = "";
 
-
         document.getElementById(
             "placa"
         ).value = "";
-
 
         document.getElementById(
             "km"
@@ -699,6 +636,57 @@ async function salvarMoto() {
         `;
 
     }
+
+}
+
+
+/* =====================================================
+   CARREGAR MOTOS
+===================================================== */
+
+async function carregarMotos() {
+
+    let consulta =
+        supabaseClient
+            .from("motos")
+            .select(
+                "id,created_at,cliente_id,marca,modelo,placa,ano,km"
+            )
+            .order(
+                "id",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (clienteSelecionado) {
+
+        consulta =
+            consulta.eq(
+                "cliente_id",
+                Number(
+                    clienteSelecionado
+                )
+            );
+
+    }
+
+
+    const {
+        data: motos,
+        error
+    } = await consulta;
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    return motos || [];
 
 }
 
@@ -761,7 +749,7 @@ async function mostrarMotos() {
                 .select("nome")
                 .eq(
                     "id",
-                    moto.clientes_id
+                    moto.cliente_id
                 )
                 .single();
 
@@ -782,63 +770,33 @@ async function mostrarMotos() {
                 <div class="moto">
 
                     <h3>
-
                         🏍️
                         ${moto.marca || ""}
                         ${moto.modelo || ""}
-
                     </h3>
 
-
                     <p>
-
                         👤
-
-                        <strong>
-                            Proprietário:
-                        </strong>
-
+                        <strong>Proprietário:</strong>
                         ${nomeCliente}
-
                     </p>
 
-
                     <p>
-
                         🔢
-
-                        <strong>
-                            Placa:
-                        </strong>
-
+                        <strong>Placa:</strong>
                         ${moto.placa || "Sem placa"}
-
                     </p>
 
-
                     <p>
-
                         📆
-
-                        <strong>
-                            Ano:
-                        </strong>
-
+                        <strong>Ano:</strong>
                         ${moto.ano || "Não informado"}
-
                     </p>
 
-
                     <p>
-
                         🛣️
-
-                        <strong>
-                            KM:
-                        </strong>
-
+                        <strong>KM:</strong>
                         ${moto.km || "Não informado"}
-
                     </p>
 
                 </div>
@@ -875,153 +833,19 @@ async function mostrarMotos() {
 
 
 /* =====================================================
-   CONFIGURAR TELA
+   INICIAR
 ===================================================== */
 
-async function configurarTela() {
+async function iniciar() {
 
-    const select =
-        document.getElementById(
-            "cliente"
-        );
-
-
-    const infoCliente =
-        document.getElementById(
-            "infoCliente"
-        );
-
-
-    const nomeCliente =
-        document.getElementById(
-            "nomeCliente"
-        );
-
-
-    const botaoVoltar =
-        document.getElementById(
-            "botaoVoltar"
-        );
-
-
-    /*
-       CLIENTE LOGADO
-    */
-
-    if (clienteLogado) {
-
-        clienteAtual =
-            await buscarCliente(
-                clienteLogado
-            );
-
-
-        if (clienteAtual) {
-
-            modoCliente = true;
-
-
-            infoCliente.classList.remove(
-                "oculto"
-            );
-
-
-            nomeCliente.innerHTML =
-                "👤 <strong>" +
-                clienteAtual.nome +
-                "</strong>";
-
-
-            select.innerHTML = `
-                <option value="${clienteAtual.id}">
-                    ${clienteAtual.nome}
-                </option>
-            `;
-
-
-            select.value =
-                String(
-                    clienteAtual.id
-                );
-
-
-            select.disabled =
-                true;
-
-
-            botaoVoltar.href =
-                "index.html";
-
-
-            botaoVoltar.textContent =
-                "← Voltar para o início";
-
-        }
-
-    }
-
-
-    /*
-       OFICINA
-    */
-
-    if (!modoCliente) {
-
-        await carregarClientesNoSelect();
-
-
-        botaoVoltar.href =
-            "clientes.html";
-
-
-        botaoVoltar.textContent =
-            "← Voltar para Clientes";
-
-    }
-
-
-    /*
-       CLIENTE ESPECÍFICO
-    */
-
-    if (
-        !modoCliente &&
-        clienteSelecionado
-    ) {
-
-        clienteAtual =
-            await buscarCliente(
-                clienteSelecionado
-            );
-
-
-        if (clienteAtual) {
-
-            infoCliente.classList.remove(
-                "oculto"
-            );
-
-
-            nomeCliente.innerHTML =
-                "👤 <strong>" +
-                clienteAtual.nome +
-                "</strong>";
-
-        }
-
-    }
-
+    await carregarClientes();
 
     await mostrarMotos();
 
 }
 
 
-/* =====================================================
-   INICIAR
-===================================================== */
-
-configurarTela();
+iniciar();
 
 </script>
 

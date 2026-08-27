@@ -192,18 +192,6 @@ button:disabled {
     font-weight: bold;
 }
 
-@media (max-width: 500px) {
-
-    .container {
-        padding: 15px;
-    }
-
-    .card {
-        padding: 17px;
-    }
-
-}
-
 </style>
 
 </head>
@@ -226,6 +214,7 @@ button:disabled {
 
 </div>
 
+
 <div class="card">
 
 <h2>📋 Novo orçamento</h2>
@@ -237,6 +226,7 @@ type="text"
 id="numero"
 readonly
 >
+
 
 <label>Cliente</label>
 
@@ -253,6 +243,7 @@ Carregando clientes...
 
 <div id="mensagemCliente"></div>
 
+
 <label>Telefone / WhatsApp</label>
 
 <input
@@ -260,6 +251,7 @@ type="tel"
 id="telefone"
 readonly
 >
+
 
 <label>Moto</label>
 
@@ -274,6 +266,7 @@ Selecione primeiro o cliente
 
 </select>
 
+
 <label>Placa</label>
 
 <input
@@ -282,6 +275,7 @@ id="placa"
 readonly
 >
 
+
 <label>Serviço solicitado</label>
 
 <input
@@ -289,6 +283,7 @@ type="text"
 id="servico"
 placeholder="Ex: Revisão completa"
 >
+
 
 <label>Diagnóstico / observação</label>
 
@@ -315,6 +310,7 @@ placeholder="0,00"
 oninput="calcularTotal()"
 >
 
+
 <label>Peças</label>
 
 <input
@@ -325,6 +321,7 @@ min="0"
 placeholder="0,00"
 oninput="calcularTotal()"
 >
+
 
 <div class="total">
 
@@ -463,7 +460,7 @@ let motoSelecionada = null;
 
 
 /* =====================================================
-   GERAR NÚMERO DO ORÇAMENTO
+   GERAR NÚMERO
 ===================================================== */
 
 function gerarNumero() {
@@ -481,28 +478,7 @@ function gerarNumero() {
 
 
 /* =====================================================
-   VERIFICAR UUID
-===================================================== */
-
-function ehUUID(valor) {
-
-    if (!valor) {
-        return false;
-    }
-
-    const uuid =
-        String(valor).trim();
-
-    const regex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-    return regex.test(uuid);
-
-}
-
-
-/* =====================================================
-   CARREGAR CLIENTES DO SUPABASE
+   CARREGAR CLIENTES
 ===================================================== */
 
 async function carregarClientes() {
@@ -527,10 +503,7 @@ async function carregarClientes() {
 
     try {
 
-        const {
-            data: clientes,
-            error
-        } =
+        const resultado =
             await supabaseClient
             .from("clientes_nova")
             .select(
@@ -544,10 +517,17 @@ async function carregarClientes() {
             );
 
 
+        const clientes =
+            resultado.data;
+
+        const error =
+            resultado.error;
+
+
         if (error) {
 
             console.error(
-                "ERRO AO CARREGAR CLIENTES:",
+                "Erro ao carregar clientes:",
                 error
             );
 
@@ -559,7 +539,7 @@ async function carregarClientes() {
 
             mensagem.innerHTML = `
                 <div class="erro">
-                    ❌ Não foi possível carregar os clientes.
+                    ❌ Erro ao carregar clientes.
                     <br><br>
                     ${error.message}
                 </div>
@@ -583,7 +563,7 @@ async function carregarClientes() {
 
             mensagem.innerHTML = `
                 <div class="erro">
-                    ⚠️ Nenhum cliente foi encontrado na tabela clientes_nova.
+                    ⚠️ A tabela clientes_nova não retornou nenhum cliente.
                 </div>
             `;
 
@@ -602,14 +582,6 @@ async function carregarClientes() {
         clientes.forEach(
             function(cliente) {
 
-                if (
-                    !cliente.id ||
-                    !ehUUID(cliente.id)
-                ) {
-                    return;
-                }
-
-
                 const option =
                     document.createElement(
                         "option"
@@ -626,11 +598,8 @@ async function carregarClientes() {
 
 
                 option.dataset.telefone =
-                    cliente.telefone || "";
-
-
-                option.dataset.cpf =
-                    cliente.cpf || "";
+                    cliente.telefone ||
+                    "";
 
 
                 select.appendChild(
@@ -652,7 +621,7 @@ async function carregarClientes() {
     catch (erro) {
 
         console.error(
-            "ERRO GERAL:",
+            "Erro geral:",
             erro
         );
 
@@ -676,7 +645,7 @@ async function carregarClientes() {
 
 
 /* =====================================================
-   CARREGAR MOTOS DO CLIENTE
+   CARREGAR MOTOS
 ===================================================== */
 
 async function carregarMotosDoCliente() {
@@ -713,6 +682,11 @@ async function carregarMotosDoCliente() {
         null;
 
 
+    telefone.value = "";
+
+    placa.value = "";
+
+
     selectMoto.innerHTML = `
         <option value="">
             🔍 Carregando motos...
@@ -720,28 +694,11 @@ async function carregarMotosDoCliente() {
     `;
 
 
-    telefone.value = "";
-    placa.value = "";
-
-
     if (!clienteId) {
 
         selectMoto.innerHTML = `
             <option value="">
                 Selecione primeiro o cliente
-            </option>
-        `;
-
-        return;
-
-    }
-
-
-    if (!ehUUID(clienteId)) {
-
-        selectMoto.innerHTML = `
-            <option value="">
-                ❌ ID do cliente inválido
             </option>
         `;
 
@@ -765,17 +722,15 @@ async function carregarMotosDoCliente() {
     if (opcao) {
 
         telefone.value =
-            opcao.dataset.telefone || "";
+            opcao.dataset.telefone ||
+            "";
 
     }
 
 
     try {
 
-        const {
-            data: motos,
-            error
-        } =
+        const resultado =
             await supabaseClient
             .from("motos")
             .select(
@@ -786,17 +741,24 @@ async function carregarMotosDoCliente() {
                 clienteId
             )
             .order(
-                "created_at",
+                "id",
                 {
-                    ascending: false
+                    ascending: true
                 }
             );
+
+
+        const motos =
+            resultado.data;
+
+        const error =
+            resultado.error;
 
 
         if (error) {
 
             console.error(
-                "ERRO AO CARREGAR MOTOS:",
+                "Erro ao carregar motos:",
                 error
             );
 
@@ -807,7 +769,7 @@ async function carregarMotosDoCliente() {
             `;
 
             alert(
-                "❌ Erro ao carregar as motos:\n\n" +
+                "❌ Erro ao carregar motos:\n\n" +
                 error.message
             );
 
@@ -823,7 +785,7 @@ async function carregarMotosDoCliente() {
 
             selectMoto.innerHTML = `
                 <option value="">
-                    Nenhuma moto cadastrada
+                    Nenhuma moto cadastrada para este cliente
                 </option>
             `;
 
@@ -842,14 +804,6 @@ async function carregarMotosDoCliente() {
         motos.forEach(
             function(moto) {
 
-                if (
-                    !moto.id ||
-                    !ehUUID(moto.id)
-                ) {
-                    return;
-                }
-
-
                 const option =
                     document.createElement(
                         "option"
@@ -862,20 +816,24 @@ async function carregarMotosDoCliente() {
 
                 option.textContent =
                     (
-                        moto.marca || ""
+                        moto.marca ||
+                        ""
                     ) +
                     " " +
                     (
-                        moto.modelo || "Moto"
+                        moto.modelo ||
+                        "Moto"
                     ) +
                     " - " +
                     (
-                        moto.placa || "Sem placa"
+                        moto.placa ||
+                        "Sem placa"
                     );
 
 
                 option.dataset.placa =
-                    moto.placa || "";
+                    moto.placa ||
+                    "";
 
 
                 selectMoto.appendChild(
@@ -890,7 +848,7 @@ async function carregarMotosDoCliente() {
     catch (erro) {
 
         console.error(
-            "ERRO GERAL MOTOS:",
+            "Erro geral motos:",
             erro
         );
 
@@ -916,20 +874,18 @@ async function carregarMotosDoCliente() {
 
 function preencherMoto() {
 
-    const motoId =
-        document.getElementById(
-            "moto"
-        ).value;
-
-
-    motoSelecionada =
-        motoId;
-
-
     const select =
         document.getElementById(
             "moto"
         );
+
+
+    const motoId =
+        select.value;
+
+
+    motoSelecionada =
+        motoId;
 
 
     const opcao =
@@ -1003,24 +959,6 @@ function pegarDadosOrcamento() {
         ).value;
 
 
-    const numero =
-        document.getElementById(
-            "numero"
-        ).value;
-
-
-    const servico =
-        document.getElementById(
-            "servico"
-        ).value.trim();
-
-
-    const diagnostico =
-        document.getElementById(
-            "diagnostico"
-        ).value.trim();
-
-
     const mao =
         parseFloat(
             document.getElementById(
@@ -1037,32 +975,32 @@ function pegarDadosOrcamento() {
         ) || 0;
 
 
-    const total =
-        mao + pecas;
-
-
-    const status =
-        document.getElementById(
-            "status"
-        ).value;
-
-
     return {
 
         cliente_id:
-            clienteId,
+            clienteId
+            ? Number(clienteId)
+            : null,
 
         moto_id:
-            motoId,
+            motoId
+            ? Number(motoId)
+            : null,
 
         numero:
-            numero,
+            document.getElementById(
+                "numero"
+            ).value,
 
         servico:
-            servico,
+            document.getElementById(
+                "servico"
+            ).value.trim(),
 
         diagnostico:
-            diagnostico,
+            document.getElementById(
+                "diagnostico"
+            ).value.trim(),
 
         mao_de_obra:
             mao,
@@ -1071,10 +1009,12 @@ function pegarDadosOrcamento() {
             pecas,
 
         total:
-            total,
+            mao + pecas,
 
         status:
-            status
+            document.getElementById(
+                "status"
+            ).value
 
     };
 
@@ -1110,17 +1050,6 @@ async function salvarOrcamento() {
     }
 
 
-    if (!ehUUID(clienteId)) {
-
-        alert(
-            "❌ O ID do cliente não é um UUID válido."
-        );
-
-        return;
-
-    }
-
-
     if (!motoId) {
 
         alert(
@@ -1132,10 +1061,19 @@ async function salvarOrcamento() {
     }
 
 
-    if (!ehUUID(motoId)) {
+    const dados =
+        pegarDadosOrcamento();
+
+
+    if (
+        !dados.cliente_id ||
+        Number.isNaN(
+            dados.cliente_id
+        )
+    ) {
 
         alert(
-            "❌ O ID da moto não é um UUID válido."
+            "❌ ID do cliente inválido."
         );
 
         return;
@@ -1143,8 +1081,20 @@ async function salvarOrcamento() {
     }
 
 
-    const dados =
-        pegarDadosOrcamento();
+    if (
+        !dados.moto_id ||
+        Number.isNaN(
+            dados.moto_id
+        )
+    ) {
+
+        alert(
+            "❌ ID da moto inválido."
+        );
+
+        return;
+
+    }
 
 
     if (!dados.servico) {
@@ -1160,10 +1110,7 @@ async function salvarOrcamento() {
 
     try {
 
-        const {
-            data,
-            error
-        } =
+        const resultado =
             await supabaseClient
             .from("orcamentos")
             .insert([
@@ -1173,15 +1120,22 @@ async function salvarOrcamento() {
             .single();
 
 
+        const data =
+            resultado.data;
+
+        const error =
+            resultado.error;
+
+
         if (error) {
 
             console.error(
-                "ERRO AO SALVAR ORÇAMENTO:",
+                "Erro ao salvar orçamento:",
                 error
             );
 
             alert(
-                "❌ Erro ao salvar orçamento.\n\n" +
+                "❌ Erro ao salvar orçamento:\n\n" +
                 error.message
             );
 
@@ -1199,7 +1153,6 @@ async function salvarOrcamento() {
 
         limparFormulario();
 
-
         carregarOrcamentos();
 
     }
@@ -1207,12 +1160,12 @@ async function salvarOrcamento() {
     catch (erro) {
 
         console.error(
-            "ERRO GERAL:",
+            "Erro geral:",
             erro
         );
 
         alert(
-            "❌ Erro ao salvar orçamento.\n\n" +
+            "❌ Erro ao salvar orçamento:\n\n" +
             (erro.message || erro)
         );
 
@@ -1239,26 +1192,11 @@ async function carregarOrcamentos() {
 
     try {
 
-        const {
-            data: orcamentos,
-            error
-        } =
+        const resultado =
             await supabaseClient
             .from("orcamentos")
             .select(
-                `
-                id,
-                created_at,
-                cliente_id,
-                moto_id,
-                numero,
-                servico,
-                diagnostico,
-                mao_de_obra,
-                pecas,
-                total,
-                status
-                `
+                "id,created_at,cliente_id,moto_id,numero,servico,diagnostico,mao_de_obra,pecas,total,status"
             )
             .order(
                 "created_at",
@@ -1268,10 +1206,17 @@ async function carregarOrcamentos() {
             );
 
 
+        const orcamentos =
+            resultado.data;
+
+        const error =
+            resultado.error;
+
+
         if (error) {
 
             console.error(
-                "ERRO ORÇAMENTOS:",
+                "Erro ao carregar orçamentos:",
                 error
             );
 
@@ -1316,16 +1261,9 @@ async function carregarOrcamentos() {
                 "Moto";
 
 
-            /* BUSCAR CLIENTE */
+            if (item.cliente_id) {
 
-            if (
-                item.cliente_id &&
-                ehUUID(item.cliente_id)
-            ) {
-
-                const {
-                    data: cliente
-                } =
+                const clienteResultado =
                     await supabaseClient
                     .from("clientes_nova")
                     .select(
@@ -1338,10 +1276,14 @@ async function carregarOrcamentos() {
                     .maybeSingle();
 
 
-                if (cliente) {
+                if (
+                    clienteResultado.data
+                ) {
 
                     nomeCliente =
-                        cliente.nome ||
+                        clienteResultado
+                        .data
+                        .nome ||
                         "Cliente";
 
                 }
@@ -1349,16 +1291,9 @@ async function carregarOrcamentos() {
             }
 
 
-            /* BUSCAR MOTO */
+            if (item.moto_id) {
 
-            if (
-                item.moto_id &&
-                ehUUID(item.moto_id)
-            ) {
-
-                const {
-                    data: moto
-                } =
+                const motoResultado =
                     await supabaseClient
                     .from("motos")
                     .select(
@@ -1371,15 +1306,23 @@ async function carregarOrcamentos() {
                     .maybeSingle();
 
 
-                if (moto) {
+                if (
+                    motoResultado.data
+                ) {
+
+                    const moto =
+                        motoResultado.data;
+
 
                     descricaoMoto =
                         (
-                            moto.marca || ""
+                            moto.marca ||
+                            ""
                         ) +
                         " " +
                         (
-                            moto.modelo || ""
+                            moto.modelo ||
+                            ""
                         );
 
 
@@ -1417,7 +1360,7 @@ async function carregarOrcamentos() {
                     👤 ${nomeCliente}
                 </strong>
 
-                <br>
+                <br><br>
 
                 🏍️ ${descricaoMoto}
 
@@ -1451,13 +1394,13 @@ async function carregarOrcamentos() {
     catch (erro) {
 
         console.error(
-            "ERRO:",
+            "Erro:",
             erro
         );
 
         lista.innerHTML = `
             <div class="erro">
-                ❌ Erro ao carregar os orçamentos.
+                ❌ Erro ao carregar orçamentos.
                 <br><br>
                 ${erro.message || erro}
             </div>
@@ -1469,7 +1412,7 @@ async function carregarOrcamentos() {
 
 
 /* =====================================================
-   APROVAR ORÇAMENTO ATUAL
+   APROVAR ORÇAMENTO
 ===================================================== */
 
 async function aprovarOrcamento() {
@@ -1491,10 +1434,7 @@ async function aprovarOrcamento() {
     }
 
 
-    const {
-        data,
-        error
-    } =
+    const resultado =
         await supabaseClient
         .from("orcamentos")
         .update({
@@ -1508,10 +1448,17 @@ async function aprovarOrcamento() {
         .maybeSingle();
 
 
+    const data =
+        resultado.data;
+
+    const error =
+        resultado.error;
+
+
     if (error) {
 
         alert(
-            "❌ Erro ao aprovar orçamento.\n\n" +
+            "❌ Erro ao aprovar orçamento:\n\n" +
             error.message
         );
 
@@ -1540,7 +1487,7 @@ async function aprovarOrcamento() {
     alert(
         "✅ Orçamento nº " +
         numero +
-        " aprovado!"
+        " aprovado com sucesso!"
     );
 
 
@@ -1550,7 +1497,7 @@ async function aprovarOrcamento() {
 
 
 /* =====================================================
-   ENVIAR WHATSAPP
+   WHATSAPP
 ===================================================== */
 
 function enviarWhatsApp() {
@@ -1703,7 +1650,7 @@ function enviarWhatsApp() {
    TRANSFORMAR EM OS
 ===================================================== */
 
-async function transformarEmOS() {
+function transformarEmOS() {
 
     const clienteId =
         document.getElementById(
@@ -1739,28 +1686,6 @@ async function transformarEmOS() {
     }
 
 
-    if (!ehUUID(clienteId)) {
-
-        alert(
-            "❌ ID do cliente inválido."
-        );
-
-        return;
-
-    }
-
-
-    if (!ehUUID(motoId)) {
-
-        alert(
-            "❌ ID da moto inválido."
-        );
-
-        return;
-
-    }
-
-
     const dados =
         pegarDadosOrcamento();
 
@@ -1780,7 +1705,7 @@ async function transformarEmOS() {
 
 
 /* =====================================================
-   LIMPAR FORMULÁRIO
+   LIMPAR
 ===================================================== */
 
 function limparFormulario() {
@@ -1844,7 +1769,7 @@ function limparFormulario() {
 
 
 /* =====================================================
-   FORMATAR MOEDA
+   MOEDA
 ===================================================== */
 
 function formatarMoeda(valor) {

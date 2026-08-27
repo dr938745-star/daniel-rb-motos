@@ -200,18 +200,6 @@ input {
     color: #a00000;
 }
 
-@media (max-width: 500px) {
-
-    .container {
-        padding: 15px;
-    }
-
-    .card {
-        padding: 17px;
-    }
-
-}
-
 </style>
 
 </head>
@@ -228,167 +216,161 @@ input {
 
 </header>
 
-
 <div class="container">
 
+    <button
+        type="button"
+        class="botao novo-cliente"
+        onclick="abrirFormulario()"
+    >
+        ➕ Novo cliente
+    </button>
 
-<button
-    type="button"
-    class="botao novo-cliente"
-    onclick="abrirFormulario()"
->
-    ➕ Novo cliente
-</button>
+
+    <div
+        id="formulario"
+        class="card formulario"
+    >
+
+        <div class="titulo-formulario">
+
+            <h2 id="tituloFormulario">
+                👤 Novo cliente
+            </h2>
+
+            <button
+                type="button"
+                class="fechar"
+                onclick="fecharFormulario()"
+            >
+                ✕
+            </button>
+
+        </div>
 
 
-<div
-    id="formulario"
-    class="card formulario"
->
+        <input
+            type="hidden"
+            id="clienteId"
+        >
 
-    <div class="titulo-formulario">
 
-        <h2 id="tituloFormulario">
-            👤 Novo cliente
-        </h2>
+        <label>Nome</label>
+
+        <input
+            type="text"
+            id="nome"
+            placeholder="Nome completo"
+        >
+
+
+        <label>CPF</label>
+
+        <input
+            type="text"
+            id="cpf"
+            placeholder="000.000.000-00"
+            maxlength="14"
+            inputmode="numeric"
+            oninput="formatarCPF(this)"
+        >
+
+
+        <label>Telefone</label>
+
+        <input
+            type="tel"
+            id="telefone"
+            placeholder="(00) 00000-0000"
+        >
+
+
+        <label>WhatsApp</label>
+
+        <input
+            type="tel"
+            id="whatsapp"
+            placeholder="(00) 00000-0000"
+        >
+
+
+        <label>E-mail</label>
+
+        <input
+            type="email"
+            id="email"
+            placeholder="cliente@email.com"
+        >
+
+
+        <label>Endereço</label>
+
+        <input
+            type="text"
+            id="endereco"
+            placeholder="Rua, número, bairro..."
+        >
+
 
         <button
             type="button"
-            class="fechar"
+            class="botao salvar"
+            onclick="salvarCliente()"
+        >
+            💾
+            <span id="textoSalvar">
+                Salvar cliente
+            </span>
+        </button>
+
+
+        <button
+            type="button"
+            class="botao cancelar"
             onclick="fecharFormulario()"
         >
-            ✕
+            Cancelar
         </button>
+
+
+        <div id="mensagemFormulario"></div>
 
     </div>
 
 
-    <input
-        type="hidden"
-        id="clienteId"
+    <div class="card">
+
+        <h2>
+            📋 Clientes cadastrados
+        </h2>
+
+
+        <input
+            type="text"
+            id="pesquisa"
+            class="pesquisa"
+            placeholder="Pesquisar por nome, CPF ou telefone..."
+            oninput="mostrarClientes()"
+        >
+
+
+        <div
+            id="contador"
+            class="contador"
+        ></div>
+
+
+        <div id="listaClientes"></div>
+
+    </div>
+
+
+    <a
+        href="oficina.html"
+        class="voltar"
     >
-
-
-    <label>Nome</label>
-
-    <input
-        type="text"
-        id="nome"
-        placeholder="Nome completo"
-    >
-
-
-    <label>CPF</label>
-
-    <input
-        type="text"
-        id="cpf"
-        placeholder="000.000.000-00"
-        maxlength="14"
-        inputmode="numeric"
-        oninput="formatarCPF(this)"
-    >
-
-
-    <label>Telefone</label>
-
-    <input
-        type="tel"
-        id="telefone"
-        placeholder="(00) 00000-0000"
-    >
-
-
-    <label>WhatsApp</label>
-
-    <input
-        type="tel"
-        id="whatsapp"
-        placeholder="(00) 00000-0000"
-    >
-
-
-    <label>E-mail</label>
-
-    <input
-        type="email"
-        id="email"
-        placeholder="cliente@email.com"
-    >
-
-
-    <label>Endereço</label>
-
-    <input
-        type="text"
-        id="endereco"
-        placeholder="Rua, número, bairro..."
-    >
-
-
-    <button
-        type="button"
-        class="botao salvar"
-        onclick="salvarCliente()"
-    >
-
-        💾 <span id="textoSalvar">
-            Salvar cliente
-        </span>
-
-    </button>
-
-
-    <button
-        type="button"
-        class="botao cancelar"
-        onclick="fecharFormulario()"
-    >
-
-        Cancelar
-
-    </button>
-
-
-    <div id="mensagemFormulario"></div>
-
-</div>
-
-
-<div class="card">
-
-    <h2>
-        📋 Clientes cadastrados
-    </h2>
-
-
-    <input
-        type="text"
-        id="pesquisa"
-        class="pesquisa"
-        placeholder="Pesquisar por nome, CPF ou telefone..."
-        oninput="mostrarClientes()"
-    >
-
-
-    <div
-        id="contador"
-        class="contador"
-    ></div>
-
-
-    <div id="listaClientes"></div>
-
-</div>
-
-
-<a
-    href="oficina.html"
-    class="voltar"
->
-    ← Voltar para a Área da Oficina
-</a>
-
+        ← Voltar para a Área da Oficina
+    </a>
 
 </div>
 
@@ -696,9 +678,9 @@ async function salvarCliente() {
 
     try {
 
-        /* =================================================
+        /* =============================================
            VERIFICAR CPF
-        ================================================= */
+        ============================================= */
 
         const {
             data: clientesExistentes,
@@ -741,9 +723,9 @@ async function salvarCliente() {
         }
 
 
-        /* =================================================
+        /* =============================================
            DADOS DO CLIENTE
-        ================================================= */
+        ============================================= */
 
         const dadosCliente = {
 
@@ -756,7 +738,7 @@ async function salvarCliente() {
             telefone:
                 telefone,
 
-            "e-mail":
+            email:
                 email,
 
             endereco:
@@ -765,9 +747,9 @@ async function salvarCliente() {
         };
 
 
-        /* =================================================
-           EDITAR
-        ================================================= */
+        /* =============================================
+           EDITAR CLIENTE
+        ============================================= */
 
         if (id) {
 
@@ -791,6 +773,12 @@ async function salvarCliente() {
             }
 
 
+            localStorage.setItem(
+                "whatsapp_" + id,
+                whatsapp
+            );
+
+
             alert(
                 "✅ Cliente atualizado com sucesso!"
             );
@@ -798,9 +786,9 @@ async function salvarCliente() {
         }
 
 
-        /* =================================================
+        /* =============================================
            NOVO CLIENTE
-        ================================================= */
+        ============================================= */
 
         else {
 
@@ -812,7 +800,9 @@ async function salvarCliente() {
                 .insert(
                     dadosCliente
                 )
-                .select("id,nome,cpf,telefone,\"e-mail\",endereco")
+                .select(
+                    "id,nome,cpf,telefone,email,endereco"
+                )
                 .single();
 
 
@@ -822,11 +812,6 @@ async function salvarCliente() {
 
             }
 
-
-            /*
-             * O WhatsApp ainda não existe na tabela.
-             * Guardamos somente no navegador por enquanto.
-             */
 
             if (novoCliente) {
 
@@ -861,9 +846,13 @@ async function salvarCliente() {
 
         mensagem.innerHTML = `
             <div class="mensagem erro">
+
                 ❌ Erro ao salvar o cliente.
+
                 <br><br>
+
                 ${erro.message || erro}
+
             </div>
         `;
 
@@ -873,7 +862,7 @@ async function salvarCliente() {
 
 
 /* =====================================================
-   CARREGAR CLIENTES DO SUPABASE
+   CARREGAR CLIENTES
 ===================================================== */
 
 async function carregarClientes() {
@@ -884,7 +873,7 @@ async function carregarClientes() {
     } = await supabaseClient
         .from("clientes_nova")
         .select(
-            "id,nome,cpf,telefone,\"e-mail\",endereco"
+            "id,nome,cpf,telefone,email,endereco"
         )
         .order(
             "id",
@@ -971,7 +960,7 @@ async function mostrarClientes() {
                         " " +
 
                         String(
-                            cliente["e-mail"] || ""
+                            cliente.email || ""
                         ) +
 
                         " " +
@@ -1080,7 +1069,7 @@ async function mostrarClientes() {
                         📧
                         <strong>E-mail:</strong>
 
-                        ${cliente["e-mail"] || "Não informado"}
+                        ${cliente.email || "Não informado"}
 
                     </p>
 
@@ -1172,7 +1161,7 @@ async function editarCliente(id) {
         } = await supabaseClient
             .from("clientes_nova")
             .select(
-                "id,nome,cpf,telefone,\"e-mail\",endereco"
+                "id,nome,cpf,telefone,email,endereco"
             )
             .eq(
                 "id",
@@ -1253,7 +1242,7 @@ async function editarCliente(id) {
         document.getElementById(
             "email"
         ).value =
-            cliente["e-mail"] || "";
+            cliente.email || "";
 
 
         document.getElementById(

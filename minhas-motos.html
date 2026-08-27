@@ -1,17 +1,5 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Minhas Motos - DANIEL RB MOTOS</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Minhas Motos - DANIEL RB MOTOS</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
 
 * {
     box-sizing: border-box;
@@ -92,10 +80,18 @@ select {
     text-decoration: none;
 }
 
+.botao-excluir {
+    background: #b00000;
+}
+
 .moto {
     border-top: 1px solid #ddd;
     padding-top: 18px;
     margin-top: 18px;
+}
+
+.moto h3 {
+    margin-bottom: 15px;
 }
 
 .vazio {
@@ -140,63 +136,24 @@ select {
     color: #176b2c;
 }
 
-</style>
-
-</head>
-
-<body>
-
-<header>
-
-<h1>🏍️ Minhas Motos</h1>
-
-<p>DANIEL RB MOTOS</p>
-
-</header>
-
-
-<div class="container">
-
-
-<div
+</style></head><body><header><h1>🏍️ Minhas Motos</h1><p>DANIEL RB MOTOS</p></header><div class="container"><div
 id="infoCliente"
 class="card oculto"
->
-
-<h2>👤 Cliente</h2>
-
-<div
+><h2>👤 Cliente</h2><div
 id="nomeCliente"
 class="info-cliente"
-></div>
+></div></div><div class="card"><h2>➕ Cadastrar moto</h2><label>Proprietário</label>
 
-</div>
-
-
-<div class="card">
-
-<h2>➕ Cadastrar moto</h2>
-
-
-<label>Proprietário</label>
-
-<select id="cliente">
-
-<option value="">
+<select id="cliente"><option value="">
 Selecione o cliente
-</option>
-
-</select>
-
-
-<label>Marca</label>
+</option></select><label>Marca</label>
 
 <input
 type="text"
 id="marca"
 placeholder="Ex: Honda"
->
 
+«»
 
 <label>Modelo</label>
 
@@ -204,8 +161,8 @@ placeholder="Ex: Honda"
 type="text"
 id="modelo"
 placeholder="Ex: Bros 160"
->
 
+«»
 
 <label>Ano</label>
 
@@ -213,8 +170,8 @@ placeholder="Ex: Bros 160"
 type="text"
 id="ano"
 placeholder="Ex: 2020"
->
 
+«»
 
 <label>Placa</label>
 
@@ -222,8 +179,8 @@ placeholder="Ex: 2020"
 type="text"
 id="placa"
 placeholder="ABC1D23"
->
 
+«»
 
 <label>Quilometragem</label>
 
@@ -231,48 +188,28 @@ placeholder="ABC1D23"
 type="text"
 id="km"
 placeholder="Ex: 35000"
->
 
+«»
 
 <button
 type="button"
 class="botao"
 onclick="salvarMoto()"
->
+
+«»
 
 💾 Cadastrar moto
 
-</button>
-
-
-<div id="mensagem"></div>
-
-</div>
-
-
-<div class="card">
-
-<h2>📋 Motos cadastradas</h2>
-
-<div id="listaMotos"></div>
-
-</div>
-
-
-<a
+</button><div id="mensagem"></div></div><div class="card"><h2>📋 Motos cadastradas</h2><div id="listaMotos"></div></div><a
 id="botaoVoltar"
 href="oficina.html"
 class="voltar"
->
+
+«»
 
 ← Voltar
 
-</a>
-
-</div>
-
-
-<script>
+</a></div><script>
 
 /* =====================================================
    SUPABASE
@@ -292,7 +229,7 @@ supabase.createClient(
 
 
 /* =====================================================
-   ORIGEM
+   CLIENTE SELECIONADO
 ===================================================== */
 
 const clienteSelecionado =
@@ -347,6 +284,7 @@ async function carregarClientes() {
         `;
 
         return;
+
     }
 
 
@@ -474,7 +412,8 @@ async function salvarMoto() {
     const placa =
         document.getElementById(
             "placa"
-        ).value.trim()
+        ).value
+        .trim()
         .toUpperCase();
 
 
@@ -491,6 +430,7 @@ async function salvarMoto() {
         );
 
         return;
+
     }
 
 
@@ -501,6 +441,7 @@ async function salvarMoto() {
         );
 
         return;
+
     }
 
 
@@ -511,6 +452,7 @@ async function salvarMoto() {
         );
 
         return;
+
     }
 
 
@@ -521,6 +463,7 @@ async function salvarMoto() {
         );
 
         return;
+
     }
 
 
@@ -575,12 +518,6 @@ async function salvarMoto() {
             throw error;
 
         }
-
-
-        console.log(
-            "Moto cadastrada:",
-            data
-        );
 
 
         document.getElementById(
@@ -660,6 +597,12 @@ async function carregarMotos() {
             );
 
 
+    /*
+       MANTÉM A FUNÇÃO ORIGINAL:
+       SE UM CLIENTE FOI SELECIONADO,
+       MOSTRA SOMENTE AS MOTOS DELE.
+    */
+
     if (clienteSelecionado) {
 
         consulta =
@@ -727,6 +670,7 @@ async function mostrarMotos() {
             `;
 
             return;
+
         }
 
 
@@ -765,43 +709,79 @@ async function mostrarMotos() {
             }
 
 
-            lista.innerHTML += `
+            const bloco =
+                document.createElement(
+                    "div"
+                );
 
-                <div class="moto">
 
-                    <h3>
-                        🏍️
-                        ${moto.marca || ""}
-                        ${moto.modelo || ""}
-                    </h3>
+            bloco.className =
+                "moto";
 
-                    <p>
-                        👤
-                        <strong>Proprietário:</strong>
-                        ${nomeCliente}
-                    </p>
 
-                    <p>
-                        🔢
-                        <strong>Placa:</strong>
-                        ${moto.placa || "Sem placa"}
-                    </p>
+            bloco.innerHTML = `
 
-                    <p>
-                        📆
-                        <strong>Ano:</strong>
-                        ${moto.ano || "Não informado"}
-                    </p>
+                <h3>
 
-                    <p>
-                        🛣️
-                        <strong>KM:</strong>
-                        ${moto.km || "Não informado"}
-                    </p>
+                    🏍️
+                    ${moto.marca || ""}
+                    ${moto.modelo || ""}
 
-                </div>
+                </h3>
+
+
+                <p>
+
+                    👤
+                    <strong>Proprietário:</strong>
+                    ${nomeCliente}
+
+                </p>
+
+
+                <p>
+
+                    🔢
+                    <strong>Placa:</strong>
+                    ${moto.placa || "Sem placa"}
+
+                </p>
+
+
+                <p>
+
+                    📆
+                    <strong>Ano:</strong>
+                    ${moto.ano || "Não informado"}
+
+                </p>
+
+
+                <p>
+
+                    🛣️
+                    <strong>KM:</strong>
+                    ${moto.km || "Não informado"}
+
+                </p>
+
+
+                <button
+                    type="button"
+                    class="botao botao-excluir"
+                    onclick="excluirMoto(${Number(moto.id)})"
+                >
+
+                    🗑️ Tirar esta moto do cliente
+
+                </button>
 
             `;
+
+
+            lista.appendChild(
+                bloco
+            );
 
         }
 
@@ -833,6 +813,87 @@ async function mostrarMotos() {
 
 
 /* =====================================================
+   EXCLUIR / TIRAR MOTO DO CLIENTE
+===================================================== */
+
+async function excluirMoto(id) {
+
+    if (!id) {
+
+        alert(
+            "⚠️ Não foi possível identificar esta moto."
+        );
+
+        return;
+
+    }
+
+
+    const confirmar =
+        confirm(
+            "⚠️ Tem certeza que deseja tirar esta moto do cadastro do cliente?\n\n" +
+            "A moto será excluída do sistema."
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            error
+        } = await supabaseClient
+            .from("motos")
+            .delete()
+            .eq(
+                "id",
+                Number(id)
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        alert(
+            "✅ Moto retirada do cadastro com sucesso!"
+        );
+
+
+        await mostrarMotos();
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "ERRO AO EXCLUIR MOTO:",
+            erro
+        );
+
+
+        alert(
+            "❌ Não foi possível retirar a moto.\n\n" +
+            (
+                erro.message ||
+                erro
+            )
+        );
+
+    }
+
+}
+
+
+/* =====================================================
    INICIAR
 ===================================================== */
 
@@ -847,8 +908,4 @@ async function iniciar() {
 
 iniciar();
 
-</script>
-
-</body>
-
-</html>
+</script></body></html>

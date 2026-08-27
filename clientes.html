@@ -5,9 +5,12 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>Clientes - DANIEL RB MOTOS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
@@ -167,22 +170,6 @@ input {
     margin-top: 5px;
 }
 
-.lista-motos {
-    background: #f3f3f3;
-    padding: 12px;
-    border-radius: 10px;
-    margin-top: 12px;
-}
-
-.moto-item {
-    border-bottom: 1px solid #ddd;
-    padding: 8px 0;
-}
-
-.moto-item:last-child {
-    border-bottom: none;
-}
-
 .novo-cliente {
     background: #146c2e;
     color: white;
@@ -194,6 +181,23 @@ input {
     color: white;
     text-decoration: none;
     margin-top: 20px;
+}
+
+.mensagem {
+    padding: 14px;
+    border-radius: 10px;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+.sucesso {
+    background: #dff5e5;
+    color: #176b2c;
+}
+
+.erro {
+    background: #ffe1e1;
+    color: #a00000;
 }
 
 @media (max-width: 500px) {
@@ -224,157 +228,167 @@ input {
 
 </header>
 
+
 <div class="container">
+
+
+<button
+    type="button"
+    class="botao novo-cliente"
+    onclick="abrirFormulario()"
+>
+    ➕ Novo cliente
+</button>
+
+
+<div
+    id="formulario"
+    class="card formulario"
+>
+
+    <div class="titulo-formulario">
+
+        <h2 id="tituloFormulario">
+            👤 Novo cliente
+        </h2>
+
+        <button
+            type="button"
+            class="fechar"
+            onclick="fecharFormulario()"
+        >
+            ✕
+        </button>
+
+    </div>
+
+
+    <input
+        type="hidden"
+        id="clienteId"
+    >
+
+
+    <label>Nome</label>
+
+    <input
+        type="text"
+        id="nome"
+        placeholder="Nome completo"
+    >
+
+
+    <label>CPF</label>
+
+    <input
+        type="text"
+        id="cpf"
+        placeholder="000.000.000-00"
+        maxlength="14"
+        inputmode="numeric"
+        oninput="formatarCPF(this)"
+    >
+
+
+    <label>Telefone</label>
+
+    <input
+        type="tel"
+        id="telefone"
+        placeholder="(00) 00000-0000"
+    >
+
+
+    <label>WhatsApp</label>
+
+    <input
+        type="tel"
+        id="whatsapp"
+        placeholder="(00) 00000-0000"
+    >
+
+
+    <label>E-mail</label>
+
+    <input
+        type="email"
+        id="email"
+        placeholder="cliente@email.com"
+    >
+
+
+    <label>Endereço</label>
+
+    <input
+        type="text"
+        id="endereco"
+        placeholder="Rua, número, bairro..."
+    >
+
 
     <button
         type="button"
-        class="botao novo-cliente"
-        onclick="abrirFormulario()"
+        class="botao salvar"
+        onclick="salvarCliente()"
     >
 
-        ➕ Novo cliente
+        💾 <span id="textoSalvar">
+            Salvar cliente
+        </span>
 
     </button>
 
 
+    <button
+        type="button"
+        class="botao cancelar"
+        onclick="fecharFormulario()"
+    >
+
+        Cancelar
+
+    </button>
+
+
+    <div id="mensagemFormulario"></div>
+
+</div>
+
+
+<div class="card">
+
+    <h2>
+        📋 Clientes cadastrados
+    </h2>
+
+
+    <input
+        type="text"
+        id="pesquisa"
+        class="pesquisa"
+        placeholder="Pesquisar por nome, CPF ou telefone..."
+        oninput="mostrarClientes()"
+    >
+
+
     <div
-        id="formulario"
-        class="card formulario"
-    >
-
-        <div class="titulo-formulario">
-
-            <h2 id="tituloFormulario">
-                👤 Novo cliente
-            </h2>
-
-            <button
-                type="button"
-                class="fechar"
-                onclick="fecharFormulario()"
-            >
-
-                ✕
-
-            </button>
-
-        </div>
+        id="contador"
+        class="contador"
+    ></div>
 
 
-        <input
-            type="hidden"
-            id="clienteId"
-        >
+    <div id="listaClientes"></div>
+
+</div>
 
 
-        <label>
-            Nome
-        </label>
+<a
+    href="oficina.html"
+    class="voltar"
+>
+    ← Voltar para a Área da Oficina
+</a>
 
-        <input
-            type="text"
-            id="nome"
-            placeholder="Nome completo"
-        >
-
-
-        <label>
-            CPF
-        </label>
-
-        <input
-            type="text"
-            id="cpf"
-            placeholder="000.000.000-00"
-            maxlength="14"
-            inputmode="numeric"
-            oninput="formatarCPF(this)"
-        >
-
-
-        <label>
-            Telefone
-        </label>
-
-        <input
-            type="tel"
-            id="telefone"
-            placeholder="(00) 00000-0000"
-        >
-
-
-        <label>
-            WhatsApp
-        </label>
-
-        <input
-            type="tel"
-            id="whatsapp"
-            placeholder="(00) 00000-0000"
-        >
-
-
-        <button
-            type="button"
-            class="botao salvar"
-            onclick="salvarCliente()"
-        >
-
-            💾 <span id="textoSalvar">
-                Salvar cliente
-            </span>
-
-        </button>
-
-
-        <button
-            type="button"
-            class="botao cancelar"
-            onclick="fecharFormulario()"
-        >
-
-            Cancelar
-
-        </button>
-
-    </div>
-
-
-    <div class="card">
-
-        <h2>
-            📋 Clientes cadastrados
-        </h2>
-
-
-        <input
-            type="text"
-            id="pesquisa"
-            class="pesquisa"
-            placeholder="Pesquisar por nome, CPF ou telefone..."
-            oninput="mostrarClientes()"
-        >
-
-
-        <div
-            id="contador"
-            class="contador"
-        ></div>
-
-
-        <div id="listaClientes"></div>
-
-    </div>
-
-
-    <a
-        href="oficina.html"
-        class="voltar"
-    >
-
-        ← Voltar para a Área da Oficina
-
-    </a>
 
 </div>
 
@@ -382,23 +396,26 @@ input {
 <script>
 
 
-function carregarClientes() {
+/* =====================================================
+   SUPABASE
+===================================================== */
 
-    return JSON.parse(
-        localStorage.getItem("clientes")
-    ) || [];
+const SUPABASE_URL =
+    "https://niffgrhjmnizvusnrqyg.supabase.co";
 
-}
+const SUPABASE_KEY =
+    "sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 
-function carregarMotos() {
-
-    return JSON.parse(
-        localStorage.getItem("motos")
-    ) || [];
-
-}
-
+/* =====================================================
+   CPF
+===================================================== */
 
 function limparCPF(cpf) {
 
@@ -443,7 +460,9 @@ function formatarCPF(input) {
             "-" +
             valor.substring(9, 11);
 
-    } else if (valor.length > 6) {
+    }
+
+    else if (valor.length > 6) {
 
         valor =
             valor.substring(0, 3) +
@@ -452,7 +471,9 @@ function formatarCPF(input) {
             "." +
             valor.substring(6);
 
-    } else if (valor.length > 3) {
+    }
+
+    else if (valor.length > 3) {
 
         valor =
             valor.substring(0, 3) +
@@ -466,6 +487,36 @@ function formatarCPF(input) {
 
 }
 
+
+function formatarCPFValor(cpf) {
+
+    const valor =
+        limparCPF(cpf);
+
+
+    if (valor.length !== 11) {
+
+        return cpf || "";
+
+    }
+
+
+    return (
+        valor.substring(0, 3) +
+        "." +
+        valor.substring(3, 6) +
+        "." +
+        valor.substring(6, 9) +
+        "-" +
+        valor.substring(9, 11)
+    );
+
+}
+
+
+/* =====================================================
+   FORMULÁRIO
+===================================================== */
 
 function abrirFormulario() {
 
@@ -487,12 +538,6 @@ function abrirFormulario() {
 
 
     limparFormulario();
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
 
 }
 
@@ -535,10 +580,29 @@ function limparFormulario() {
         "whatsapp"
     ).value = "";
 
+
+    document.getElementById(
+        "email"
+    ).value = "";
+
+
+    document.getElementById(
+        "endereco"
+    ).value = "";
+
+
+    document.getElementById(
+        "mensagemFormulario"
+    ).innerHTML = "";
+
 }
 
 
-function salvarCliente() {
+/* =====================================================
+   SALVAR CLIENTE
+===================================================== */
+
+async function salvarCliente() {
 
     const id =
         document.getElementById(
@@ -570,6 +634,24 @@ function salvarCliente() {
         document.getElementById(
             "whatsapp"
         ).value.trim();
+
+
+    const email =
+        document.getElementById(
+            "email"
+        ).value.trim();
+
+
+    const endereco =
+        document.getElementById(
+            "endereco"
+        ).value.trim();
+
+
+    const mensagem =
+        document.getElementById(
+            "mensagemFormulario"
+        );
 
 
     if (!nome) {
@@ -605,146 +687,230 @@ function salvarCliente() {
     }
 
 
-    let clientes =
-        carregarClientes();
+    mensagem.innerHTML = `
+        <div class="mensagem">
+            ⏳ Salvando cliente...
+        </div>
+    `;
 
 
-    const cpfJaCadastrado =
-        clientes.some(
-            function(cliente) {
+    try {
 
-                return limparCPF(
-                    cliente.cpf
-                ) === cpf &&
-                String(
-                    cliente.id
-                ) !== String(id);
+        /* =================================================
+           VERIFICAR CPF
+        ================================================= */
 
-            }
-        );
-
-
-    if (cpfJaCadastrado) {
-
-        alert(
-            "⚠️ Este CPF já está cadastrado para outro cliente."
-        );
-
-        return;
-
-    }
+        const {
+            data: clientesExistentes,
+            error: erroBusca
+        } = await supabaseClient
+            .from("clientes_nova")
+            .select("id,cpf");
 
 
-    if (id) {
+        if (erroBusca) {
 
-        const index =
-            clientes.findIndex(
+            throw erroBusca;
+
+        }
+
+
+        const cpfDuplicado =
+            (clientesExistentes || []).some(
                 function(cliente) {
 
-                    return String(
-                        cliente.id
-                    ) === String(id);
+                    return (
+                        limparCPF(cliente.cpf) === cpf &&
+                        String(cliente.id) !== String(id)
+                    );
 
                 }
             );
 
 
-        if (index === -1) {
+        if (cpfDuplicado) {
 
-            alert(
-                "❌ Cliente não encontrado."
-            );
+            mensagem.innerHTML = `
+                <div class="mensagem erro">
+                    ⚠️ Este CPF já está cadastrado.
+                </div>
+            `;
 
             return;
 
         }
 
 
-        clientes[index] = {
+        /* =================================================
+           DADOS DO CLIENTE
+        ================================================= */
 
-            ...clientes[index],
+        const dadosCliente = {
 
-            nome: nome,
+            nome:
+                nome,
 
-            cpf: cpf,
+            cpf:
+                cpf,
 
-            telefone: telefone,
+            telefone:
+                telefone,
 
-            whatsapp: whatsapp
+            "e-mail":
+                email,
 
-        };
-
-
-        localStorage.setItem(
-            "clientes",
-            JSON.stringify(clientes)
-        );
-
-
-        alert(
-            "✅ Cliente atualizado com sucesso!"
-        );
-
-    } else {
-
-        const novoCliente = {
-
-            id: Date.now(),
-
-            nome: nome,
-
-            cpf: cpf,
-
-            telefone: telefone,
-
-            whatsapp: whatsapp
+            endereco:
+                endereco
 
         };
 
 
-        clientes.push(
-            novoCliente
-        );
+        /* =================================================
+           EDITAR
+        ================================================= */
+
+        if (id) {
+
+            const {
+                error: erroAtualizar
+            } = await supabaseClient
+                .from("clientes_nova")
+                .update(
+                    dadosCliente
+                )
+                .eq(
+                    "id",
+                    id
+                );
 
 
-        localStorage.setItem(
-            "clientes",
-            JSON.stringify(clientes)
-        );
+            if (erroAtualizar) {
+
+                throw erroAtualizar;
+
+            }
 
 
-        alert(
-            "✅ Cliente cadastrado com sucesso!"
-        );
+            alert(
+                "✅ Cliente atualizado com sucesso!"
+            );
+
+        }
+
+
+        /* =================================================
+           NOVO CLIENTE
+        ================================================= */
+
+        else {
+
+            const {
+                data: novoCliente,
+                error: erroInserir
+            } = await supabaseClient
+                .from("clientes_nova")
+                .insert(
+                    dadosCliente
+                )
+                .select("id,nome,cpf,telefone,\"e-mail\",endereco")
+                .single();
+
+
+            if (erroInserir) {
+
+                throw erroInserir;
+
+            }
+
+
+            /*
+             * O WhatsApp ainda não existe na tabela.
+             * Guardamos somente no navegador por enquanto.
+             */
+
+            if (novoCliente) {
+
+                localStorage.setItem(
+                    "whatsapp_" + novoCliente.id,
+                    whatsapp
+                );
+
+            }
+
+
+            alert(
+                "✅ Cliente cadastrado com sucesso!"
+            );
+
+        }
+
+
+        fecharFormulario();
+
+        mostrarClientes();
 
     }
 
+    catch (erro) {
 
-    fecharFormulario();
+        console.error(
+            "ERRO AO SALVAR CLIENTE:",
+            erro
+        );
 
-    mostrarClientes();
+
+        mensagem.innerHTML = `
+            <div class="mensagem erro">
+                ❌ Erro ao salvar o cliente.
+                <br><br>
+                ${erro.message || erro}
+            </div>
+        `;
+
+    }
 
 }
 
 
-function mostrarClientes() {
+/* =====================================================
+   CARREGAR CLIENTES DO SUPABASE
+===================================================== */
 
-    const clientes =
-        carregarClientes();
+async function carregarClientes() {
 
-
-    const motos =
-        carregarMotos();
-
-
-    const pesquisa =
-        document.getElementById(
-            "pesquisa"
+    const {
+        data: clientes,
+        error
+    } = await supabaseClient
+        .from("clientes_nova")
+        .select(
+            "id,nome,cpf,telefone,\"e-mail\",endereco"
         )
-        .value
-        .toLowerCase()
-        .trim();
+        .order(
+            "id",
+            {
+                ascending: false
+            }
+        );
 
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    return clientes || [];
+
+}
+
+
+/* =====================================================
+   MOSTRAR CLIENTES
+===================================================== */
+
+async function mostrarClientes() {
 
     const lista =
         document.getElementById(
@@ -758,80 +924,101 @@ function mostrarClientes() {
         );
 
 
-    const filtrados =
-        clientes.filter(
-            function(cliente) {
-
-                const texto = (
-
-                    String(
-                        cliente.nome || ""
-                    ) +
-
-                    " " +
-
-                    String(
-                        cliente.cpf || ""
-                    ) +
-
-                    " " +
-
-                    String(
-                        cliente.telefone || ""
-                    ) +
-
-                    " " +
-
-                    String(
-                        cliente.whatsapp || ""
-                    )
-
-                ).toLowerCase();
+    const pesquisa =
+        document.getElementById(
+            "pesquisa"
+        )
+        .value
+        .toLowerCase()
+        .trim();
 
 
-                return texto.includes(
-                    pesquisa
-                );
-
-            }
-        );
-
-
-    contador.textContent =
-        filtrados.length +
-        (
-            filtrados.length === 1
-                ? " cliente"
-                : " clientes"
-        );
+    lista.innerHTML = `
+        <div class="vazio">
+            ⏳ Carregando clientes...
+        </div>
+    `;
 
 
-    if (
-        filtrados.length === 0
-    ) {
+    try {
 
-        lista.innerHTML = `
-
-            <div class="vazio">
-
-                📭 Nenhum cliente encontrado.
-
-            </div>
-
-        `;
-
-        return;
-
-    }
+        const clientes =
+            await carregarClientes();
 
 
-    lista.innerHTML = "";
+        const filtrados =
+            clientes.filter(
+                function(cliente) {
+
+                    const texto = (
+
+                        String(
+                            cliente.nome || ""
+                        ) +
+
+                        " " +
+
+                        String(
+                            cliente.cpf || ""
+                        ) +
+
+                        " " +
+
+                        String(
+                            cliente.telefone || ""
+                        ) +
+
+                        " " +
+
+                        String(
+                            cliente["e-mail"] || ""
+                        ) +
+
+                        " " +
+
+                        String(
+                            cliente.endereco || ""
+                        )
+
+                    ).toLowerCase();
 
 
-    filtrados
-        .slice()
-        .reverse()
-        .forEach(
+                    return texto.includes(
+                        pesquisa
+                    );
+
+                }
+            );
+
+
+        contador.textContent =
+            filtrados.length +
+            (
+                filtrados.length === 1
+                    ? " cliente"
+                    : " clientes"
+            );
+
+
+        if (
+            filtrados.length === 0
+        ) {
+
+            lista.innerHTML = `
+                <div class="vazio">
+                    📭 Nenhum cliente encontrado.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        lista.innerHTML = "";
+
+
+        filtrados.forEach(
             function(cliente) {
 
                 const div =
@@ -844,106 +1031,34 @@ function mostrarClientes() {
                     "cliente";
 
 
-                const motosCliente =
-                    motos.filter(
-                        function(moto) {
-
-                            return String(
-                                moto.clienteId
-                            ) ===
-                            String(
-                                cliente.id
-                            );
-
-                        }
-                    );
-
-
-                let motosHTML = "";
-
-
-                if (
-                    motosCliente.length === 0
-                ) {
-
-                    motosHTML = `
-
-                        <div class="lista-motos">
-
-                            🏍️ Nenhuma moto cadastrada para este cliente.
-
-                        </div>
-
-                    `;
-
-                } else {
-
-                    motosHTML = `
-
-                        <div class="lista-motos">
-
-                            <strong>
-                                🏍️ Motos cadastradas:
-                            </strong>
-
-                            ${
-                                motosCliente.map(
-                                    function(moto) {
-
-                                        return `
-
-                                            <div class="moto-item">
-
-                                                🏍️
-                                                ${moto.marca || ""}
-                                                ${moto.modelo || ""}
-
-                                                <br>
-
-                                                🔢
-                                                ${moto.placa || "Sem placa"}
-
-                                                ${
-                                                    moto.ano
-                                                        ? " — " + moto.ano
-                                                        : ""
-                                                }
-
-                                            </div>
-
-                                        `;
-
-                                    }
-                                ).join("")
-
-                            }
-
-                        </div>
-
-                    `;
-
-                }
+                const whatsapp =
+                    localStorage.getItem(
+                        "whatsapp_" + cliente.id
+                    ) || "";
 
 
                 div.innerHTML = `
 
                     <h3>
-                        👤 ${cliente.nome || "Cliente sem nome"}
+                        👤
+                        ${cliente.nome || "Cliente sem nome"}
                     </h3>
 
 
                     <p class="informacao">
 
-                        🪪 <strong>CPF:</strong>
+                        🪪
+                        <strong>CPF:</strong>
 
-                        ${cliente.cpf || "Não informado"}
+                        ${formatarCPFValor(cliente.cpf)}
 
                     </p>
 
 
                     <p class="informacao">
 
-                        📞 <strong>Telefone:</strong>
+                        📞
+                        <strong>Telefone:</strong>
 
                         ${cliente.telefone || "Não informado"}
 
@@ -952,20 +1067,38 @@ function mostrarClientes() {
 
                     <p class="informacao">
 
-                        📱 <strong>WhatsApp:</strong>
+                        📱
+                        <strong>WhatsApp:</strong>
 
-                        ${cliente.whatsapp || "Não informado"}
+                        ${whatsapp || "Não informado"}
 
                     </p>
 
 
-                    ${motosHTML}
+                    <p class="informacao">
+
+                        📧
+                        <strong>E-mail:</strong>
+
+                        ${cliente["e-mail"] || "Não informado"}
+
+                    </p>
+
+
+                    <p class="informacao">
+
+                        🏠
+                        <strong>Endereço:</strong>
+
+                        ${cliente.endereco || "Não informado"}
+
+                    </p>
 
 
                     <button
                         type="button"
                         class="botao editar"
-                        onclick="editarCliente('${String(cliente.id)}')"
+                        onclick="editarCliente('${cliente.id}')"
                     >
 
                         ✏️ Editar cliente
@@ -976,7 +1109,7 @@ function mostrarClientes() {
                     <button
                         type="button"
                         class="botao motos"
-                        onclick="abrirMotosCliente('${String(cliente.id)}')"
+                        onclick="abrirMotosCliente('${cliente.id}')"
                     >
 
                         🏍️ Ver / cadastrar motos
@@ -987,7 +1120,7 @@ function mostrarClientes() {
                     <button
                         type="button"
                         class="botao excluir"
-                        onclick="excluirCliente('${String(cliente.id)}')"
+                        onclick="excluirCliente('${cliente.id}')"
                     >
 
                         🗑️ Excluir cliente
@@ -1004,223 +1137,253 @@ function mostrarClientes() {
             }
         );
 
+    }
+
+    catch (erro) {
+
+        lista.innerHTML = `
+            <div class="mensagem erro">
+
+                ❌ Erro ao carregar clientes.
+
+                <br><br>
+
+                ${erro.message || erro}
+
+            </div>
+        `;
+
+    }
+
 }
 
 
-function editarCliente(id) {
+/* =====================================================
+   EDITAR CLIENTE
+===================================================== */
 
-    const clientes =
-        carregarClientes();
+async function editarCliente(id) {
+
+    try {
+
+        const {
+            data: cliente,
+            error
+        } = await supabaseClient
+            .from("clientes_nova")
+            .select(
+                "id,nome,cpf,telefone,\"e-mail\",endereco"
+            )
+            .eq(
+                "id",
+                id
+            )
+            .single();
 
 
-    const cliente =
-        clientes.find(
-            function(item) {
+        if (error) {
 
-                return String(
-                    item.id
-                ) === String(id);
+            throw error;
 
-            }
-        );
+        }
 
 
-    if (!cliente) {
+        if (!cliente) {
+
+            alert(
+                "❌ Cliente não encontrado."
+            );
+
+            return;
+
+        }
+
+
+        document
+            .getElementById("formulario")
+            .classList.add("ativo");
+
+
+        document.getElementById(
+            "tituloFormulario"
+        ).textContent =
+            "✏️ Editar cliente";
+
+
+        document.getElementById(
+            "textoSalvar"
+        ).textContent =
+            "Salvar alterações";
+
+
+        document.getElementById(
+            "clienteId"
+        ).value =
+            cliente.id;
+
+
+        document.getElementById(
+            "nome"
+        ).value =
+            cliente.nome || "";
+
+
+        document.getElementById(
+            "cpf"
+        ).value =
+            formatarCPFValor(
+                cliente.cpf
+            );
+
+
+        document.getElementById(
+            "telefone"
+        ).value =
+            cliente.telefone || "";
+
+
+        document.getElementById(
+            "whatsapp"
+        ).value =
+            localStorage.getItem(
+                "whatsapp_" + cliente.id
+            ) || "";
+
+
+        document.getElementById(
+            "email"
+        ).value =
+            cliente["e-mail"] || "";
+
+
+        document.getElementById(
+            "endereco"
+        ).value =
+            cliente.endereco || "";
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+    catch (erro) {
 
         alert(
-            "❌ Cliente não encontrado."
+            "❌ Erro ao carregar cliente.\n\n" +
+            (erro.message || erro)
         );
 
-        return;
-
     }
-
-
-    document
-        .getElementById("formulario")
-        .classList.add("ativo");
-
-
-    document.getElementById(
-        "tituloFormulario"
-    ).textContent =
-        "✏️ Editar cliente";
-
-
-    document.getElementById(
-        "textoSalvar"
-    ).textContent =
-        "Salvar alterações";
-
-
-    document.getElementById(
-        "clienteId"
-    ).value =
-        cliente.id;
-
-
-    document.getElementById(
-        "nome"
-    ).value =
-        cliente.nome || "";
-
-
-    document.getElementById(
-        "cpf"
-    ).value =
-        cliente.cpf
-        ? formatarCPFValor(
-            cliente.cpf
-        )
-        : "";
-
-
-    document.getElementById(
-        "telefone"
-    ).value =
-        cliente.telefone || "";
-
-
-    document.getElementById(
-        "whatsapp"
-    ).value =
-        cliente.whatsapp || "";
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
 
 }
 
 
-function formatarCPFValor(cpf) {
+/* =====================================================
+   EXCLUIR CLIENTE
+===================================================== */
 
-    const valor =
-        limparCPF(cpf);
+async function excluirCliente(id) {
 
+    try {
 
-    if (valor.length !== 11) {
-
-        return cpf || "";
-
-    }
-
-
-    return (
-        valor.substring(0, 3) +
-        "." +
-        valor.substring(3, 6) +
-        "." +
-        valor.substring(6, 9) +
-        "-" +
-        valor.substring(9, 11)
-    );
-
-}
+        const {
+            data: cliente,
+            error: erroBusca
+        } = await supabaseClient
+            .from("clientes_nova")
+            .select(
+                "id,nome"
+            )
+            .eq(
+                "id",
+                id
+            )
+            .single();
 
 
-function excluirCliente(id) {
+        if (erroBusca) {
 
-    const clientes =
-        carregarClientes();
+            throw erroBusca;
+
+        }
 
 
-    const cliente =
-        clientes.find(
-            function(item) {
+        if (!cliente) {
 
-                return String(
-                    item.id
-                ) === String(id);
+            alert(
+                "❌ Cliente não encontrado."
+            );
 
-            }
+            return;
+
+        }
+
+
+        const confirma =
+            confirm(
+                "Tem certeza que deseja excluir o cliente:\n\n" +
+                cliente.nome +
+                "?"
+            );
+
+
+        if (!confirma) {
+
+            return;
+
+        }
+
+
+        const {
+            error: erroExcluir
+        } = await supabaseClient
+            .from("clientes_nova")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
+
+
+        if (erroExcluir) {
+
+            throw erroExcluir;
+
+        }
+
+
+        localStorage.removeItem(
+            "whatsapp_" + id
         );
 
-
-    if (!cliente) {
 
         alert(
-            "❌ Cliente não encontrado."
-        );
-
-        return;
-
-    }
-
-
-    const motos =
-        carregarMotos();
-
-
-    const possuiMotos =
-        motos.some(
-            function(moto) {
-
-                return String(
-                    moto.clienteId
-                ) === String(id);
-
-            }
+            "🗑️ Cliente excluído com sucesso."
         );
 
 
-    let mensagem =
-        "Tem certeza que deseja excluir o cliente:\n\n" +
-        cliente.nome +
-        "?";
-
-
-    if (possuiMotos) {
-
-        mensagem +=
-            "\n\n⚠️ Este cliente possui moto(s) cadastrada(s)." +
-            "\nAs motos NÃO serão excluídas automaticamente.";
+        mostrarClientes();
 
     }
 
+    catch (erro) {
 
-    if (!confirm(mensagem)) {
-
-        return;
-
-    }
-
-
-    const novosClientes =
-        clientes.filter(
-            function(item) {
-
-                return String(
-                    item.id
-                ) !== String(id);
-
-            }
+        alert(
+            "❌ Erro ao excluir cliente.\n\n" +
+            (erro.message || erro)
         );
 
-
-    localStorage.setItem(
-        "clientes",
-        JSON.stringify(
-            novosClientes
-        )
-    );
-
-
-    mostrarClientes();
-
-
-    alert(
-        "🗑️ Cliente excluído com sucesso."
-    );
+    }
 
 }
 
 
-/* =========================
+/* =====================================================
    CLIENTE → MOTOS
-========================= */
+===================================================== */
 
 function abrirMotosCliente(id) {
 
@@ -1236,8 +1399,11 @@ function abrirMotosCliente(id) {
 }
 
 
-mostrarClientes();
+/* =====================================================
+   INICIAR
+===================================================== */
 
+mostrarClientes();
 
 </script>
 

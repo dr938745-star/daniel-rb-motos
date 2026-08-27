@@ -1,4 +1,17 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Minhas Motos - DANIEL RB MOTOS</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Minhas Motos - DANIEL RB MOTOS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
 
 * {
     box-sizing: border-box;
@@ -144,24 +157,63 @@ select {
     color: #176b2c;
 }
 
-</style></head><body><header><h1>🏍️ Minhas Motos</h1><p>DANIEL RB MOTOS</p></header><div class="container"><div
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🏍️ Minhas Motos</h1>
+
+<p>DANIEL RB MOTOS</p>
+
+</header>
+
+
+<div class="container">
+
+
+<div
 id="infoCliente"
 class="card oculto"
-><h2>👤 Cliente</h2><div
+>
+
+<h2>👤 Cliente</h2>
+
+<div
 id="nomeCliente"
 class="info-cliente"
-></div></div><div class="card"><h2>➕ Cadastrar moto</h2><label>Proprietário</label>
+></div>
 
-<select id="cliente"><option value="">
+</div>
+
+
+<div class="card">
+
+<h2>➕ Cadastrar moto</h2>
+
+
+<label>Proprietário</label>
+
+<select id="cliente">
+
+<option value="">
 Selecione o cliente
-</option></select><label>Marca</label>
+</option>
+
+</select>
+
+
+<label>Marca</label>
 
 <input
 type="text"
 id="marca"
 placeholder="Ex: Honda"
+>
 
-«»
 
 <label>Modelo</label>
 
@@ -169,8 +221,8 @@ placeholder="Ex: Honda"
 type="text"
 id="modelo"
 placeholder="Ex: Bros 160"
+>
 
-«»
 
 <label>Ano</label>
 
@@ -178,8 +230,8 @@ placeholder="Ex: Bros 160"
 type="text"
 id="ano"
 placeholder="Ex: 2020"
+>
 
-«»
 
 <label>Placa</label>
 
@@ -187,38 +239,56 @@ placeholder="Ex: 2020"
 type="text"
 id="placa"
 placeholder="ABC1D23"
+>
 
-«»
 
 <label>Quilometragem</label>
 
 <input
 type="text"
 id="km"
-inputmode="numeric"
 placeholder="Ex: 35000"
+>
 
-«»
 
 <button
 type="button"
 class="botao"
 onclick="salvarMoto()"
-
-«»
+>
 
 💾 Cadastrar moto
 
-</button><div id="mensagem"></div></div><div class="card"><h2>📋 Motos cadastradas</h2><div id="listaMotos"></div></div><a
+</button>
+
+
+<div id="mensagem"></div>
+
+</div>
+
+
+<div class="card">
+
+<h2>📋 Motos cadastradas</h2>
+
+<div id="listaMotos"></div>
+
+</div>
+
+
+<a
 href="oficina.html"
 class="voltar"
-
-«»
+>
 
 ← Voltar para a Área da Oficina
 
-</a></div><script>
+</a>
 
+</div>
+
+
+<script>
 
 /* =====================================================
    SUPABASE
@@ -503,11 +573,7 @@ async function salvarMoto() {
     const km =
         document.getElementById(
             "km"
-        ).value
-        .replace(
-            /\D/g,
-            ""
-        );
+        ).value.trim();
 
 
     if (!clienteId) {
@@ -581,9 +647,7 @@ async function salvarMoto() {
                 ano || null,
 
             km:
-                km
-                    ? Number(km)
-                    : null
+                km || null
 
         };
 
@@ -806,16 +870,6 @@ async function mostrarMotos() {
                 "moto";
 
 
-            const kmExibicao =
-                moto.km != null
-                    ? Number(moto.km)
-                        .toLocaleString(
-                            "pt-BR"
-                        ) +
-                        " km"
-                    : "Não informado";
-
-
             bloco.innerHTML = `
 
                 <h3>
@@ -849,7 +903,7 @@ async function mostrarMotos() {
                 <p>
                     🛣️
                     <strong>Quilometragem:</strong>
-                    ${kmExibicao}
+                    ${moto.km || "Não informado"}
                 </p>
 
 
@@ -995,4 +1049,8 @@ async function iniciar() {
 
 iniciar();
 
-</script></body></html>
+</script>
+
+</body>
+
+</html>

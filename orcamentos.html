@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -109,6 +110,10 @@ textarea {
     background: #555;
 }
 
+.botao-excluir {
+    background: #b00000;
+}
+
 .total {
     font-size: 24px;
     font-weight: bold;
@@ -164,24 +169,20 @@ textarea {
     color: #a00000;
     padding: 12px;
     border-radius: 10px;
-    margin-top: 10px;
+    margin-top: 12px;
     font-weight: bold;
 }
 
-.sucesso {
-    background: #dff5e5;
-    color: #176b2c;
-    padding: 12px;
-    border-radius: 10px;
-    margin-top: 10px;
-    font-weight: bold;
-}
+@media (max-width: 500px) {
 
-.carregando {
-    background: #eee;
-    padding: 12px;
-    border-radius: 10px;
-    margin-top: 10px;
+    .container {
+        padding: 15px;
+    }
+
+    .card {
+        padding: 17px;
+    }
+
 }
 
 </style>
@@ -201,8 +202,11 @@ textarea {
 <div class="container">
 
 <div id="aviso" class="aviso">
+
 📋 Crie um orçamento para o cliente antes de iniciar o serviço.
+
 </div>
+
 
 <div class="card">
 
@@ -229,13 +233,16 @@ Carregando clientes...
 
 </select>
 
+
 <label>Telefone / WhatsApp</label>
 
 <input
 type="tel"
 id="telefone"
 readonly
+placeholder="Não informado"
 >
+
 
 <label>Moto</label>
 
@@ -250,6 +257,7 @@ Selecione primeiro o cliente
 
 </select>
 
+
 <label>Placa</label>
 
 <input
@@ -257,6 +265,7 @@ type="text"
 id="placa"
 readonly
 >
+
 
 <label>Serviço solicitado</label>
 
@@ -266,6 +275,7 @@ id="servico"
 placeholder="Ex: Revisão completa"
 >
 
+
 <label>Diagnóstico / observação</label>
 
 <textarea
@@ -274,6 +284,7 @@ placeholder="Descreva o problema ou o que será necessário fazer..."
 ></textarea>
 
 </div>
+
 
 <div class="card">
 
@@ -290,6 +301,7 @@ placeholder="0,00"
 oninput="calcularTotal()"
 >
 
+
 <label>Peças</label>
 
 <input
@@ -300,6 +312,7 @@ min="0"
 placeholder="0,00"
 oninput="calcularTotal()"
 >
+
 
 <div class="total">
 
@@ -313,9 +326,20 @@ R$ 0,00
 
 </div>
 
+
 <div class="card">
 
-<h2>📊 Status</h2>
+<h2>📅 Condições</h2>
+
+<label>Validade do orçamento</label>
+
+<input
+type="date"
+id="validade"
+>
+
+
+<label>Status</label>
 
 <select id="status">
 
@@ -335,6 +359,7 @@ Recusado
 
 </div>
 
+
 <button
 type="button"
 class="botao"
@@ -346,6 +371,7 @@ onclick="salvarOrcamento()"
 
 </button>
 
+
 <button
 type="button"
 class="botao botao-whatsapp"
@@ -356,37 +382,44 @@ onclick="enviarWhatsApp()"
 
 </button>
 
+
 <button
 type="button"
 class="botao botao-aprovar"
-onclick="aprovarOrcamentoAtual()"
+onclick="aprovarOrcamento()"
 >
 
 ✅ Aprovar Orçamento
 
 </button>
 
+
 <button
 type="button"
 class="botao botao-os"
-onclick="transformarEmOSAtual()"
+onclick="transformarEmOS()"
 >
 
 🔧 Transformar em Ordem de Serviço
 
 </button>
 
+
 <div class="card">
 
 <h2>📚 Orçamentos salvos</h2>
 
-<div id="lista" class="lista">
+<div
+id="lista"
+class="lista"
+>
 
 Carregando...
 
 </div>
 
 </div>
+
 
 <a
 href="oficina.html"
@@ -399,6 +432,7 @@ class="voltar"
 
 </div>
 
+
 <script>
 
 /* =========================================
@@ -406,31 +440,23 @@ class="voltar"
 ========================================= */
 
 const SUPABASE_URL =
-"https://niffgrhjmnizvusnrqyg.supabase.co";
+    "https://niffgrhjmnizvusnrqyg.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
+    "sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
 
 const supabaseClient =
-supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
-
-/* =========================================
-   VARIÁVEIS
-========================================= */
-
-let clientes = [];
-
-let motos = [];
 
 let orcamentoAtual = null;
 
 
 /* =========================================
-   NÚMERO
+   NÚMERO DO ORÇAMENTO
 ========================================= */
 
 function gerarNumero() {
@@ -440,23 +466,20 @@ function gerarNumero() {
         .toString()
         .slice(-6);
 
-    document.getElementById(
-        "numero"
-    ).value = numero;
+    document.getElementById("numero").value =
+        numero;
 
 }
 
 
 /* =========================================
-   CARREGAR CLIENTES
+   CARREGAR CLIENTES DO SUPABASE
 ========================================= */
 
 async function carregarClientes() {
 
     const select =
-        document.getElementById(
-            "cliente"
-        );
+        document.getElementById("cliente");
 
     select.innerHTML = `
         <option value="">
@@ -467,25 +490,21 @@ async function carregarClientes() {
     try {
 
         const {
-            data,
+            data: clientes,
             error
         } =
             await supabaseClient
             .from("clientes_nova")
-            .select(
-                "id,nome,cpf,telefone,whatsapp"
-            )
-            .order(
-                "nome",
-                {
-                    ascending: true
-                }
-            );
+            .select("id,nome")
+            .order("nome", {
+                ascending: true
+            });
 
 
         if (error) {
 
             console.error(
+                "Erro ao carregar clientes:",
                 error
             );
 
@@ -495,13 +514,13 @@ async function carregarClientes() {
                 </option>
             `;
 
+            alert(
+                "❌ Erro ao carregar clientes.\n\n" +
+                error.message
+            );
+
             return;
-
         }
-
-
-        clientes =
-            data || [];
 
 
         select.innerHTML = `
@@ -511,7 +530,7 @@ async function carregarClientes() {
         `;
 
 
-        clientes.forEach(
+        (clientes || []).forEach(
             function(cliente) {
 
                 const option =
@@ -537,6 +556,7 @@ async function carregarClientes() {
     } catch (erro) {
 
         console.error(
+            "Erro geral:",
             erro
         );
 
@@ -546,13 +566,18 @@ async function carregarClientes() {
             </option>
         `;
 
+        alert(
+            "❌ Não foi possível carregar os clientes.\n\n" +
+            (erro.message || erro)
+        );
+
     }
 
 }
 
 
 /* =========================================
-   CARREGAR MOTOS
+   CARREGAR MOTOS DO CLIENTE
 ========================================= */
 
 async function carregarMotosDoCliente() {
@@ -562,12 +587,14 @@ async function carregarMotosDoCliente() {
             "cliente"
         ).value;
 
+
     const selectMoto =
         document.getElementById(
             "moto"
         );
 
-    const campoTelefone =
+
+    const telefone =
         document.getElementById(
             "telefone"
         );
@@ -579,11 +606,13 @@ async function carregarMotosDoCliente() {
         </option>
     `;
 
+
     document.getElementById(
         "placa"
     ).value = "";
 
-    campoTelefone.value = "";
+
+    telefone.value = "";
 
 
     if (!clienteId) {
@@ -599,34 +628,10 @@ async function carregarMotosDoCliente() {
     }
 
 
-    const cliente =
-        clientes.find(
-            function(item) {
-
-                return String(
-                    item.id
-                ) === String(
-                    clienteId
-                );
-
-            }
-        );
-
-
-    if (cliente) {
-
-        campoTelefone.value =
-            cliente.telefone ||
-            cliente.whatsapp ||
-            "";
-
-    }
-
-
     try {
 
         const {
-            data,
+            data: motos,
             error
         } =
             await supabaseClient
@@ -639,9 +644,9 @@ async function carregarMotosDoCliente() {
                 clienteId
             )
             .order(
-                "created_at",
+                "marca",
                 {
-                    ascending: false
+                    ascending: true
                 }
             );
 
@@ -649,6 +654,7 @@ async function carregarMotosDoCliente() {
         if (error) {
 
             console.error(
+                "Erro ao carregar motos:",
                 error
             );
 
@@ -658,13 +664,14 @@ async function carregarMotosDoCliente() {
                 </option>
             `;
 
+            alert(
+                "❌ Erro ao carregar motos.\n\n" +
+                error.message
+            );
+
             return;
 
         }
-
-
-        motos =
-            data || [];
 
 
         selectMoto.innerHTML = `
@@ -674,7 +681,7 @@ async function carregarMotosDoCliente() {
         `;
 
 
-        if (!motos.length) {
+        if (!motos || motos.length === 0) {
 
             selectMoto.innerHTML = `
                 <option value="">
@@ -716,6 +723,7 @@ async function carregarMotosDoCliente() {
     } catch (erro) {
 
         console.error(
+            "Erro geral:",
             erro
         );
 
@@ -724,6 +732,11 @@ async function carregarMotosDoCliente() {
                 Erro ao carregar motos
             </option>
         `;
+
+        alert(
+            "❌ Erro ao carregar motos.\n\n" +
+            (erro.message || erro)
+        );
 
     }
 
@@ -734,39 +747,82 @@ async function carregarMotosDoCliente() {
    PREENCHER MOTO
 ========================================= */
 
-function preencherMoto() {
+async function preencherMoto() {
 
     const motoId =
         document.getElementById(
             "moto"
         ).value;
 
-    const moto =
-        motos.find(
-            function(item) {
 
-                return String(
-                    item.id
-                ) === String(
-                    motoId
-                );
-
-            }
+    const placa =
+        document.getElementById(
+            "placa"
         );
 
 
-    document.getElementById(
-        "placa"
-    ).value =
-        moto
-        ? moto.placa || ""
-        : "";
+    placa.value = "";
+
+
+    if (!motoId) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            data: motos,
+            error
+        } =
+            await supabaseClient
+            .from("motos")
+            .select(
+                "id,placa"
+            )
+            .eq(
+                "id",
+                motoId
+            )
+            .limit(1);
+
+
+        if (error) {
+
+            console.error(
+                error
+            );
+
+            return;
+
+        }
+
+
+        if (
+            motos &&
+            motos.length > 0
+        ) {
+
+            placa.value =
+                motos[0].placa ||
+                "";
+
+        }
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+    }
 
 }
 
 
 /* =========================================
-   TOTAL
+   CALCULAR TOTAL
 ========================================= */
 
 function calcularTotal() {
@@ -777,6 +833,7 @@ function calcularTotal() {
                 "maoDeObra"
             ).value
         ) || 0;
+
 
     const pecas =
         parseFloat(
@@ -804,17 +861,19 @@ function calcularTotal() {
    PEGAR DADOS
 ========================================= */
 
-function pegarDadosFormulario() {
+function pegarDadosOrcamento() {
 
-    const clienteId =
+    const clienteSelect =
         document.getElementById(
             "cliente"
-        ).value;
+        );
 
-    const motoId =
+
+    const motoSelect =
         document.getElementById(
             "moto"
-        ).value;
+        );
+
 
     const mao =
         parseFloat(
@@ -822,6 +881,7 @@ function pegarDadosFormulario() {
                 "maoDeObra"
             ).value
         ) || 0;
+
 
     const pecas =
         parseFloat(
@@ -834,10 +894,10 @@ function pegarDadosFormulario() {
     return {
 
         cliente_id:
-            clienteId,
+            clienteSelect.value,
 
         moto_id:
-            motoId,
+            motoSelect.value,
 
         numero:
             document.getElementById(
@@ -863,6 +923,11 @@ function pegarDadosFormulario() {
         total:
             mao + pecas,
 
+        validade:
+            document.getElementById(
+                "validade"
+            ).value || null,
+
         status:
             document.getElementById(
                 "status"
@@ -879,23 +944,19 @@ function pegarDadosFormulario() {
 
 async function salvarOrcamento() {
 
-    const clienteId =
+    const cliente =
         document.getElementById(
             "cliente"
         ).value;
 
-    const motoId =
+
+    const moto =
         document.getElementById(
             "moto"
         ).value;
 
-    const servico =
-        document.getElementById(
-            "servico"
-        ).value;
 
-
-    if (!clienteId) {
+    if (!cliente) {
 
         alert(
             "⚠️ Selecione o cliente."
@@ -906,7 +967,7 @@ async function salvarOrcamento() {
     }
 
 
-    if (!motoId) {
+    if (!moto) {
 
         alert(
             "⚠️ Selecione a moto."
@@ -917,21 +978,15 @@ async function salvarOrcamento() {
     }
 
 
-    if (!servico) {
-
-        alert(
-            "⚠️ Informe o serviço solicitado."
-        );
-
-        return;
-
-    }
+    const dados =
+        pegarDadosOrcamento();
 
 
     const botao =
         document.getElementById(
             "btnSalvar"
         );
+
 
     botao.disabled = true;
 
@@ -941,51 +996,29 @@ async function salvarOrcamento() {
 
     try {
 
-        const dados =
-            pegarDadosFormulario();
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+            .from("orcamentos")
+            .insert([
+                dados
+            ])
+            .select()
+            .single();
 
 
-        let resultado;
-
-
-        if (orcamentoAtual) {
-
-            resultado =
-                await supabaseClient
-                .from("orcamentos")
-                .update(
-                    dados
-                )
-                .eq(
-                    "id",
-                    orcamentoAtual.id
-                )
-                .select()
-                .single();
-
-        } else {
-
-            resultado =
-                await supabaseClient
-                .from("orcamentos")
-                .insert([
-                    dados
-                ])
-                .select()
-                .single();
-
-        }
-
-
-        if (resultado.error) {
+        if (error) {
 
             console.error(
-                resultado.error
+                "Erro ao salvar:",
+                error
             );
 
             alert(
-                "❌ Erro ao salvar o orçamento.\n\n" +
-                resultado.error.message
+                "❌ Erro ao salvar orçamento.\n\n" +
+                error.message
             );
 
             return;
@@ -994,12 +1027,12 @@ async function salvarOrcamento() {
 
 
         orcamentoAtual =
-            resultado.data;
+            data;
 
 
         alert(
             "✅ Orçamento nº " +
-            orcamentoAtual.numero +
+            dados.numero +
             " salvo com sucesso!"
         );
 
@@ -1015,10 +1048,7 @@ async function salvarOrcamento() {
 
         alert(
             "❌ Erro ao salvar orçamento.\n\n" +
-            (
-                erro.message ||
-                erro
-            )
+            (erro.message || erro)
         );
 
     } finally {
@@ -1034,7 +1064,118 @@ async function salvarOrcamento() {
 
 
 /* =========================================
-   CARREGAR ORÇAMENTOS
+   APROVAR ORÇAMENTO ATUAL
+========================================= */
+
+async function aprovarOrcamento() {
+
+    const numero =
+        document.getElementById(
+            "numero"
+        ).value;
+
+
+    if (!numero) {
+
+        alert(
+            "⚠️ Número do orçamento não encontrado."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data: orcamentos,
+        error
+    } =
+        await supabaseClient
+        .from("orcamentos")
+        .select("*")
+        .eq(
+            "numero",
+            numero
+        )
+        .limit(1);
+
+
+    if (error) {
+
+        alert(
+            "❌ Erro ao localizar orçamento.\n\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !orcamentos ||
+        orcamentos.length === 0
+    ) {
+
+        alert(
+            "⚠️ Salve o orçamento primeiro."
+        );
+
+        return;
+
+    }
+
+
+    const id =
+        orcamentos[0].id;
+
+
+    const {
+        error: erroUpdate
+    } =
+        await supabaseClient
+        .from("orcamentos")
+        .update({
+            status: "Aprovado"
+        })
+        .eq(
+            "id",
+            id
+        );
+
+
+    if (erroUpdate) {
+
+        alert(
+            "❌ Erro ao aprovar orçamento.\n\n" +
+            erroUpdate.message
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "status"
+    ).value =
+        "Aprovado";
+
+
+    alert(
+        "✅ Orçamento nº " +
+        numero +
+        " aprovado!"
+    );
+
+
+    mostrarOrcamentos();
+
+}
+
+
+/* =========================================
+   MOSTRAR ORÇAMENTOS
 ========================================= */
 
 async function mostrarOrcamentos() {
@@ -1044,6 +1185,7 @@ async function mostrarOrcamentos() {
             "lista"
         );
 
+
     div.innerHTML =
         "Carregando orçamentos...";
 
@@ -1051,24 +1193,14 @@ async function mostrarOrcamentos() {
     try {
 
         const {
-            data,
+            data: lista,
             error
         } =
             await supabaseClient
             .from("orcamentos")
-            .select(`
-                id,
-                created_at,
-                cliente_id,
-                moto_id,
-                numero,
-                servico,
-                diagnostico,
-                mao_de_obra,
-                pecas,
-                total,
-                status
-            `)
+            .select(
+                "id,created_at,cliente_id,moto_id,numero,servico,diagnostico,mao_de_obra,pecas,total,validade,status"
+            )
             .order(
                 "created_at",
                 {
@@ -1096,7 +1228,10 @@ async function mostrarOrcamentos() {
         }
 
 
-        if (!data || !data.length) {
+        if (
+            !lista ||
+            lista.length === 0
+        ) {
 
             div.innerHTML =
                 "Nenhum orçamento cadastrado.";
@@ -1109,131 +1244,240 @@ async function mostrarOrcamentos() {
         div.innerHTML = "";
 
 
-        data.forEach(
-            function(item) {
+        for (
+            const item of lista
+        ) {
 
-                const cliente =
-                    clientes.find(
-                        function(c) {
-
-                            return String(
-                                c.id
-                            ) === String(
-                                item.cliente_id
-                            );
-
-                        }
-                    );
+            let nomeCliente =
+                "Cliente";
 
 
-                const moto =
-                    awaitBuscarMoto(
+            let nomeMoto =
+                "Moto";
+
+
+            try {
+
+                const {
+                    data: clientes
+                } =
+                    await supabaseClient
+                    .from("clientes_nova")
+                    .select(
+                        "nome"
+                    )
+                    .eq(
+                        "id",
+                        item.cliente_id
+                    )
+                    .limit(1);
+
+
+                if (
+                    clientes &&
+                    clientes.length
+                ) {
+
+                    nomeCliente =
+                        clientes[0].nome ||
+                        "Cliente";
+
+                }
+
+
+                const {
+                    data: motos
+                } =
+                    await supabaseClient
+                    .from("motos")
+                    .select(
+                        "marca,modelo,placa"
+                    )
+                    .eq(
+                        "id",
                         item.moto_id
-                    );
+                    )
+                    .limit(1);
 
 
-                const bloco =
-                    document.createElement(
-                        "div"
-                    );
+                if (
+                    motos &&
+                    motos.length
+                ) {
 
-                bloco.className =
-                    "orcamento-item";
+                    nomeMoto =
+                        (
+                            motos[0].marca ||
+                            ""
+                        ) +
+                        " " +
+                        (
+                            motos[0].modelo ||
+                            ""
+                        ) +
+                        " - " +
+                        (
+                            motos[0].placa ||
+                            "Sem placa"
+                        );
 
+                }
 
-                bloco.innerHTML =
+            } catch (e) {
 
-                    "<h3>📋 Orçamento nº " +
-                    (item.numero || "") +
-                    "</h3>" +
-
-                    "<strong>" +
-                    (
-                        cliente
-                        ? cliente.nome
-                        : "Cliente"
-                    ) +
-                    "</strong><br>" +
-
-                    (
-                        moto
-                        ? (
-                            (moto.marca || "") +
-                            " " +
-                            (moto.modelo || "") +
-                            (
-                                moto.placa
-                                ? " - " + moto.placa
-                                : ""
-                            )
-                        )
-                        : "Moto"
-                    ) +
-
-                    "<br><br>" +
-
-                    "<span class='status'>" +
-                    (
-                        item.status ||
-                        "Pendente"
-                    ) +
-                    "</span>" +
-
-                    "<p><strong>Serviço:</strong> " +
-                    (
-                        item.servico ||
-                        ""
-                    ) +
-                    "</p>" +
-
-                    "<p><strong>Total:</strong> " +
-                    formatarMoeda(
-                        item.total
-                    ) +
-                    "</p>" +
-
-                    "<div class='acoes'>" +
-
-                    "<button " +
-                    "type='button' " +
-                    "class='botao botao-aprovar' " +
-                    "onclick='aprovarOrcamentoSalvo(" +
-                    item.id +
-                    ")'>" +
-                    "✅ Aprovar" +
-                    "</button>" +
-
-                    (
-                        String(
-                            item.status
-                        ).toLowerCase() ===
-                        "aprovado"
-
-                        ?
-
-                        "<button " +
-                        "type='button' " +
-                        "class='botao botao-os' " +
-                        "onclick='transformarOrcamentoSalvoEmOS(" +
-                        item.id +
-                        ")'>" +
-                        "🔧 Transformar em OS" +
-                        "</button>"
-
-                        :
-
-                        ""
-                    ) +
-
-                    "</div>";
-
-
-                div.appendChild(
-                    bloco
+                console.error(
+                    e
                 );
 
             }
-        );
+
+
+            const bloco =
+                document.createElement(
+                    "div"
+                );
+
+
+            bloco.className =
+                "orcamento-item";
+
+
+            bloco.innerHTML = `
+
+                <h3>
+                    Orçamento nº ${item.numero}
+                </h3>
+
+                <strong>
+                    ${nomeCliente}
+                </strong>
+
+                <br>
+
+                ${nomeMoto}
+
+                <br><br>
+
+                <strong>
+                    Serviço:
+                </strong>
+
+                ${item.servico || "Não informado"}
+
+                <br><br>
+
+                <span class="status">
+                    ${item.status || "Pendente"}
+                </span>
+
+                <p>
+                    <strong>Total:</strong>
+                    ${formatarMoeda(item.total)}
+                </p>
+
+            `;
+
+
+            const acoes =
+                document.createElement(
+                    "div"
+                );
+
+
+            acoes.className =
+                "acoes";
+
+
+            if (
+                item.status ===
+                "Pendente"
+            ) {
+
+                const botaoAprovar =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                botaoAprovar.type =
+                    "button";
+
+
+                botaoAprovar.className =
+                    "botao botao-aprovar";
+
+
+                botaoAprovar.innerText =
+                    "✅ Aprovar orçamento";
+
+
+                botaoAprovar.onclick =
+                    function() {
+
+                        aprovarOrcamentoSalvo(
+                            item.id
+                        );
+
+                    };
+
+
+                acoes.appendChild(
+                    botaoAprovar
+                );
+
+            }
+
+
+            if (
+                item.status ===
+                "Aprovado"
+            ) {
+
+                const botaoOS =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                botaoOS.type =
+                    "button";
+
+
+                botaoOS.className =
+                    "botao botao-os";
+
+
+                botaoOS.innerText =
+                    "🔧 Transformar em OS";
+
+
+                botaoOS.onclick =
+                    function() {
+
+                        transformarOrcamentoSalvoEmOS(
+                            item.id
+                        );
+
+                    };
+
+
+                acoes.appendChild(
+                    botaoOS
+                );
+
+            }
+
+
+            bloco.appendChild(
+                acoes
+            );
+
+
+            div.appendChild(
+                bloco
+            );
+
+        }
 
 
     } catch (erro) {
@@ -1244,7 +1488,7 @@ async function mostrarOrcamentos() {
 
         div.innerHTML = `
             <div class="erro">
-                ❌ Erro ao carregar.
+                ❌ Erro ao carregar orçamentos.
                 <br><br>
                 ${erro.message || erro}
             </div>
@@ -1256,36 +1500,30 @@ async function mostrarOrcamentos() {
 
 
 /* =========================================
-   BUSCAR MOTO
+   APROVAR ORÇAMENTO SALVO
 ========================================= */
 
-function awaitBuscarMoto(id) {
+async function aprovarOrcamentoSalvo(id) {
 
-    return motos.find(
-        function(moto) {
+    const {
+        error
+    } =
+        await supabaseClient
+        .from("orcamentos")
+        .update({
+            status: "Aprovado"
+        })
+        .eq(
+            "id",
+            id
+        );
 
-            return String(
-                moto.id
-            ) === String(
-                id
-            );
 
-        }
-    ) || null;
-
-}
-
-
-/* =========================================
-   APROVAR ATUAL
-========================================= */
-
-async function aprovarOrcamentoAtual() {
-
-    if (!orcamentoAtual) {
+    if (error) {
 
         alert(
-            "⚠️ Salve o orçamento primeiro."
+            "❌ Erro ao aprovar orçamento.\n\n" +
+            error.message
         );
 
         return;
@@ -1293,92 +1531,90 @@ async function aprovarOrcamentoAtual() {
     }
 
 
-    await aprovarOrcamento(
-        orcamentoAtual.id
+    alert(
+        "✅ Orçamento aprovado com sucesso!"
     );
+
+
+    mostrarOrcamentos();
 
 }
 
 
 /* =========================================
-   APROVAR SALVO
+   TRANSFORMAR EM OS
 ========================================= */
 
-async function aprovarOrcamentoSalvo(id) {
+async function transformarOrcamentoSalvoEmOS(id) {
 
-    await aprovarOrcamento(
-        id
-    );
-
-}
-
-
-/* =========================================
-   APROVAR
-========================================= */
-
-async function aprovarOrcamento(id) {
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-            .from("orcamentos")
-            .update({
-                status:
-                    "Aprovado"
-            })
-            .eq(
-                "id",
-                id
-            )
-            .select()
-            .single();
+    const {
+        data: orcamentos,
+        error
+    } =
+        await supabaseClient
+        .from("orcamentos")
+        .select("*")
+        .eq(
+            "id",
+            id
+        )
+        .limit(1);
 
 
-        if (error) {
-
-            alert(
-                "❌ Erro ao aprovar.\n\n" +
-                error.message
-            );
-
-            return;
-
-        }
-
-
-        orcamentoAtual =
-            data;
-
-
-        document.getElementById(
-            "status"
-        ).value =
-            "Aprovado";
-
+    if (error) {
 
         alert(
-            "✅ Orçamento aprovado com sucesso!"
+            "❌ Erro ao buscar orçamento.\n\n" +
+            error.message
         );
 
-
-        mostrarOrcamentos();
-
-    } catch (erro) {
-
-        alert(
-            "❌ Erro.\n\n" +
-            (
-                erro.message ||
-                erro
-            )
-        );
+        return;
 
     }
+
+
+    if (
+        !orcamentos ||
+        !orcamentos.length
+    ) {
+
+        alert(
+            "⚠️ Orçamento não encontrado."
+        );
+
+        return;
+
+    }
+
+
+    const orcamento =
+        orcamentos[0];
+
+
+    if (
+        orcamento.status !==
+        "Aprovado"
+    ) {
+
+        alert(
+            "⚠️ O orçamento precisa estar aprovado antes de virar uma Ordem de Serviço."
+        );
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        "dadosOrcamentoParaOS",
+        JSON.stringify(
+            orcamento
+        )
+    );
+
+
+    window.location.href =
+        "ordem-servico.html";
 
 }
 
@@ -1398,7 +1634,7 @@ function enviarWhatsApp() {
     if (!telefone) {
 
         alert(
-            "⚠️ O cliente não possui telefone cadastrado."
+            "⚠️ O telefone/WhatsApp do cliente não está disponível."
         );
 
         return;
@@ -1411,17 +1647,20 @@ function enviarWhatsApp() {
             "cliente"
         );
 
+
     const motoSelect =
         document.getElementById(
             "moto"
         );
 
 
-    if (!clienteSelect.value ||
-        !motoSelect.value) {
+    if (
+        !clienteSelect.value ||
+        !motoSelect.value
+    ) {
 
         alert(
-            "⚠️ Selecione cliente e moto."
+            "⚠️ Selecione o cliente e a moto."
         );
 
         return;
@@ -1490,21 +1729,15 @@ function enviarWhatsApp() {
         "\n\n" +
 
         "💰 Mão de obra: " +
-        formatarMoeda(
-            mao
-        ) +
+        formatarMoeda(mao) +
         "\n" +
 
         "🔩 Peças: " +
-        formatarMoeda(
-            pecas
-        ) +
+        formatarMoeda(pecas) +
         "\n\n" +
 
         "💵 *TOTAL: " +
-        formatarMoeda(
-            total
-        ) +
+        formatarMoeda(total) +
         "*\n\n" +
 
         "Aguardamos sua aprovação. 😊";
@@ -1543,131 +1776,7 @@ function enviarWhatsApp() {
 
 
 /* =========================================
-   TRANSFORMAR EM OS
-========================================= */
-
-async function transformarEmOSAtual() {
-
-    if (!orcamentoAtual) {
-
-        alert(
-            "⚠️ Salve o orçamento primeiro."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        String(
-            orcamentoAtual.status
-        ).toLowerCase() !==
-        "aprovado"
-    ) {
-
-        alert(
-            "⚠️ O orçamento precisa estar aprovado antes de virar uma OS."
-        );
-
-        return;
-
-    }
-
-
-    localStorage.setItem(
-        "dadosOrcamentoParaOS",
-        JSON.stringify(
-            orcamentoAtual
-        )
-    );
-
-
-    window.location.href =
-        "ordem-servico.html";
-
-}
-
-
-/* =========================================
-   TRANSFORMAR SALVO EM OS
-========================================= */
-
-async function transformarOrcamentoSalvoEmOS(id) {
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-            .from("orcamentos")
-            .select("*")
-            .eq(
-                "id",
-                id
-            )
-            .single();
-
-
-        if (error) {
-
-            alert(
-                "❌ Erro ao buscar orçamento.\n\n" +
-                error.message
-            );
-
-            return;
-
-        }
-
-
-        if (
-            String(
-                data.status
-            ).toLowerCase() !==
-            "aprovado"
-        ) {
-
-            alert(
-                "⚠️ O orçamento precisa estar aprovado antes de virar uma OS."
-            );
-
-            return;
-
-        }
-
-
-        localStorage.setItem(
-            "dadosOrcamentoParaOS",
-            JSON.stringify(
-                data
-            )
-        );
-
-
-        window.location.href =
-            "ordem-servico.html";
-
-
-    } catch (erro) {
-
-        alert(
-            "❌ Erro.\n\n" +
-            (
-                erro.message ||
-                erro
-            )
-        );
-
-    }
-
-}
-
-
-/* =========================================
-   MOEDA
+   FORMATAÇÃO DE MOEDA
 ========================================= */
 
 function formatarMoeda(valor) {
@@ -1677,12 +1786,8 @@ function formatarMoeda(valor) {
     ).toLocaleString(
         "pt-BR",
         {
-            style:
-                "currency",
-
-            currency:
-                "BRL"
-
+            style: "currency",
+            currency: "BRL"
         }
     );
 
@@ -1690,7 +1795,7 @@ function formatarMoeda(valor) {
 
 
 /* =========================================
-   INICIAR
+   INICIALIZAÇÃO
 ========================================= */
 
 gerarNumero();

@@ -61,52 +61,27 @@ select {
     border-radius: 10px;
     font-size: 16px;
     background: white;
-    color: #111;
 }
-
-input:focus,
-select:focus {
-    outline: none;
-    border: 2px solid #111;
-}
-
-
-/* BOTÃO CADASTRAR */
 
 .botao {
     display: block;
     width: 100%;
     padding: 15px;
-    margin-top: 15px;
-    border: 2px solid #111;
+    margin-top: 12px;
+    border: none;
     border-radius: 10px;
-    background: white;
-    color: #111;
+    background: #111;
+    color: white;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     text-align: center;
+    text-decoration: none;
 }
-
-.botao:hover {
-    background: #eeeeee;
-}
-
-
-/* BOTÃO EXCLUIR */
 
 .botao-excluir {
     background: #b00000;
-    color: white;
-    border: 2px solid #b00000;
 }
-
-.botao-excluir:hover {
-    background: #8b0000;
-}
-
-
-/* MOTOS */
 
 .moto {
     border-top: 1px solid #ddd;
@@ -124,35 +99,23 @@ select:focus {
     padding: 15px;
 }
 
-
-/* BOTÃO VOLTAR */
-
-.area-voltar {
-    max-width: 600px;
-    margin: auto;
-    padding: 15px 20px 0 20px;
-}
-
 .voltar {
     display: block;
     width: 100%;
     text-align: center;
-    color: #111;
+    color: white;
     text-decoration: none;
-    background: white;
-    border: 2px solid #111;
+    background: #111;
     border-radius: 10px;
+    margin-top: 20px;
     padding: 15px;
     font-size: 16px;
     font-weight: bold;
 }
 
 .voltar:hover {
-    background: #eeeeee;
+    background: #444;
 }
-
-
-/* OUTROS */
 
 .oculto {
     display: none;
@@ -181,7 +144,72 @@ select:focus {
     color: #176b2c;
 }
 
-</style></head><body><header><h1>🏍️ Minhas Motos</h1><p>DANIEL RB MOTOS</p></header><!-- BOTÃO VOLTAR --><div class="area-voltar"><a
+</style></head><body><header><h1>🏍️ Minhas Motos</h1><p>DANIEL RB MOTOS</p></header><div class="container"><div
+id="infoCliente"
+class="card oculto"
+><h2>👤 Cliente</h2><div
+id="nomeCliente"
+class="info-cliente"
+></div></div><div class="card"><h2>➕ Cadastrar moto</h2><label>Proprietário</label>
+
+<select id="cliente"><option value="">
+Selecione o cliente
+</option></select><label>Marca</label>
+
+<input
+type="text"
+id="marca"
+placeholder="Ex: Honda"
+
+«»
+
+<label>Modelo</label>
+
+<input
+type="text"
+id="modelo"
+placeholder="Ex: Bros 160"
+
+«»
+
+<label>Ano</label>
+
+<input
+type="text"
+id="ano"
+placeholder="Ex: 2020"
+
+«»
+
+<label>Placa</label>
+
+<input
+type="text"
+id="placa"
+placeholder="ABC1D23"
+
+«»
+
+<label>Quilometragem</label>
+
+<input
+type="text"
+id="km"
+inputmode="numeric"
+placeholder="Ex: 35000"
+
+«»
+
+<button
+type="button"
+class="botao"
+onclick="salvarMoto()"
+
+«»
+
+💾 Cadastrar moto
+
+</button><div id="mensagem"></div></div><div class="card"><h2>📋 Motos cadastradas</h2><div id="listaMotos"></div></div><a
 href="oficina.html"
 class="voltar"
 
@@ -189,112 +217,7 @@ class="voltar"
 
 ← Voltar para a Área da Oficina
 
-</a></div><div class="container"><!-- CLIENTE SELECIONADO --><div
-    id="infoCliente"
-    class="card oculto"
-><h2>👤 Cliente</h2>
-
-<div
-    id="nomeCliente"
-    class="info-cliente"
-></div>
-
-</div><!-- CADASTRAR MOTO --><div class="card"><h2>➕ Cadastrar moto</h2>
-
-
-<label for="cliente">
-    Proprietário
-</label>
-
-<select id="cliente">
-
-    <option value="">
-        Selecione o cliente
-    </option>
-
-</select>
-
-
-<label for="marca">
-    Marca
-</label>
-
-<input
-    type="text"
-    id="marca"
-    placeholder="Ex.: Honda"
->
-
-
-<label for="modelo">
-    Modelo
-</label>
-
-<input
-    type="text"
-    id="modelo"
-    placeholder="Ex.: Bros 160"
->
-
-
-<label for="ano">
-    Ano
-</label>
-
-<input
-    type="text"
-    id="ano"
-    inputmode="numeric"
-    maxlength="4"
-    placeholder="Ex.: 2020"
->
-
-
-<label for="placa">
-    Placa
-</label>
-
-<input
-    type="text"
-    id="placa"
-    maxlength="7"
-    placeholder="Ex.: ABC1D23"
->
-
-
-<!-- QUILOMETRAGEM -->
-
-<label for="km">
-    Quilometragem
-</label>
-
-<input
-    type="text"
-    id="km"
-    inputmode="numeric"
-    placeholder="Ex.: 35.000 km"
->
-
-
-<!-- BOTÃO DE CADASTRAR -->
-
-<button
-    type="button"
-    id="botaoCadastrar"
-    class="botao"
-    onclick="salvarMoto()"
->
-    💾 Cadastrar moto
-</button>
-
-
-<div id="mensagem"></div>
-
-</div><!-- MOTOS CADASTRADAS --><div class="card"><h2>📋 Motos cadastradas</h2>
-
-<div id="listaMotos"></div>
-
-</div></div><script>
+</a></div><script>
 
 
 /* =====================================================
@@ -371,6 +294,7 @@ async function carregarClientes() {
             </option>
         `;
 
+
         return;
 
     }
@@ -419,7 +343,7 @@ async function carregarClientes() {
 
 
 /* =====================================================
-   MOSTRAR CLIENTE
+   MOSTRAR CLIENTE SELECIONADO
 ===================================================== */
 
 async function mostrarClienteSelecionado(id) {
@@ -474,7 +398,7 @@ async function mostrarClienteSelecionado(id) {
 
 
 /* =====================================================
-   TROCAR CLIENTE
+   QUANDO TROCAR O CLIENTE
 ===================================================== */
 
 document
@@ -502,6 +426,7 @@ document
                 await mostrarClienteSelecionado(
                     id
                 );
+
 
             } else {
 
@@ -532,62 +457,6 @@ document
 
 
 /* =====================================================
-   QUILOMETRAGEM
-===================================================== */
-
-function limparQuilometragem(valor) {
-
-    return valor.replace(
-        /\D/g,
-        ""
-    );
-
-}
-
-
-function formatarQuilometragem(valor) {
-
-    const numero =
-        limparQuilometragem(
-            valor
-        );
-
-
-    if (!numero) {
-
-        return "";
-
-    }
-
-
-    return Number(numero)
-        .toLocaleString(
-            "pt-BR"
-        );
-
-}
-
-
-/* =====================================================
-   CAMPO DE QUILOMETRAGEM
-===================================================== */
-
-document
-    .getElementById("km")
-    .addEventListener(
-        "input",
-        function() {
-
-            this.value =
-                formatarQuilometragem(
-                    this.value
-                );
-
-        }
-    );
-
-
-/* =====================================================
    SALVAR MOTO
 ===================================================== */
 
@@ -596,12 +465,6 @@ async function salvarMoto() {
     const mensagem =
         document.getElementById(
             "mensagem"
-        );
-
-
-    const botao =
-        document.getElementById(
-            "botaoCadastrar"
         );
 
 
@@ -637,19 +500,15 @@ async function salvarMoto() {
         .toUpperCase();
 
 
-    const kmTexto =
+    const km =
         document.getElementById(
             "km"
-        ).value.trim();
-
-
-    const km =
-        limparQuilometragem(
-            kmTexto
+        ).value
+        .replace(
+            /\D/g,
+            ""
         );
 
-
-    /* VALIDAÇÕES */
 
     if (!clienteId) {
 
@@ -695,31 +554,9 @@ async function salvarMoto() {
     }
 
 
-    if (
-        ano &&
-        !/^\d{4}$/.test(ano)
-    ) {
-
-        alert(
-            "⚠️ Informe um ano válido com 4 números."
-        );
-
-        return;
-
-    }
-
-
-    /* DESABILITA O BOTÃO ENQUANTO SALVA */
-
-    botao.disabled = true;
-
-    botao.innerHTML =
-        "⏳ Salvando moto...";
-
-
     mensagem.innerHTML = `
         <div class="mensagem">
-            ⏳ Salvando cadastro...
+            ⏳ Salvando moto...
         </div>
     `;
 
@@ -771,8 +608,6 @@ async function salvarMoto() {
 
         }
 
-
-        /* LIMPA OS CAMPOS */
 
         document.getElementById(
             "marca"
@@ -829,15 +664,6 @@ async function salvarMoto() {
 
             </div>
         `;
-
-    }
-
-    finally {
-
-        botao.disabled = false;
-
-        botao.innerHTML =
-            "💾 Cadastrar moto";
 
     }
 
@@ -1032,7 +858,9 @@ async function mostrarMotos() {
                     class="botao botao-excluir"
                     onclick="excluirMoto(${Number(moto.id)})"
                 >
+
                     🗑️ Tirar esta moto do cliente
+
                 </button>
 
             `;

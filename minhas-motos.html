@@ -5,8 +5,7 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Minhas Motos - DANIEL RB MOTOS</title>
 
@@ -93,10 +92,6 @@ select {
     text-decoration: none;
 }
 
-.editar {
-    background: #444;
-}
-
 .excluir {
     background: #b00000;
 }
@@ -158,50 +153,28 @@ select {
 
 <header>
 
-<h1>
-🏍️ Minhas Motos
-</h1>
+<h1>🏍️ Minhas Motos</h1>
 
-<p>
-DANIEL RB MOTOS
-</p>
+<p>DANIEL RB MOTOS</p>
 
 </header>
 
-
 <div class="container">
 
+<div id="infoCliente" class="card oculto">
 
-<div
-id="infoCliente"
-class="card oculto"
->
+<h2>👤 Cliente</h2>
 
-<h2>
-👤 Cliente
-</h2>
-
-<div
-id="nomeCliente"
-class="info-cliente"
-></div>
+<div id="nomeCliente" class="info-cliente"></div>
 
 </div>
 
 
-<div
-id="cardCadastro"
-class="card"
->
+<div id="cardCadastro" class="card">
 
-<h2>
-➕ Cadastrar moto
-</h2>
+<h2>➕ Cadastrar moto</h2>
 
-
-<label>
-Proprietário
-</label>
+<label>Proprietário</label>
 
 <select id="cliente">
 
@@ -212,9 +185,7 @@ Selecione o cliente
 </select>
 
 
-<label>
-Marca
-</label>
+<label>Marca</label>
 
 <input
 type="text"
@@ -223,9 +194,7 @@ placeholder="Ex: Honda"
 >
 
 
-<label>
-Modelo
-</label>
+<label>Modelo</label>
 
 <input
 type="text"
@@ -234,20 +203,16 @@ placeholder="Ex: Bros 160"
 >
 
 
-<label>
-Ano
-</label>
+<label>Ano</label>
 
 <input
-type="number"
+type="text"
 id="ano"
 placeholder="Ex: 2020"
 >
 
 
-<label>
-Placa
-</label>
+<label>Placa</label>
 
 <input
 type="text"
@@ -256,12 +221,10 @@ placeholder="ABC1D23"
 >
 
 
-<label>
-Quilometragem
-</label>
+<label>Quilometragem</label>
 
 <input
-type="number"
+type="text"
 id="km"
 placeholder="Ex: 35000"
 >
@@ -284,9 +247,7 @@ onclick="salvarMoto()"
 
 <div class="card">
 
-<h2>
-📋 Motos cadastradas
-</h2>
+<h2>📋 Motos cadastradas</h2>
 
 <div id="listaMotos"></div>
 
@@ -303,7 +264,6 @@ class="voltar"
 
 </a>
 
-
 </div>
 
 
@@ -314,16 +274,16 @@ class="voltar"
 ===================================================== */
 
 const SUPABASE_URL =
-    "https://niffgrhjmnizvusnrqyg.supabase.co";
+"https://niffgrhjmnizvusnrqyg.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
+"sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
 
 const supabaseClient =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
 
 /* =====================================================
@@ -331,11 +291,10 @@ const supabaseClient =
 ===================================================== */
 
 const clienteLogado =
-    sessionStorage.getItem("clienteLogado");
+sessionStorage.getItem("clienteLogado");
 
 const clienteSelecionado =
-    localStorage.getItem("clienteSelecionado");
-
+localStorage.getItem("clienteSelecionado");
 
 let modoCliente = false;
 
@@ -343,7 +302,7 @@ let clienteAtual = null;
 
 
 /* =====================================================
-   BUSCAR CLIENTE NO SUPABASE
+   BUSCAR CLIENTE
 ===================================================== */
 
 async function buscarCliente(id) {
@@ -357,13 +316,8 @@ async function buscarCliente(id) {
         error
     } = await supabaseClient
         .from("clientes_nova")
-        .select(
-            "id,nome,cpf,telefone,email,endereco"
-        )
-        .eq(
-            "id",
-            id
-        )
+        .select("id,nome,cpf,telefone,email,endereco")
+        .eq("id", id)
         .single();
 
     if (error) {
@@ -374,11 +328,9 @@ async function buscarCliente(id) {
         );
 
         return null;
-
     }
 
     return data;
-
 }
 
 
@@ -391,31 +343,21 @@ async function carregarClientesNoSelect() {
     const select =
         document.getElementById("cliente");
 
-
     select.innerHTML = `
-
         <option value="">
             Selecione o cliente
         </option>
-
     `;
-
 
     const {
         data: clientes,
         error
     } = await supabaseClient
         .from("clientes_nova")
-        .select(
-            "id,nome,cpf"
-        )
-        .order(
-            "id",
-            {
-                ascending: true
-            }
-        );
-
+        .select("id,nome,cpf")
+        .order("id", {
+            ascending: true
+        });
 
     if (error) {
 
@@ -424,52 +366,35 @@ async function carregarClientesNoSelect() {
             error
         );
 
-
         select.innerHTML = `
-
             <option value="">
                 Erro ao carregar clientes
             </option>
-
         `;
 
         return;
-
     }
-
 
     (clientes || []).forEach(
         function(cliente) {
 
             const option =
-                document.createElement(
-                    "option"
-                );
-
+                document.createElement("option");
 
             option.value =
                 cliente.id;
 
-
             option.textContent =
                 cliente.nome;
 
-
-            select.appendChild(
-                option
-            );
-
+            select.appendChild(option);
         }
     );
-
 
     if (clienteSelecionado) {
 
         select.value =
-            String(
-                clienteSelecionado
-            );
-
+            String(clienteSelecionado);
     }
 
 }
@@ -485,7 +410,7 @@ async function carregarMotos() {
         supabaseClient
             .from("motos")
             .select(
-                "id,cliente_id,marca,modelo,placa,ano,km"
+                "id,clientes_id,marca,modelo,placa,ano,km"
             )
             .order(
                 "id",
@@ -495,6 +420,10 @@ async function carregarMotos() {
             );
 
 
+    /*
+       CLIENTE LOGADO
+    */
+
     if (
         modoCliente &&
         clienteAtual
@@ -502,17 +431,24 @@ async function carregarMotos() {
 
         consulta =
             consulta.eq(
-                "cliente_id",
+                "clientes_id",
                 clienteAtual.id
             );
 
     }
 
-    else if (clienteSelecionado) {
+
+    /*
+       CLIENTE SELECIONADO PELA OFICINA
+    */
+
+    else if (
+        clienteSelecionado
+    ) {
 
         consulta =
             consulta.eq(
-                "cliente_id",
+                "clientes_id",
                 clienteSelecionado
             );
 
@@ -587,7 +523,7 @@ async function salvarMoto() {
     const ano =
         document.getElementById(
             "ano"
-        ).value;
+        ).value.trim();
 
 
     const placa =
@@ -599,7 +535,7 @@ async function salvarMoto() {
     const km =
         document.getElementById(
             "km"
-        ).value;
+        ).value.trim();
 
 
     if (!clienteId) {
@@ -609,7 +545,6 @@ async function salvarMoto() {
         );
 
         return;
-
     }
 
 
@@ -620,7 +555,6 @@ async function salvarMoto() {
         );
 
         return;
-
     }
 
 
@@ -631,7 +565,6 @@ async function salvarMoto() {
         );
 
         return;
-
     }
 
 
@@ -642,16 +575,13 @@ async function salvarMoto() {
         );
 
         return;
-
     }
 
 
     mensagem.innerHTML = `
-
         <div class="mensagem">
             ⏳ Salvando moto...
         </div>
-
     `;
 
 
@@ -659,7 +589,7 @@ async function salvarMoto() {
 
         const novaMoto = {
 
-            cliente_id:
+            clientes_id:
                 Number(clienteId),
 
             marca:
@@ -668,19 +598,14 @@ async function salvarMoto() {
             modelo:
                 modelo,
 
-            ano:
-                ano
-                    ? Number(ano)
-                    : null,
-
             placa:
                 placa,
 
-            km:
-                km
-                    ? Number(km)
-                    : null
+            ano:
+                ano || null,
 
+            km:
+                km || null
         };
 
 
@@ -699,7 +624,7 @@ async function salvarMoto() {
                 novaMoto
             )
             .select(
-                "id,cliente_id,marca,modelo,placa,ano,km"
+                "id,clientes_id,marca,modelo,placa,ano,km"
             )
             .single();
 
@@ -743,13 +668,9 @@ async function salvarMoto() {
 
 
         mensagem.innerHTML = `
-
             <div class="mensagem sucesso">
-
                 ✅ Moto cadastrada com sucesso!
-
             </div>
-
         `;
 
 
@@ -766,7 +687,6 @@ async function salvarMoto() {
 
 
         mensagem.innerHTML = `
-
             <div class="mensagem erro">
 
                 ❌ Erro ao cadastrar a moto.
@@ -776,7 +696,6 @@ async function salvarMoto() {
                 ${erro.message || erro}
 
             </div>
-
         `;
 
     }
@@ -797,11 +716,9 @@ async function mostrarMotos() {
 
 
     lista.innerHTML = `
-
         <div class="vazio">
             ⏳ Carregando motos...
         </div>
-
     `;
 
 
@@ -816,17 +733,12 @@ async function mostrarMotos() {
         ) {
 
             lista.innerHTML = `
-
                 <div class="vazio">
-
                     🏍️ Nenhuma moto cadastrada.
-
                 </div>
-
             `;
 
             return;
-
         }
 
 
@@ -846,12 +758,10 @@ async function mostrarMotos() {
                 error
             } = await supabaseClient
                 .from("clientes_nova")
-                .select(
-                    "nome"
-                )
+                .select("nome")
                 .eq(
                     "id",
-                    moto.cliente_id
+                    moto.clientes_id
                 )
                 .single();
 
@@ -883,6 +793,7 @@ async function mostrarMotos() {
                     <p>
 
                         👤
+
                         <strong>
                             Proprietário:
                         </strong>
@@ -895,6 +806,7 @@ async function mostrarMotos() {
                     <p>
 
                         🔢
+
                         <strong>
                             Placa:
                         </strong>
@@ -907,6 +819,7 @@ async function mostrarMotos() {
                     <p>
 
                         📆
+
                         <strong>
                             Ano:
                         </strong>
@@ -919,6 +832,7 @@ async function mostrarMotos() {
                     <p>
 
                         🛣️
+
                         <strong>
                             KM:
                         </strong>
@@ -944,7 +858,6 @@ async function mostrarMotos() {
 
 
         lista.innerHTML = `
-
             <div class="mensagem erro">
 
                 ❌ Erro ao carregar motos.
@@ -954,7 +867,6 @@ async function mostrarMotos() {
                 ${erro.message || erro}
 
             </div>
-
         `;
 
     }
@@ -1015,18 +927,15 @@ async function configurarTela() {
 
 
             nomeCliente.innerHTML =
-
                 "👤 <strong>" +
                 clienteAtual.nome +
                 "</strong>";
 
 
             select.innerHTML = `
-
                 <option value="${clienteAtual.id}">
                     ${clienteAtual.nome}
                 </option>
-
             `;
 
 
@@ -1072,7 +981,7 @@ async function configurarTela() {
 
 
     /*
-       VEIO DE UM CLIENTE ESPECÍFICO
+       CLIENTE ESPECÍFICO
     */
 
     if (
@@ -1094,7 +1003,6 @@ async function configurarTela() {
 
 
             nomeCliente.innerHTML =
-
                 "👤 <strong>" +
                 clienteAtual.nome +
                 "</strong>";

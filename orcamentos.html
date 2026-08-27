@@ -8,6 +8,8 @@
 
 <title>Orçamentos - DANIEL RB MOTOS</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 
 * {
@@ -79,6 +81,10 @@ textarea {
     resize: vertical;
 }
 
+input[readonly] {
+    background: #eeeeee;
+}
+
 .botao {
     width: 100%;
     padding: 16px;
@@ -90,6 +96,10 @@ textarea {
     font-size: 17px;
     font-weight: bold;
     cursor: pointer;
+}
+
+.botao:hover {
+    opacity: 0.9;
 }
 
 .botao-whatsapp {
@@ -158,6 +168,33 @@ textarea {
     margin-top: 12px;
 }
 
+.erro {
+    background: #ffe1e1;
+    color: #a00000;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+.sucesso {
+    background: #dff5e5;
+    color: #176b2c;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+.carregando {
+    background: #eeeeee;
+    color: #333;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
 @media (max-width: 500px) {
 
     .container {
@@ -184,7 +221,9 @@ textarea {
 
 </header>
 
+
 <div class="container">
+
 
 <div id="aviso" class="aviso">
 
@@ -192,9 +231,14 @@ textarea {
 
 </div>
 
+
+<div id="mensagem"></div>
+
+
 <div class="card">
 
 <h2>📋 Novo orçamento</h2>
+
 
 <label>Número do orçamento</label>
 
@@ -204,6 +248,7 @@ id="numero"
 readonly
 >
 
+
 <label>Cliente</label>
 
 <select
@@ -212,10 +257,11 @@ onchange="carregarMotosDoCliente()"
 >
 
 <option value="">
-Selecione o cliente
+Carregando clientes...
 </option>
 
 </select>
+
 
 <label>Telefone / WhatsApp</label>
 
@@ -224,6 +270,7 @@ type="tel"
 id="telefone"
 readonly
 >
+
 
 <label>Moto</label>
 
@@ -238,6 +285,7 @@ Selecione primeiro o cliente
 
 </select>
 
+
 <label>Placa</label>
 
 <input
@@ -246,6 +294,7 @@ id="placa"
 readonly
 >
 
+
 <label>Serviço solicitado</label>
 
 <input
@@ -253,6 +302,7 @@ type="text"
 id="servico"
 placeholder="Ex: Revisão completa"
 >
+
 
 <label>Diagnóstico / observação</label>
 
@@ -263,9 +313,11 @@ placeholder="Descreva o problema ou o que será necessário fazer..."
 
 </div>
 
+
 <div class="card">
 
 <h2>💰 Valores</h2>
+
 
 <label>Mão de obra</label>
 
@@ -278,6 +330,7 @@ placeholder="0,00"
 oninput="calcularTotal()"
 >
 
+
 <label>Peças</label>
 
 <input
@@ -288,6 +341,7 @@ min="0"
 placeholder="0,00"
 oninput="calcularTotal()"
 >
+
 
 <div class="total">
 
@@ -301,9 +355,11 @@ R$ 0,00
 
 </div>
 
+
 <div class="card">
 
 <h2>📅 Condições</h2>
+
 
 <label>Validade do orçamento</label>
 
@@ -312,19 +368,27 @@ type="date"
 id="validade"
 >
 
+
 <label>Status</label>
 
 <select id="status">
 
-<option>Pendente</option>
+<option value="Pendente">
+Pendente
+</option>
 
-<option>Aprovado</option>
+<option value="Aprovado">
+Aprovado
+</option>
 
-<option>Recusado</option>
+<option value="Recusado">
+Recusado
+</option>
 
 </select>
 
 </div>
+
 
 <button
 type="button"
@@ -336,6 +400,7 @@ onclick="salvarOrcamento()"
 
 </button>
 
+
 <button
 type="button"
 class="botao botao-whatsapp"
@@ -345,6 +410,7 @@ onclick="enviarWhatsApp()"
 📱 Enviar pelo WhatsApp
 
 </button>
+
 
 <button
 type="button"
@@ -356,6 +422,7 @@ onclick="aprovarOrcamento()"
 
 </button>
 
+
 <button
 type="button"
 class="botao botao-os"
@@ -366,6 +433,7 @@ onclick="transformarEmOS()"
 
 </button>
 
+
 <div class="card">
 
 <h2>📚 Orçamentos salvos</h2>
@@ -375,11 +443,14 @@ id="lista"
 class="lista"
 >
 
-Nenhum orçamento cadastrado.
-
+<div class="carregando">
+🔍 Carregando orçamentos...
 </div>
 
 </div>
+
+</div>
+
 
 <a
 href="oficina.html"
@@ -390,11 +461,53 @@ class="voltar"
 
 </a>
 
+
 </div>
+
 
 <script>
 
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+    "https://niffgrhjmnizvusnrqyg.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
 let orcamentoAtual = null;
+
+
+/* =====================================================
+   MENSAGENS
+===================================================== */
+
+function mostrarMensagem(texto, tipo = "erro") {
+
+    const div =
+        document.getElementById("mensagem");
+
+    div.innerHTML =
+        `<div class="${tipo}">
+            ${texto}
+        </div>`;
+
+}
+
+
+/* =====================================================
+   NÚMERO DO ORÇAMENTO
+===================================================== */
 
 function gerarNumero() {
 
@@ -409,184 +522,439 @@ function gerarNumero() {
 
 }
 
-function carregarClientes() {
 
-    const clientes =
-        JSON.parse(
-            localStorage.getItem(
-                "clientes"
-            )
-        ) || [];
+/* =====================================================
+   CARREGAR CLIENTES DO SUPABASE
+===================================================== */
+
+async function carregarClientes() {
 
     const select =
-        document.getElementById(
-            "cliente"
-        );
+        document.getElementById("cliente");
 
     select.innerHTML = `
         <option value="">
-            Selecione o cliente
+            Carregando clientes...
         </option>
     `;
 
-    clientes.forEach(
-        function(cliente) {
 
-            const option =
-                document.createElement(
-                    "option"
-                );
+    try {
 
-            option.value =
-                cliente.id;
-
-            option.textContent =
-                cliente.nome;
-
-            select.appendChild(
-                option
+        const {
+            data: clientes,
+            error
+        } =
+            await supabaseClient
+            .from("clientes_nova")
+            .select(
+                "id,nome,cpf,telefone,whatsapp"
+            )
+            .order(
+                "nome",
+                {
+                    ascending: true
+                }
             );
 
+
+        if (error) {
+
+            console.error(
+                "ERRO CLIENTES:",
+                error
+            );
+
+            select.innerHTML = `
+                <option value="">
+                    Erro ao carregar clientes
+                </option>
+            `;
+
+            mostrarMensagem(
+                "❌ Erro ao carregar clientes.<br><br>" +
+                error.message
+            );
+
+            return;
+
         }
-    );
+
+
+        select.innerHTML = `
+            <option value="">
+                Selecione o cliente
+            </option>
+        `;
+
+
+        if (
+            !clientes ||
+            clientes.length === 0
+        ) {
+
+            select.innerHTML = `
+                <option value="">
+                    Nenhum cliente cadastrado
+                </option>
+            `;
+
+            return;
+
+        }
+
+
+        clientes.forEach(
+            function(cliente) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    cliente.id;
+
+                option.textContent =
+                    cliente.nome ||
+                    "Cliente sem nome";
+
+                option.dataset.telefone =
+                    cliente.telefone ||
+                    cliente.whatsapp ||
+                    "";
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+        select.innerHTML = `
+            <option value="">
+                Erro ao carregar clientes
+            </option>
+        `;
+
+        mostrarMensagem(
+            "❌ Erro ao conectar ao banco.<br><br>" +
+            (erro.message || erro)
+        );
+
+    }
 
 }
 
-function carregarMotosDoCliente() {
+
+/* =====================================================
+   CARREGAR MOTOS DO CLIENTE
+===================================================== */
+
+async function carregarMotosDoCliente() {
 
     const clienteId =
         document.getElementById(
             "cliente"
         ).value;
 
-    const clientes =
-        JSON.parse(
-            localStorage.getItem(
-                "clientes"
-            )
-        ) || [];
 
-    const motos =
-        JSON.parse(
-            localStorage.getItem(
-                "motos"
+    const selectMoto =
+        document.getElementById(
+            "moto"
+        );
+
+
+    const telefone =
+        document.getElementById(
+            "telefone"
+        );
+
+
+    const placa =
+        document.getElementById(
+            "placa"
+        );
+
+
+    selectMoto.innerHTML = `
+        <option value="">
+            Carregando motos...
+        </option>
+    `;
+
+
+    telefone.value = "";
+
+    placa.value = "";
+
+
+    if (!clienteId) {
+
+        selectMoto.innerHTML = `
+            <option value="">
+                Selecione primeiro o cliente
+            </option>
+        `;
+
+        return;
+
+    }
+
+
+    /* TELEFONE DO CLIENTE */
+
+    const clientes =
+        await buscarClientePorId(
+            clienteId
+        );
+
+
+    if (clientes) {
+
+        telefone.value =
+            clientes.telefone ||
+            clientes.whatsapp ||
+            "";
+
+    }
+
+
+    try {
+
+        const {
+            data: motos,
+            error
+        } =
+            await supabaseClient
+            .from("motos")
+            .select(
+                "id,cliente_id,marca,modelo,placa,ano,km"
             )
-        ) || [];
+            .eq(
+                "cliente_id",
+                clienteId
+            )
+            .order(
+                "modelo",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "ERRO MOTOS:",
+                error
+            );
+
+            selectMoto.innerHTML = `
+                <option value="">
+                    Erro ao carregar motos
+                </option>
+            `;
+
+            mostrarMensagem(
+                "❌ Erro ao carregar as motos.<br><br>" +
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        selectMoto.innerHTML = `
+            <option value="">
+                Selecione a moto
+            </option>
+        `;
+
+
+        if (
+            !motos ||
+            motos.length === 0
+        ) {
+
+            selectMoto.innerHTML = `
+                <option value="">
+                    Nenhuma moto cadastrada para este cliente
+                </option>
+            `;
+
+            return;
+
+        }
+
+
+        motos.forEach(
+            function(moto) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    moto.id;
+
+                option.textContent =
+                    (
+                        moto.marca || ""
+                    ) +
+                    " " +
+                    (
+                        moto.modelo || ""
+                    ) +
+                    " - " +
+                    (
+                        moto.placa ||
+                        "Sem placa"
+                    );
+
+                option.dataset.placa =
+                    moto.placa || "";
+
+                option.dataset.marca =
+                    moto.marca || "";
+
+                option.dataset.modelo =
+                    moto.modelo || "";
+
+                option.dataset.ano =
+                    moto.ano || "";
+
+                option.dataset.km =
+                    moto.km || "";
+
+                selectMoto.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+        selectMoto.innerHTML = `
+            <option value="">
+                Erro ao carregar motos
+            </option>
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   BUSCAR CLIENTE POR ID
+===================================================== */
+
+async function buscarClientePorId(id) {
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+            .from("clientes_nova")
+            .select(
+                "id,nome,cpf,telefone,whatsapp"
+            )
+            .eq(
+                "id",
+                id
+            )
+            .limit(1);
+
+
+        if (
+            error ||
+            !data ||
+            data.length === 0
+        ) {
+
+            return null;
+
+        }
+
+
+        return data[0];
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+        return null;
+
+    }
+
+}
+
+
+/* =====================================================
+   PREENCHER MOTO
+===================================================== */
+
+function preencherMoto() {
 
     const select =
         document.getElementById(
             "moto"
         );
 
-    select.innerHTML = `
-        <option value="">
-            Selecione a moto
-        </option>
-    `;
 
-    document.getElementById(
-        "placa"
-    ).value = "";
+    const option =
+        select.options[
+            select.selectedIndex
+        ];
 
-    const cliente =
-        clientes.find(
-            function(item) {
 
-                return String(item.id) ===
-                       String(clienteId);
+    if (
+        !option ||
+        !option.value
+    ) {
 
-            }
-        );
-
-    document.getElementById(
-        "telefone"
-    ).value =
-        cliente
-        ? (
-            cliente.telefone ||
-            cliente.whatsapp ||
-            ""
-        )
-        : "";
-
-    if (!clienteId) {
+        document.getElementById(
+            "placa"
+        ).value = "";
 
         return;
 
     }
 
-    const motosCliente =
-        motos.filter(
-            function(moto) {
-
-                return String(
-                    moto.clienteId
-                ) === String(
-                    clienteId
-                );
-
-            }
-        );
-
-    motosCliente.forEach(
-        function(moto) {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                moto.id;
-
-            option.textContent =
-                (moto.marca || "") +
-                " " +
-                (moto.modelo || "") +
-                " - " +
-                (moto.placa || "");
-
-            select.appendChild(
-                option
-            );
-
-        }
-    );
-
-}
-
-function preencherMoto() {
-
-    const motoId =
-        document.getElementById(
-            "moto"
-        ).value;
-
-    const motos =
-        JSON.parse(
-            localStorage.getItem(
-                "motos"
-            )
-        ) || [];
-
-    const moto =
-        motos.find(
-            function(item) {
-
-                return String(item.id) ===
-                       String(motoId);
-
-            }
-        );
 
     document.getElementById(
         "placa"
     ).value =
-        moto
-        ? moto.placa || ""
-        : "";
+        option.dataset.placa ||
+        "";
 
 }
+
+
+/* =====================================================
+   CALCULAR TOTAL
+===================================================== */
 
 function calcularTotal() {
 
@@ -597,6 +965,7 @@ function calcularTotal() {
             ).value
         ) || 0;
 
+
     const pecas =
         parseFloat(
             document.getElementById(
@@ -604,27 +973,50 @@ function calcularTotal() {
             ).value
         ) || 0;
 
+
     const total =
         mao + pecas;
+
 
     document.getElementById(
         "total"
     ).textContent =
-        formatarMoeda(total);
+        formatarMoeda(
+            total
+        );
 
 }
 
-function pegarDadosOrcamento() {
+
+/* =====================================================
+   PEGAR DADOS DO FORMULÁRIO
+===================================================== */
+
+function pegarDadosFormulario() {
 
     const clienteSelect =
         document.getElementById(
             "cliente"
         );
 
+
     const motoSelect =
         document.getElementById(
             "moto"
         );
+
+
+    const clienteOption =
+        clienteSelect.options[
+            clienteSelect.selectedIndex
+        ];
+
+
+    const motoOption =
+        motoSelect.options[
+            motoSelect.selectedIndex
+        ];
+
 
     const mao =
         parseFloat(
@@ -633,6 +1025,7 @@ function pegarDadosOrcamento() {
             ).value
         ) || 0;
 
+
     const pecas =
         parseFloat(
             document.getElementById(
@@ -640,27 +1033,18 @@ function pegarDadosOrcamento() {
             ).value
         ) || 0;
 
+
     return {
 
-        id:
-            Date.now(),
-
-        numero:
-            document.getElementById(
-                "numero"
-            ).value,
-
-        clienteId:
+        cliente_id:
             clienteSelect.value,
 
-        motoId:
+        moto_id:
             motoSelect.value,
 
         cliente:
-            clienteSelect.value
-            ? clienteSelect.options[
-                clienteSelect.selectedIndex
-            ].text
+            clienteOption
+            ? clienteOption.text
             : "",
 
         telefone:
@@ -669,10 +1053,8 @@ function pegarDadosOrcamento() {
             ).value,
 
         moto:
-            motoSelect.value
-            ? motoSelect.options[
-                motoSelect.selectedIndex
-            ].text
+            motoOption
+            ? motoOption.text
             : "",
 
         placa:
@@ -690,7 +1072,7 @@ function pegarDadosOrcamento() {
                 "diagnostico"
             ).value,
 
-        maoDeObra:
+        mao_de_obra:
             mao,
 
         pecas:
@@ -702,36 +1084,34 @@ function pegarDadosOrcamento() {
         validade:
             document.getElementById(
                 "validade"
-            ).value,
+            ).value || null,
 
         status:
             document.getElementById(
                 "status"
             ).value,
 
-        dataCriacao:
-            new Date()
-            .toLocaleDateString(
-                "pt-BR"
-            )
+        numero:
+            document.getElementById(
+                "numero"
+            ).value
 
     };
 
 }
 
-function salvarOrcamento() {
 
-    const cliente =
-        document.getElementById(
-            "cliente"
-        ).value;
+/* =====================================================
+   SALVAR ORÇAMENTO NO SUPABASE
+===================================================== */
 
-    const moto =
-        document.getElementById(
-            "moto"
-        ).value;
+async function salvarOrcamento() {
 
-    if (!cliente) {
+    const dados =
+        pegarDadosFormulario();
+
+
+    if (!dados.cliente_id) {
 
         alert(
             "⚠️ Selecione o cliente."
@@ -741,7 +1121,8 @@ function salvarOrcamento() {
 
     }
 
-    if (!moto) {
+
+    if (!dados.moto_id) {
 
         alert(
             "⚠️ Selecione a moto."
@@ -751,88 +1132,139 @@ function salvarOrcamento() {
 
     }
 
-    const novo =
-        pegarDadosOrcamento();
 
-    let lista =
-        JSON.parse(
-            localStorage.getItem(
-                "orcamentos"
-            )
-        ) || [];
-
-    lista.push(
-        novo
-    );
-
-    localStorage.setItem(
-        "orcamentos",
-        JSON.stringify(
-            lista
-        )
-    );
-
-    orcamentoAtual =
-        novo;
-
-    alert(
-        "✅ Orçamento nº " +
-        novo.numero +
-        " salvo com sucesso!"
-    );
-
-    mostrarOrcamentos();
-
-}
-
-function aprovarOrcamento() {
-
-    let lista =
-        JSON.parse(
-            localStorage.getItem(
-                "orcamentos"
-            )
-        ) || [];
-
-    const numero =
-        document.getElementById(
-            "numero"
-        ).value;
-
-    const cliente =
-        document.getElementById(
-            "cliente"
-        ).value;
-
-    const moto =
-        document.getElementById(
-            "moto"
-        ).value;
-
-    if (!cliente || !moto) {
+    if (!dados.servico.trim()) {
 
         alert(
-            "⚠️ Selecione o cliente e a moto."
+            "⚠️ Informe o serviço solicitado."
         );
 
         return;
 
     }
 
-    const index =
-        lista.findIndex(
-            function(item) {
 
-                return String(
-                    item.numero
-                ) === String(
-                    numero
-                );
+    try {
 
-            }
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+            .from("orcamentos")
+            .insert([
+                dados
+            ])
+            .select()
+            .single();
+
+
+        if (error) {
+
+            console.error(
+                "ERRO AO SALVAR ORÇAMENTO:",
+                error
+            );
+
+            alert(
+                "❌ Erro ao salvar o orçamento.\n\n" +
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        orcamentoAtual =
+            data;
+
+
+        alert(
+            "✅ Orçamento nº " +
+            dados.numero +
+            " salvo com sucesso!"
         );
 
-    if (index === -1) {
+
+        await mostrarOrcamentos();
+
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+        alert(
+            "❌ Erro ao salvar orçamento.\n\n" +
+            (
+                erro.message ||
+                erro
+            )
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   APROVAR ORÇAMENTO ATUAL
+===================================================== */
+
+async function aprovarOrcamento() {
+
+    const numero =
+        document.getElementById(
+            "numero"
+        ).value;
+
+
+    if (!numero) {
+
+        alert(
+            "⚠️ Número do orçamento não encontrado."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("orcamentos")
+        .update({
+            status: "Aprovado"
+        })
+        .eq(
+            "numero",
+            numero
+        )
+        .select();
+
+
+    if (error) {
+
+        console.error(
+            error
+        );
+
+        alert(
+            "❌ Erro ao aprovar orçamento.\n\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    if (!data || data.length === 0) {
 
         alert(
             "⚠️ Salve o orçamento primeiro antes de aprová-lo."
@@ -842,25 +1274,12 @@ function aprovarOrcamento() {
 
     }
 
-    lista[index].status =
-        "Aprovado";
-
-    localStorage.setItem(
-        "orcamentos",
-        JSON.stringify(
-            lista
-        )
-    );
 
     document.getElementById(
         "status"
     ).value =
         "Aprovado";
 
-    orcamentoAtual =
-        lista[index];
-
-    mostrarOrcamentos();
 
     alert(
         "✅ Orçamento nº " +
@@ -868,7 +1287,15 @@ function aprovarOrcamento() {
         " aprovado com sucesso!"
     );
 
+
+    await mostrarOrcamentos();
+
 }
+
+
+/* =====================================================
+   ENVIAR WHATSAPP
+===================================================== */
 
 function enviarWhatsApp() {
 
@@ -876,6 +1303,7 @@ function enviarWhatsApp() {
         document.getElementById(
             "telefone"
         ).value;
+
 
     if (!telefone) {
 
@@ -887,33 +1315,58 @@ function enviarWhatsApp() {
 
     }
 
-    const nomeOficina =
-        obterNomeOficina();
 
     const clienteSelect =
         document.getElementById(
             "cliente"
         );
 
+
     const motoSelect =
         document.getElementById(
             "moto"
         );
+
+
+    if (!clienteSelect.value) {
+
+        alert(
+            "⚠️ Selecione o cliente."
+        );
+
+        return;
+
+    }
+
+
+    if (!motoSelect.value) {
+
+        alert(
+            "⚠️ Selecione a moto."
+        );
+
+        return;
+
+    }
+
 
     const cliente =
         clienteSelect.options[
             clienteSelect.selectedIndex
         ].text;
 
+
     const moto =
         motoSelect.options[
             motoSelect.selectedIndex
         ].text;
 
+
     const servico =
         document.getElementById(
             "servico"
         ).value;
+
 
     const mao =
         parseFloat(
@@ -922,6 +1375,7 @@ function enviarWhatsApp() {
             ).value
         ) || 0;
 
+
     const pecas =
         parseFloat(
             document.getElementById(
@@ -929,8 +1383,10 @@ function enviarWhatsApp() {
             ).value
         ) || 0;
 
+
     const total =
         mao + pecas;
+
 
     const mensagem =
 
@@ -938,9 +1394,7 @@ function enviarWhatsApp() {
         cliente +
         "! 👋\n\n" +
 
-        "Aqui é da " +
-        nomeOficina +
-        ".\n\n" +
+        "Aqui é da DANIEL RB MOTOS.\n\n" +
 
         "📋 *ORÇAMENTO Nº " +
         document.getElementById(
@@ -970,29 +1424,29 @@ function enviarWhatsApp() {
 
         "Aguardamos sua aprovação. 😊";
 
-    const numero =
+
+    let numero =
         telefone.replace(
             /\D/g,
             ""
         );
 
-    let numeroWhatsApp =
-        numero;
 
     if (
-        numeroWhatsApp.length === 10 ||
-        numeroWhatsApp.length === 11
+        numero.length === 10 ||
+        numero.length === 11
     ) {
 
-        numeroWhatsApp =
+        numero =
             "55" +
-            numeroWhatsApp;
+            numero;
 
     }
 
+
     window.open(
         "https://wa.me/" +
-        numeroWhatsApp +
+        numero +
         "?text=" +
         encodeURIComponent(
             mensagem
@@ -1002,6 +1456,11 @@ function enviarWhatsApp() {
 
 }
 
+
+/* =====================================================
+   TRANSFORMAR EM OS
+===================================================== */
+
 function transformarEmOS() {
 
     const cliente =
@@ -1009,10 +1468,12 @@ function transformarEmOS() {
             "cliente"
         ).value;
 
+
     const moto =
         document.getElementById(
             "moto"
         ).value;
+
 
     if (!cliente) {
 
@@ -1024,6 +1485,7 @@ function transformarEmOS() {
 
     }
 
+
     if (!moto) {
 
         alert(
@@ -1034,11 +1496,10 @@ function transformarEmOS() {
 
     }
 
-    const dados =
-        pegarDadosOrcamento();
 
-    dados.status =
-        "Em orçamento";
+    const dados =
+        pegarDadosFormulario();
+
 
     localStorage.setItem(
         "dadosOrcamentoParaOS",
@@ -1047,155 +1508,276 @@ function transformarEmOS() {
         )
     );
 
+
     window.location.href =
         "ordem-servico.html";
 
 }
 
-function mostrarOrcamentos() {
 
-    const lista =
-        JSON.parse(
-            localStorage.getItem(
-                "orcamentos"
-            )
-        ) || [];
+/* =====================================================
+   MOSTRAR ORÇAMENTOS
+===================================================== */
+
+async function mostrarOrcamentos() {
 
     const div =
         document.getElementById(
             "lista"
         );
 
-    if (!lista.length) {
 
-        div.innerHTML =
-            "Nenhum orçamento cadastrado.";
+    div.innerHTML = `
+        <div class="carregando">
+            🔍 Carregando orçamentos...
+        </div>
+    `;
 
-        return;
 
-    }
+    try {
 
-    div.innerHTML = "";
-
-    lista
-    .slice()
-    .reverse()
-    .forEach(
-        function(item) {
-
-            const bloco =
-                document.createElement(
-                    "div"
-                );
-
-            bloco.className =
-                "orcamento-item";
-
-            bloco.innerHTML =
-
-                "<h3>Orçamento nº " +
-                item.numero +
-                "</h3>" +
-
-                "<strong>" +
-                item.cliente +
-                "</strong><br>" +
-
-                item.moto +
-                "<br><br>" +
-
-                "<span class='status'>" +
-                item.status +
-                "</span>" +
-
-                "<p><strong>Total:</strong> " +
-                formatarMoeda(
-                    item.total
-                ) +
-                "</p>" +
-
-                "<div class='acoes'>" +
-
-                (
-                    item.status === "Pendente"
-
-                    ?
-
-                    "<button " +
-                    "type='button' " +
-                    "class='botao botao-aprovar' " +
-                    "onclick='aprovarOrcamentoSalvo(" +
-                    JSON.stringify(
-                        String(item.numero)
-                    ) +
-                    ")'>" +
-
-                    "✅ Aprovar orçamento" +
-
-                    "</button>"
-
-                    :
-
-                    ""
-                ) +
-
-                (
-                    item.status === "Aprovado"
-
-                    ?
-
-                    "<button " +
-                    "type='button' " +
-                    "class='botao botao-os' " +
-                    "onclick='transformarOrcamentoSalvoEmOS(" +
-                    JSON.stringify(
-                        String(item.numero)
-                    ) +
-                    ")'>" +
-
-                    "🔧 Transformar em OS" +
-
-                    "</button>"
-
-                    :
-
-                    ""
-                ) +
-
-                "</div>";
-
-            div.appendChild(
-                bloco
+        const {
+            data: lista,
+            error
+        } =
+            await supabaseClient
+            .from("orcamentos")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
             );
 
+
+        if (error) {
+
+            console.error(
+                "ERRO ORÇAMENTOS:",
+                error
+            );
+
+            div.innerHTML = `
+                <div class="erro">
+                    ❌ Erro ao carregar orçamentos.
+                    <br><br>
+                    ${error.message}
+                </div>
+            `;
+
+            return;
+
         }
-    );
 
-}
 
-function aprovarOrcamentoSalvo(numero) {
+        if (
+            !lista ||
+            lista.length === 0
+        ) {
 
-    let lista =
-        JSON.parse(
-            localStorage.getItem(
-                "orcamentos"
-            )
-        ) || [];
+            div.innerHTML =
+                "Nenhum orçamento cadastrado.";
 
-    const index =
-        lista.findIndex(
+            return;
+
+        }
+
+
+        div.innerHTML = "";
+
+
+        lista.forEach(
             function(item) {
 
-                return String(
-                    item.numero
-                ) === String(
-                    numero
+                const bloco =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                bloco.className =
+                    "orcamento-item";
+
+
+                const numero =
+                    item.numero ||
+                    item.id ||
+                    "";
+
+
+                const cliente =
+                    item.cliente ||
+                    "Cliente";
+
+
+                const moto =
+                    item.moto ||
+                    "Moto";
+
+
+                const status =
+                    item.status ||
+                    "Pendente";
+
+
+                const total =
+                    item.total ||
+                    0;
+
+
+                let botoes = "";
+
+
+                if (
+                    status.toLowerCase() ===
+                    "pendente"
+                ) {
+
+                    botoes += `
+
+                        <button
+                            type="button"
+                            class="botao botao-aprovar"
+                            onclick="aprovarOrcamentoSalvo('${numero}')"
+                        >
+                            ✅ Aprovar orçamento
+                        </button>
+
+                    `;
+
+                }
+
+
+                if (
+                    status.toLowerCase() ===
+                    "aprovado"
+                ) {
+
+                    botoes += `
+
+                        <button
+                            type="button"
+                            class="botao botao-os"
+                            onclick="transformarOrcamentoSalvoEmOS('${numero}')"
+                        >
+                            🔧 Transformar em OS
+                        </button>
+
+                    `;
+
+                }
+
+
+                bloco.innerHTML =
+
+                    "<h3>Orçamento nº " +
+                    numero +
+                    "</h3>" +
+
+                    "<strong>" +
+                    cliente +
+                    "</strong><br>" +
+
+                    moto +
+                    "<br><br>" +
+
+                    "<span class='status'>" +
+                    status +
+                    "</span>" +
+
+                    "<p><strong>Total:</strong> " +
+                    formatarMoeda(
+                        total
+                    ) +
+                    "</p>" +
+
+                    "<div class='acoes'>" +
+                    botoes +
+                    "</div>";
+
+
+                div.appendChild(
+                    bloco
                 );
 
             }
         );
 
-    if (index === -1) {
+
+    } catch (erro) {
+
+        console.error(
+            erro
+        );
+
+        div.innerHTML = `
+            <div class="erro">
+                ❌ Erro ao carregar os orçamentos.
+                <br><br>
+                ${erro.message || erro}
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   APROVAR ORÇAMENTO SALVO
+===================================================== */
+
+async function aprovarOrcamentoSalvo(numero) {
+
+    const confirmar =
+        confirm(
+            "Deseja aprovar o orçamento nº " +
+            numero +
+            "?"
+        );
+
+
+    if (!confirmar) {
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("orcamentos")
+        .update({
+            status: "Aprovado"
+        })
+        .eq(
+            "numero",
+            numero
+        )
+        .select();
+
+
+    if (error) {
+
+        console.error(
+            error
+        );
+
+        alert(
+            "❌ Erro ao aprovar orçamento.\n\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    if (!data || data.length === 0) {
 
         alert(
             "⚠️ Orçamento não encontrado."
@@ -1205,30 +1787,6 @@ function aprovarOrcamentoSalvo(numero) {
 
     }
 
-    if (
-        lista[index].status ===
-        "Aprovado"
-    ) {
-
-        alert(
-            "ℹ️ Este orçamento já está aprovado."
-        );
-
-        return;
-
-    }
-
-    lista[index].status =
-        "Aprovado";
-
-    localStorage.setItem(
-        "orcamentos",
-        JSON.stringify(
-            lista
-        )
-    );
-
-    mostrarOrcamentos();
 
     alert(
         "✅ Orçamento nº " +
@@ -1236,31 +1794,49 @@ function aprovarOrcamentoSalvo(numero) {
         " aprovado com sucesso!"
     );
 
+
+    await mostrarOrcamentos();
+
 }
 
-function transformarOrcamentoSalvoEmOS(numero) {
 
-    const lista =
-        JSON.parse(
-            localStorage.getItem(
-                "orcamentos"
-            )
-        ) || [];
+/* =====================================================
+   TRANSFORMAR ORÇAMENTO SALVO EM OS
+===================================================== */
 
-    const orcamento =
-        lista.find(
-            function(item) {
+async function transformarOrcamentoSalvoEmOS(numero) {
 
-                return String(
-                    item.numero
-                ) === String(
-                    numero
-                );
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("orcamentos")
+        .select("*")
+        .eq(
+            "numero",
+            numero
+        )
+        .limit(1);
 
-            }
+
+    if (error) {
+
+        console.error(
+            error
         );
 
-    if (!orcamento) {
+        alert(
+            "❌ Erro ao buscar orçamento.\n\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    if (!data || data.length === 0) {
 
         alert(
             "⚠️ Orçamento não encontrado."
@@ -1270,9 +1846,17 @@ function transformarOrcamentoSalvoEmOS(numero) {
 
     }
 
+
+    const orcamento =
+        data[0];
+
+
     if (
-        orcamento.status !==
-        "Aprovado"
+        String(
+            orcamento.status || ""
+        ).toLowerCase()
+        !==
+        "aprovado"
     ) {
 
         alert(
@@ -1283,6 +1867,7 @@ function transformarOrcamentoSalvoEmOS(numero) {
 
     }
 
+
     localStorage.setItem(
         "dadosOrcamentoParaOS",
         JSON.stringify(
@@ -1290,24 +1875,16 @@ function transformarOrcamentoSalvoEmOS(numero) {
         )
     );
 
+
     window.location.href =
         "ordem-servico.html";
 
 }
 
-function obterNomeOficina() {
 
-    const dados =
-        JSON.parse(
-            localStorage.getItem(
-                "configuracoesOficina"
-            )
-        ) || {};
-
-    return dados.nome ||
-           "DANIEL RB MOTOS";
-
-}
+/* =====================================================
+   FORMATAR MOEDA
+===================================================== */
 
 function formatarMoeda(valor) {
 
@@ -1323,11 +1900,74 @@ function formatarMoeda(valor) {
 
 }
 
+
+/* =====================================================
+   DATA DE VALIDADE
+===================================================== */
+
+function definirValidadePadrao() {
+
+    const hoje =
+        new Date();
+
+
+    const validade =
+        new Date(
+            hoje
+        );
+
+
+    validade.setDate(
+        validade.getDate() + 7
+    );
+
+
+    const ano =
+        validade.getFullYear();
+
+
+    const mes =
+        String(
+            validade.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    const dia =
+        String(
+            validade.getDate()
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    document.getElementById(
+        "validade"
+    ).value =
+        ano +
+        "-" +
+        mes +
+        "-" +
+        dia;
+
+}
+
+
+/* =====================================================
+   INICIALIZAÇÃO
+===================================================== */
+
 gerarNumero();
+
+definirValidadePadrao();
 
 carregarClientes();
 
 mostrarOrcamentos();
+
 
 </script>
 

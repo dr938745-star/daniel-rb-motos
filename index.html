@@ -2,17 +2,12 @@
 <html lang="pt-BR">
 
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<meta name="theme-color"
-      content="#080808">
-
+<meta name="theme-color" content="#080808">
 <meta name="description"
-      content="DANIEL RB MOTOS - Oficina especializada em manutenção e reparação de motocicletas.">
+content="DANIEL RB MOTOS - Oficina especializada em manutenção e reparação de motocicletas.">
 
 <title>DANIEL RB MOTOS | Oficina de Motos</title>
 
@@ -35,21 +30,17 @@ body {
 
 :root {
     --vermelho: #c40000;
-    --vermelho-escuro: #720000;
     --vermelho-claro: #ff1b1b;
     --preto: #070707;
-    --preto-2: #111;
     --cinza: #1c1c1c;
-    --cinza-2: #292929;
     --branco: #fff;
-    --texto-cinza: #bdbdbd;
 }
 
 header {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: rgba(5,5,5,0.96);
+    background: rgba(5,5,5,0.97);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(196,0,0,0.5);
     box-shadow: 0 5px 25px rgba(0,0,0,0.45);
@@ -90,7 +81,6 @@ header {
     text-decoration: none;
     font-size: 14px;
     font-weight: bold;
-    transition: 0.2s;
 }
 
 .menu a:hover {
@@ -131,6 +121,12 @@ header {
 .botao-whatsapp {
     background: #168c45;
     color: white;
+}
+
+.botao-cliente {
+    background: linear-gradient(135deg, #e00000, #870000);
+    color: white;
+    border: 1px solid #ff3333;
 }
 
 .hero {
@@ -191,8 +187,8 @@ header {
 }
 
 .hero h1 span {
+    display: block;
     color: var(--vermelho-claro);
-    text-shadow: 0 0 30px rgba(255,0,0,0.2);
 }
 
 .hero p {
@@ -222,7 +218,6 @@ header {
 .estatistica strong {
     display: block;
     font-size: 24px;
-    color: white;
 }
 
 .estatistica span {
@@ -450,11 +445,6 @@ footer {
     color: #aaa;
     text-decoration: none;
     font-size: 13px;
-    transition: 0.2s;
-}
-
-.footer-links a:hover {
-    color: white;
 }
 
 .footer-oficina {
@@ -478,13 +468,16 @@ footer {
     text-decoration: none;
     font-size: 13px;
     font-weight: bold;
-    transition: 0.2s;
 }
 
-.footer-oficina a:hover {
+.footer-cliente {
+    margin-top: 15px;
+}
+
+.footer-cliente a {
+    background: #8d0000;
     color: white;
-    border-color: #8d0000;
-    background: #1c1c1c;
+    border-color: #b00000;
 }
 
 @media (max-width: 800px) {
@@ -572,51 +565,31 @@ footer {
 }
 
 </style>
-
 </head>
 
 <body>
 
 <header>
 
-    <nav class="nav">
+<nav class="nav">
 
-        <a
-            href="#inicio"
-            class="logo"
-        >
+<a href="#inicio" class="logo">
+    DANIEL RB <span>MOTOS</span>
+</a>
 
-            DANIEL RB
-            <span>MOTOS</span>
+<div class="menu">
 
-        </a>
+<a href="#servicos">Serviços</a>
+<a href="#diferenciais">Diferenciais</a>
+<a href="#contato">Contato</a>
 
-        <div class="menu">
+</div>
 
-            <a href="#servicos">
-                Serviços
-            </a>
+<a href="login.html" class="botao botao-cliente">
+    🔐 Área do Cliente
+</a>
 
-            <a href="#diferenciais">
-                Diferenciais
-            </a>
-
-            <a href="#contato">
-                Contato
-            </a>
-
-        </div>
-
-        <a
-            href="agenda.html"
-            class="botao botao-principal"
-        >
-
-            📅 Agendar
-
-        </a>
-
-    </nav>
+</nav>
 
 </header>
 
@@ -624,378 +597,287 @@ footer {
 
 <section class="hero">
 
-    <div class="hero-container">
+<div class="hero-container">
 
-        <div class="tag">
-            🔧 OFICINA DE MOTOS
-        </div>
+<div class="tag">
+    🔧 OFICINA DE MOTOS
+</div>
 
-        <h1>
-            Sua moto em boas mãos.
-            <span>
-                Seu caminho continua.
-            </span>
-        </h1>
+<h1>
+    Sua moto em boas mãos.
+    <span>Seu caminho continua.</span>
+</h1>
 
-        <p>
-            Manutenção, revisão e reparação de motocicletas
-            com atenção aos detalhes e compromisso com o serviço.
-        </p>
+<p>
+    Manutenção, revisão e reparação de motocicletas
+    com atenção aos detalhes e compromisso com o serviço.
+</p>
 
-        <div class="hero-botoes">
+<div class="hero-botoes">
 
-            <a
-                href="agenda.html"
-                class="botao botao-principal"
-            >
+<a href="login.html" class="botao botao-principal">
+    🔐 Área do Cliente
+</a>
 
-                📅 Agendar serviço
+<a href="#servicos" class="botao botao-secundario">
+    🔧 Ver serviços
+</a>
 
-            </a>
+<a href="https://wa.me/5531971827571"
+target="_blank"
+rel="noopener"
+class="botao botao-whatsapp">
+    💬 WhatsApp
+</a>
 
-            <a
-                href="#servicos"
-                class="botao botao-secundario"
-            >
+</div>
 
-                🔧 Ver serviços
+<div class="estatisticas">
 
-            </a>
+<div class="estatistica">
+<strong>🔧</strong>
+<span>Serviço especializado</span>
+</div>
 
-            <a
-                href="https://wa.me/5531971827571"
-                target="_blank"
-                rel="noopener"
-                class="botao botao-whatsapp"
-            >
+<div class="estatistica">
+<strong>🏍️</strong>
+<span>Motos de diversos modelos</span>
+</div>
 
-                💬 WhatsApp
+<div class="estatistica">
+<strong>✅</strong>
+<span>Atendimento profissional</span>
+</div>
 
-            </a>
+</div>
 
-        </div>
-
-        <div class="estatisticas">
-
-            <div class="estatistica">
-
-                <strong>
-                    🔧
-                </strong>
-
-                <span>
-                    Serviço especializado
-                </span>
-
-            </div>
-
-            <div class="estatistica">
-
-                <strong>
-                    🏍️
-                </strong>
-
-                <span>
-                    Motos de diversos modelos
-                </span>
-
-            </div>
-
-            <div class="estatistica">
-
-                <strong>
-                    ✅
-                </strong>
-
-                <span>
-                    Atendimento profissional
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
+</div>
 
 </section>
 
-<section
-    id="servicos"
-    class="secao secao-escura"
->
+<section id="servicos" class="secao secao-escura">
 
-    <div class="secao-container">
+<div class="secao-container">
 
-        <div class="secao-titulo">
+<div class="secao-titulo">
 
-            <small>
-                O que fazemos
-            </small>
+<small>O que fazemos</small>
 
-            <h2>
-                Serviços para sua moto
-            </h2>
+<h2>
+    Serviços para sua moto
+</h2>
 
-            <p>
-                Cuidados essenciais para manter sua motocicleta
-                segura, confiável e pronta para rodar.
-            </p>
+<p>
+    Cuidados essenciais para manter sua motocicleta
+    segura, confiável e pronta para rodar.
+</p>
 
-        </div>
+</div>
 
-        <div class="servicos">
+<div class="servicos">
 
-            <div class="servico">
+<div class="servico">
 
-                <div class="servico-icone">
-                    🔧
-                </div>
+<div class="servico-icone">🔧</div>
 
-                <h3>
-                    Revisão geral
-                </h3>
+<h3>Revisão geral</h3>
 
-                <p>
-                    Verificação dos principais sistemas da
-                    motocicleta e identificação de possíveis problemas.
-                </p>
+<p>
+    Verificação dos principais sistemas da
+    motocicleta e identificação de possíveis problemas.
+</p>
 
-            </div>
+</div>
 
-            <div class="servico">
+<div class="servico">
 
-                <div class="servico-icone">
-                    🛢️
-                </div>
+<div class="servico-icone">🛢️</div>
 
-                <h3>
-                    Troca de óleo
-                </h3>
+<h3>Troca de óleo</h3>
 
-                <p>
-                    Troca de óleo e verificação dos componentes
-                    relacionados à lubrificação do motor.
-                </p>
+<p>
+    Troca de óleo e verificação dos componentes
+    relacionados à lubrificação do motor.
+</p>
 
-            </div>
+</div>
 
-            <div class="servico">
+<div class="servico">
 
-                <div class="servico-icone">
-                    🛑
-                </div>
+<div class="servico-icone">🛑</div>
 
-                <h3>
-                    Sistema de freios
-                </h3>
+<h3>Sistema de freios</h3>
 
-                <p>
-                    Inspeção, manutenção e substituição de
-                    componentes do sistema de frenagem.
-                </p>
+<p>
+    Inspeção, manutenção e substituição de
+    componentes do sistema de frenagem.
+</p>
 
-            </div>
+</div>
 
-            <div class="servico">
+<div class="servico">
 
-                <div class="servico-icone">
-                    ⚙️
-                </div>
+<div class="servico-icone">⚙️</div>
 
-                <h3>
-                    Motor
-                </h3>
+<h3>Motor</h3>
 
-                <p>
-                    Diagnóstico e manutenção de componentes
-                    mecânicos do motor.
-                </p>
+<p>
+    Diagnóstico e manutenção de componentes
+    mecânicos do motor.
+</p>
 
-            </div>
+</div>
 
-            <div class="servico">
+<div class="servico">
 
-                <div class="servico-icone">
-                    ⚡
-                </div>
+<div class="servico-icone">⚡</div>
 
-                <h3>
-                    Elétrica
-                </h3>
+<h3>Elétrica</h3>
 
-                <p>
-                    Diagnóstico de falhas elétricas, sensores,
-                    alimentação e sistema de carga.
-                </p>
+<p>
+    Diagnóstico de falhas elétricas, sensores,
+    alimentação e sistema de carga.
+</p>
 
-            </div>
+</div>
 
-            <div class="servico">
+<div class="servico">
 
-                <div class="servico-icone">
-                    🏍️
-                </div>
+<div class="servico-icone">🏍️</div>
 
-                <h3>
-                    Manutenção preventiva
-                </h3>
+<h3>Manutenção preventiva</h3>
 
-                <p>
-                    Cuidados preventivos para evitar problemas
-                    e aumentar a confiabilidade da motocicleta.
-                </p>
+<p>
+    Cuidados preventivos para evitar problemas
+    e aumentar a confiabilidade da motocicleta.
+</p>
 
-            </div>
+</div>
 
-        </div>
+</div>
 
-    </div>
+</div>
 
 </section>
 
-<section
-    id="diferenciais"
-    class="secao secao-cinza"
->
+<section id="diferenciais" class="secao secao-cinza">
 
-    <div class="secao-container">
+<div class="secao-container">
 
-        <div class="diferenciais">
+<div class="diferenciais">
 
-            <div>
+<div>
 
-                <div class="secao-titulo">
+<div class="secao-titulo">
 
-                    <small>
-                        Por que escolher a gente
-                    </small>
+<small>Por que escolher a gente</small>
 
-                    <h2>
-                        Cuidado em cada detalhe.
-                    </h2>
+<h2>
+    Cuidado em cada detalhe.
+</h2>
 
-                    <p>
-                        Nosso objetivo é entregar um serviço
-                        bem feito e deixar você tranquilo para
-                        voltar a rodar.
-                    </p>
+<p>
+    Nosso objetivo é entregar um serviço
+    bem feito e deixar você tranquilo para
+    voltar a rodar.
+</p>
 
-                </div>
+</div>
 
-                <div class="lista-diferenciais">
+<div class="lista-diferenciais">
 
-                    <div class="diferencial">
+<div class="diferencial">
 
-                        <div class="diferencial-icone">
-                            ✓
-                        </div>
+<div class="diferencial-icone">✓</div>
 
-                        <div>
+<div>
 
-                            <h3>
-                                Diagnóstico cuidadoso
-                            </h3>
+<h3>Diagnóstico cuidadoso</h3>
 
-                            <p>
-                                Procuramos a causa do problema
-                                antes de realizar o serviço.
-                            </p>
+<p>
+    Procuramos a causa do problema
+    antes de realizar o serviço.
+</p>
 
-                        </div>
+</div>
 
-                    </div>
+</div>
 
-                    <div class="diferencial">
+<div class="diferencial">
 
-                        <div class="diferencial-icone">
-                            🔧
-                        </div>
+<div class="diferencial-icone">🔧</div>
 
-                        <div>
+<div>
 
-                            <h3>
-                                Serviço organizado
-                            </h3>
+<h3>Serviço organizado</h3>
 
-                            <p>
-                                Cada atendimento é acompanhado
-                                e registrado.
-                            </p>
+<p>
+    Cada atendimento é acompanhado
+    e registrado.
+</p>
 
-                        </div>
+</div>
 
-                    </div>
+</div>
 
-                    <div class="diferencial">
+<div class="diferencial">
 
-                        <div class="diferencial-icone">
-                            🛡️
-                        </div>
+<div class="diferencial-icone">🛡️</div>
 
-                        <div>
+<div>
 
-                            <h3>
-                                Transparência
-                            </h3>
+<h3>Transparência</h3>
 
-                            <p>
-                                O cliente sabe o que está sendo
-                                feito na motocicleta.
-                            </p>
+<p>
+    O cliente sabe o que está sendo
+    feito na motocicleta.
+</p>
 
-                        </div>
+</div>
 
-                    </div>
+</div>
 
-                </div>
+</div>
 
-            </div>
+</div>
 
-            <div class="destaque">
+<div class="destaque">
 
-                <div>
+<div>
 
-                    <h2>
-                        Sua moto merece atenção.
-                    </h2>
+<h2>
+    Sua moto merece atenção.
+</h2>
 
-                    <p>
-                        Faça sua revisão e mantenha sua
-                        motocicleta pronta para o dia a dia.
-                    </p>
+<p>
+    Faça sua revisão e mantenha sua
+    motocicleta pronta para o dia a dia.
+</p>
 
-                </div>
+</div>
 
-            </div>
+</div>
 
-        </div>
+</div>
 
-    </div>
+</div>
 
 </section>
 
-<section
-    id="contato"
-    class="cta"
->
+<section id="contato" class="cta">
 
-    <h2>
-        Precisa de manutenção?
-    </h2>
+<h2>
+    Já é cliente?
+</h2>
 
-    <p>
-        Agende seu atendimento e traga sua moto
-        para a DANIEL RB MOTOS.
-    </p>
+<p>
+    Entre na sua conta para acompanhar suas motos,
+    solicitar serviços e consultar seu histórico.
+</p>
 
-    <a
-        href="agenda.html"
-        class="botao"
-    >
-
-        📅 Agendar meu serviço
-
-    </a>
+<a href="login.html" class="botao">
+    🔐 Entrar na Área do Cliente
+</a>
 
 </section>
 
@@ -1003,58 +885,53 @@ footer {
 
 <footer>
 
-    <div class="footer-container">
+<div class="footer-container">
 
-        <div>
+<div>
 
-            <div class="footer-logo">
+<div class="footer-logo">
+    DANIEL RB <span>MOTOS</span>
+</div>
 
-                DANIEL RB
-                <span>MOTOS</span>
+<div class="footer-text">
+    Oficina de manutenção e reparação
+    de motocicletas.
+</div>
 
-            </div>
+</div>
 
-            <div class="footer-text">
+<div class="footer-links">
 
-                Oficina de manutenção e reparação
-                de motocicletas.
+<a href="#inicio">Início</a>
+<a href="#servicos">Serviços</a>
+<a href="#diferenciais">Diferenciais</a>
+<a href="https://www.instagram.com/danielrbmotoss/"
+target="_blank"
+rel="noopener">
+    📸 Instagram
+</a>
 
-            </div>
+</div>
 
-        </div>
+<div class="footer-oficina">
 
-        <div class="footer-links">
+<a href="login.html">
+    🔐 Área da Oficina
+</a>
 
-            <a href="#inicio">
-                Início
-            </a>
+<div class="footer-cliente">
 
-            <a href="#servicos">
-                Serviços
-            </a>
+<a href="login.html">
+    👤 Área do Cliente
+</a>
 
-            <a href="agenda.html">
-                Agendamento
-            </a>
+</div>
 
-        </div>
+</div>
 
-        <div class="footer-oficina">
-
-            <a
-                href="login.html"
-            >
-
-                🔐 Área da Oficina
-
-            </a>
-
-        </div>
-
-    </div>
+</div>
 
 </footer>
 
 </body>
-
 </html>

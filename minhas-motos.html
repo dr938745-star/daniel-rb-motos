@@ -4,7 +4,6 @@
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Minhas Motos - DANIEL RB MOTOS</title>
@@ -19,14 +18,15 @@
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #2b2b2b;
-    color: #111;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0b0b0b;
+    color: white;
+    min-height: 100vh;
 }
 
 header {
-    background: #111;
-    color: white;
+    background: #050505;
+    border-bottom: 1px solid #222;
     padding: 25px 20px;
     text-align: center;
 }
@@ -37,8 +37,8 @@ header h1 {
 }
 
 header p {
-    color: #ccc;
-    margin-bottom: 0;
+    margin: 8px 0 0;
+    color: #aaa;
 }
 
 .container {
@@ -48,15 +48,23 @@ header p {
 }
 
 .card {
-    background: white;
-    border-radius: 15px;
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 18px;
     padding: 20px;
     margin-bottom: 18px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 
 .card h2 {
     margin-top: 0;
+}
+
+.info-cliente {
+    background: #202020;
+    border: 1px solid #333;
+    padding: 14px;
+    border-radius: 12px;
+    color: #ddd;
 }
 
 label {
@@ -66,14 +74,19 @@ label {
     font-weight: bold;
 }
 
-input,
-select {
+input {
     width: 100%;
     padding: 13px;
-    border: 1px solid #ccc;
+    border: 1px solid #444;
     border-radius: 10px;
     font-size: 16px;
-    background: white;
+    background: #0f0f0f;
+    color: white;
+    outline: none;
+}
+
+input:focus {
+    border-color: #d40000;
 }
 
 .botao {
@@ -83,7 +96,7 @@ select {
     margin-top: 12px;
     border: none;
     border-radius: 10px;
-    background: #111;
+    background: linear-gradient(135deg, #e00000, #870000);
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -92,52 +105,32 @@ select {
     text-decoration: none;
 }
 
-.botao-excluir {
-    background: #b00000;
+.botao:hover {
+    opacity: 0.92;
 }
 
 .moto {
-    border-top: 1px solid #ddd;
-    padding-top: 18px;
-    margin-top: 18px;
+    border: 1px solid #333;
+    background: #1d1d1d;
+    border-radius: 14px;
+    padding: 18px;
+    margin-top: 15px;
 }
 
 .moto h3 {
     margin-top: 0;
+    font-size: 20px;
+}
+
+.moto p {
+    color: #ccc;
+    line-height: 1.5;
 }
 
 .vazio {
-    color: #666;
+    color: #999;
     text-align: center;
-    padding: 15px;
-}
-
-.voltar {
-    display: block;
-    width: 100%;
-    text-align: center;
-    color: white;
-    text-decoration: none;
-    background: #111;
-    border-radius: 10px;
-    margin-top: 20px;
-    padding: 15px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.voltar:hover {
-    background: #444;
-}
-
-.oculto {
-    display: none;
-}
-
-.info-cliente {
-    background: #f3f3f3;
-    padding: 12px;
-    border-radius: 10px;
+    padding: 20px;
 }
 
 .mensagem {
@@ -148,13 +141,55 @@ select {
 }
 
 .erro {
-    background: #ffe1e1;
-    color: #a00000;
+    background: #3a1010;
+    color: #ff7777;
+    border: 1px solid #6b2222;
 }
 
 .sucesso {
-    background: #dff5e5;
-    color: #176b2c;
+    background: #10351d;
+    color: #65df8a;
+    border: 1px solid #1f6d38;
+}
+
+.voltar {
+    display: block;
+    width: 100%;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 10px;
+    margin-top: 20px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.voltar:hover {
+    background: #222;
+}
+
+footer {
+    text-align: center;
+    padding: 30px 20px;
+    color: #777;
+    font-size: 13px;
+}
+
+.instagram {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 18px;
+    border-radius: 25px;
+    background: #151515;
+    color: white;
+    text-decoration: none;
+    border: 1px solid #333;
 }
 
 </style>
@@ -171,42 +206,48 @@ select {
 
 </header>
 
-
 <div class="container">
 
+<div class="card">
 
-<div
-id="infoCliente"
-class="card oculto"
->
-
-<h2>👤 Cliente</h2>
+<h2>👤 Minha conta</h2>
 
 <div
 id="nomeCliente"
 class="info-cliente"
-></div>
+>
+⏳ Carregando seus dados...
+</div>
 
 </div>
 
 
 <div class="card">
 
-<h2>➕ Cadastrar moto</h2>
+<h2>🏍️ Minhas motos</h2>
+
+<div id="listaMotos">
+
+<div class="vazio">
+⏳ Carregando suas motos...
+</div>
+
+</div>
+
+</div>
 
 
-<label>Proprietário</label>
+<div class="card">
 
-<select id="cliente">
+<h2>➕ Cadastrar minha moto</h2>
 
-<option value="">
-Selecione o cliente
-</option>
+<p style="color:#aaa;line-height:1.5;">
+Cadastre uma moto que pertence a você.
+</p>
 
-</select>
-
-
-<label>Marca</label>
+<label for="marca">
+Marca
+</label>
 
 <input
 type="text"
@@ -214,8 +255,9 @@ id="marca"
 placeholder="Ex: Honda"
 >
 
-
-<label>Modelo</label>
+<label for="modelo">
+Modelo
+</label>
 
 <input
 type="text"
@@ -223,8 +265,9 @@ id="modelo"
 placeholder="Ex: Bros 160"
 >
 
-
-<label>Ano</label>
+<label for="ano">
+Ano
+</label>
 
 <input
 type="text"
@@ -232,8 +275,9 @@ id="ano"
 placeholder="Ex: 2020"
 >
 
-
-<label>Placa</label>
+<label for="placa">
+Placa
+</label>
 
 <input
 type="text"
@@ -241,8 +285,9 @@ id="placa"
 placeholder="ABC1D23"
 >
 
-
-<label>Quilometragem</label>
+<label for="km">
+Quilometragem
+</label>
 
 <input
 type="text"
@@ -250,49 +295,49 @@ id="km"
 placeholder="Ex: 35000"
 >
 
-
 <button
 type="button"
 class="botao"
-onclick="salvarMoto()"
+id="botaoCadastrar"
 >
-
-💾 Cadastrar moto
-
+💾 Cadastrar minha moto
 </button>
-
 
 <div id="mensagem"></div>
 
 </div>
 
 
-<div class="card">
-
-<h2>📋 Motos cadastradas</h2>
-
-<div id="listaMotos"></div>
-
-</div>
-
-
 <a
-href="oficina.html"
+href="area-cliente.html"
 class="voltar"
 >
-
-← Voltar para a Área da Oficina
-
+← Voltar para a Área do Cliente
 </a>
 
 </div>
 
 
-<script>
+<footer>
 
-/* =====================================================
-   SUPABASE
-===================================================== */
+DANIEL RB MOTOS<br>
+Oficina de motos
+
+<br>
+
+<a
+class="instagram"
+href="https://www.instagram.com/danielrbmotoss/"
+target="_blank"
+rel="noopener noreferrer"
+>
+📸 @DANIELRBMOTOSS
+</a>
+
+</footer>
+
+
+<script>
 
 const SUPABASE_URL =
 "https://niffgrhjmnizvusnrqyg.supabase.co";
@@ -301,495 +346,128 @@ const SUPABASE_KEY =
 "sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
 
 const supabaseClient =
-supabase.createClient(
+window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
 
 
-/* =====================================================
-   CLIENTE SELECIONADO
-===================================================== */
+let usuarioLogado = null;
+let clienteLogado = null;
 
-let clienteSelecionado =
-localStorage.getItem(
-    "clienteSelecionado"
-);
 
-
-/* =====================================================
-   CARREGAR CLIENTES
-===================================================== */
-
-async function carregarClientes() {
-
-    const select =
-        document.getElementById(
-            "cliente"
-        );
-
-
-    select.innerHTML = `
-        <option value="">
-            Selecione o cliente
-        </option>
-    `;
-
-
-    const {
-        data: clientes,
-        error
-    } = await supabaseClient
-        .from("clientes_nova")
-        .select("id,nome")
-        .order(
-            "id",
-            {
-                ascending: true
-            }
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Erro ao carregar clientes:",
-            error
-        );
-
-
-        select.innerHTML = `
-            <option value="">
-                Erro ao carregar clientes
-            </option>
-        `;
-
-
-        return;
-
-    }
-
-
-    (clientes || []).forEach(
-        function(cliente) {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                cliente.id;
-
-
-            option.textContent =
-                cliente.nome;
-
-
-            select.appendChild(
-                option
-            );
-
-        }
-    );
-
-
-    if (clienteSelecionado) {
-
-        select.value =
-            String(
-                clienteSelecionado
-            );
-
-
-        await mostrarClienteSelecionado(
-            clienteSelecionado
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   MOSTRAR CLIENTE SELECIONADO
-===================================================== */
-
-async function mostrarClienteSelecionado(id) {
-
-    if (!id) {
-
-        return;
-
-    }
-
-
-    const {
-        data: cliente,
-        error
-    } = await supabaseClient
-        .from("clientes_nova")
-        .select("id,nome")
-        .eq(
-            "id",
-            id
-        )
-        .single();
-
-
-    if (
-        error ||
-        !cliente
-    ) {
-
-        return;
-
-    }
-
-
-    document
-        .getElementById(
-            "infoCliente"
-        )
-        .classList.remove(
-            "oculto"
-        );
-
-
-    document.getElementById(
-        "nomeCliente"
-    ).innerHTML =
-        "👤 <strong>" +
-        cliente.nome +
-        "</strong>";
-
-}
-
-
-/* =====================================================
-   QUANDO TROCAR O CLIENTE
-===================================================== */
-
-document
-    .getElementById("cliente")
-    .addEventListener(
-        "change",
-        async function() {
-
-            const id =
-                this.value;
-
-
-            if (id) {
-
-                clienteSelecionado =
-                    id;
-
-
-                localStorage.setItem(
-                    "clienteSelecionado",
-                    id
-                );
-
-
-                await mostrarClienteSelecionado(
-                    id
-                );
-
-
-            } else {
-
-                clienteSelecionado =
-                    null;
-
-
-                localStorage.removeItem(
-                    "clienteSelecionado"
-                );
-
-
-                document
-                    .getElementById(
-                        "infoCliente"
-                    )
-                    .classList.add(
-                        "oculto"
-                    );
-
-            }
-
-
-            await mostrarMotos();
-
-        }
-    );
-
-
-/* =====================================================
-   SALVAR MOTO
-===================================================== */
-
-async function salvarMoto() {
-
-    const mensagem =
-        document.getElementById(
-            "mensagem"
-        );
-
-
-    const clienteId =
-        document.getElementById(
-            "cliente"
-        ).value;
-
-
-    const marca =
-        document.getElementById(
-            "marca"
-        ).value.trim();
-
-
-    const modelo =
-        document.getElementById(
-            "modelo"
-        ).value.trim();
-
-
-    const ano =
-        document.getElementById(
-            "ano"
-        ).value.trim();
-
-
-    const placa =
-        document.getElementById(
-            "placa"
-        ).value
-        .trim()
-        .toUpperCase();
-
-
-    const km =
-        document.getElementById(
-            "km"
-        ).value.trim();
-
-
-    if (!clienteId) {
-
-        alert(
-            "⚠️ Selecione o proprietário."
-        );
-
-        return;
-
-    }
-
-
-    if (!marca) {
-
-        alert(
-            "⚠️ Informe a marca."
-        );
-
-        return;
-
-    }
-
-
-    if (!modelo) {
-
-        alert(
-            "⚠️ Informe o modelo."
-        );
-
-        return;
-
-    }
-
-
-    if (!placa) {
-
-        alert(
-            "⚠️ Informe a placa."
-        );
-
-        return;
-
-    }
-
-
-    mensagem.innerHTML = `
-        <div class="mensagem">
-            ⏳ Salvando moto...
-        </div>
-    `;
-
+async function iniciar() {
 
     try {
 
-        const novaMoto = {
-
-            cliente_id:
-                Number(clienteId),
-
-            marca:
-                marca,
-
-            modelo:
-                modelo,
-
-            placa:
-                placa,
-
-            ano:
-                ano || null,
-
-            km:
-                km || null
-
-        };
-
-
         const {
-            data,
-            error
+            data: {
+                user
+            },
+            error: erroUsuario
         } = await supabaseClient
-            .from("motos")
-            .insert(
-                novaMoto
-            )
-            .select(
-                "id,created_at,cliente_id,marca,modelo,placa,ano,km"
-            )
-            .single();
+            .auth
+            .getUser();
 
 
-        if (error) {
+        if (erroUsuario) {
+            throw erroUsuario;
+        }
 
-            throw error;
+
+        if (!user) {
+
+            window.location.href =
+                "login-cliente.html";
+
+            return;
 
         }
 
 
-        document.getElementById(
-            "marca"
-        ).value = "";
+        usuarioLogado = user;
+
+
+        const email =
+            user.email
+            ? user.email
+                .trim()
+                .toLowerCase()
+            : "";
+
+
+        if (!email) {
+
+            mostrarErro(
+                "A conta não possui um e-mail válido."
+            );
+
+            return;
+
+        }
+
+
+        const {
+            data: cliente,
+            error: erroCliente
+        } = await supabaseClient
+            .from("clientes_nova")
+            .select("id,nome,email")
+            .eq("email", email)
+            .maybeSingle();
+
+
+        if (erroCliente) {
+
+            throw erroCliente;
+
+        }
+
+
+        if (!cliente) {
+
+            mostrarErro(
+                "Seu cadastro de cliente não foi encontrado."
+            );
+
+            return;
+
+        }
+
+
+        clienteLogado = cliente;
 
 
         document.getElementById(
-            "modelo"
-        ).value = "";
+            "nomeCliente"
+        ).innerHTML =
+            "👤 <strong>" +
+            escaparHTML(cliente.nome || "Cliente") +
+            "</strong>";
 
 
-        document.getElementById(
-            "ano"
-        ).value = "";
-
-
-        document.getElementById(
-            "placa"
-        ).value = "";
-
-
-        document.getElementById(
-            "km"
-        ).value = "";
-
-
-        mensagem.innerHTML = `
-            <div class="mensagem sucesso">
-                ✅ Moto cadastrada com sucesso!
-            </div>
-        `;
-
-
-        await mostrarMotos();
+        await carregarMotos();
 
     }
 
     catch (erro) {
 
         console.error(
-            "ERRO AO SALVAR MOTO:",
+            "ERRO AO INICIAR:",
             erro
         );
 
-
-        mensagem.innerHTML = `
-            <div class="mensagem erro">
-
-                ❌ Erro ao cadastrar a moto.
-
-                <br><br>
-
-                ${erro.message || erro}
-
-            </div>
-        `;
+        mostrarErro(
+            erro.message ||
+            "Não foi possível carregar sua conta."
+        );
 
     }
 
 }
 
-
-/* =====================================================
-   CARREGAR MOTOS
-===================================================== */
 
 async function carregarMotos() {
-
-    let consulta =
-        supabaseClient
-            .from("motos")
-            .select(
-                "id,created_at,cliente_id,marca,modelo,placa,ano,km"
-            )
-            .order(
-                "id",
-                {
-                    ascending: false
-                }
-            );
-
-
-    if (clienteSelecionado) {
-
-        consulta =
-            consulta.eq(
-                "cliente_id",
-                Number(
-                    clienteSelecionado
-                )
-            );
-
-    }
-
-
-    const {
-        data: motos,
-        error
-    } = await consulta;
-
-
-    if (error) {
-
-        throw error;
-
-    }
-
-
-    return motos || [];
-
-}
-
-
-/* =====================================================
-   MOSTRAR MOTOS
-===================================================== */
-
-async function mostrarMotos() {
 
     const lista =
         document.getElementById(
@@ -797,68 +475,78 @@ async function mostrarMotos() {
         );
 
 
+    if (!clienteLogado) {
+
+        return;
+
+    }
+
+
     lista.innerHTML = `
         <div class="vazio">
-            ⏳ Carregando motos...
+            ⏳ Carregando suas motos...
         </div>
     `;
 
 
-    try {
-
-        const motos =
-            await carregarMotos();
-
-
-        if (
-            motos.length === 0
-        ) {
-
-            lista.innerHTML = `
-                <div class="vazio">
-                    🏍️ Nenhuma moto cadastrada para este cliente.
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        lista.innerHTML = "";
-
-
-        for (
-            const moto of motos
-        ) {
-
-            let nomeCliente =
-                "Cliente não encontrado";
-
-
-            const {
-                data: cliente,
-                error
-            } = await supabaseClient
-                .from("clientes_nova")
-                .select("nome")
-                .eq(
-                    "id",
-                    moto.cliente_id
-                )
-                .single();
-
-
-            if (
-                !error &&
-                cliente
-            ) {
-
-                nomeCliente =
-                    cliente.nome;
-
+    const {
+        data: motos,
+        error
+    } = await supabaseClient
+        .from("motos")
+        .select(
+            "id,marca,modelo,placa,ano,km,created_at"
+        )
+        .eq(
+            "cliente_id",
+            Number(clienteLogado.id)
+        )
+        .order(
+            "id",
+            {
+                ascending: false
             }
+        );
 
+
+    if (error) {
+
+        console.error(
+            "ERRO AO CARREGAR MOTOS:",
+            error
+        );
+
+        lista.innerHTML = `
+            <div class="mensagem erro">
+                ❌ Não foi possível carregar suas motos.
+                <br><br>
+                ${escaparHTML(error.message)}
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    if (!motos || motos.length === 0) {
+
+        lista.innerHTML = `
+            <div class="vazio">
+                🏍️ Você ainda não possui motos cadastradas.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    lista.innerHTML = "";
+
+
+    motos.forEach(
+        function(moto) {
 
             const bloco =
                 document.createElement(
@@ -874,48 +562,37 @@ async function mostrarMotos() {
 
                 <h3>
                     🏍️
-                    ${moto.marca || ""}
-                    ${moto.modelo || ""}
+                    ${escaparHTML(
+                        moto.marca || ""
+                    )}
+                    ${escaparHTML(
+                        moto.modelo || ""
+                    )}
                 </h3>
-
-
-                <p>
-                    👤
-                    <strong>Proprietário:</strong>
-                    ${nomeCliente}
-                </p>
-
 
                 <p>
                     🔢
                     <strong>Placa:</strong>
-                    ${moto.placa || "Sem placa"}
+                    ${escaparHTML(
+                        moto.placa || "Sem placa"
+                    )}
                 </p>
-
 
                 <p>
                     📆
                     <strong>Ano:</strong>
-                    ${moto.ano || "Não informado"}
+                    ${escaparHTML(
+                        moto.ano || "Não informado"
+                    )}
                 </p>
-
 
                 <p>
                     🛣️
                     <strong>Quilometragem:</strong>
-                    ${moto.km || "Não informado"}
+                    ${escaparHTML(
+                        moto.km || "Não informado"
+                    )}
                 </p>
-
-
-                <button
-                    type="button"
-                    class="botao botao-excluir"
-                    onclick="excluirMoto(${Number(moto.id)})"
-                >
-
-                    🗑️ Tirar esta moto do cliente
-
-                </button>
 
             `;
 
@@ -925,124 +602,253 @@ async function mostrarMotos() {
             );
 
         }
-
-    }
-
-    catch (erro) {
-
-        console.error(
-            "ERRO AO CARREGAR MOTOS:",
-            erro
-        );
-
-
-        lista.innerHTML = `
-            <div class="mensagem erro">
-
-                ❌ Erro ao carregar motos.
-
-                <br><br>
-
-                ${erro.message || erro}
-
-            </div>
-        `;
-
-    }
+    );
 
 }
 
 
-/* =====================================================
-   EXCLUIR MOTO
-===================================================== */
+document
+.getElementById("botaoCadastrar")
+.addEventListener(
+    "click",
+    async function() {
 
-async function excluirMoto(id) {
+        const botao =
+            this;
 
-    if (!id) {
-
-        alert(
-            "⚠️ ID da moto inválido."
-        );
-
-        return;
-
-    }
-
-
-    const confirmar =
-        confirm(
-            "⚠️ Tem certeza que deseja tirar esta moto do cadastro deste cliente?\n\n" +
-            "A moto será excluída do sistema."
-        );
-
-
-    if (!confirmar) {
-
-        return;
-
-    }
-
-
-    try {
-
-        const {
-            error
-        } = await supabaseClient
-            .from("motos")
-            .delete()
-            .eq(
-                "id",
-                Number(id)
+        const mensagem =
+            document.getElementById(
+                "mensagem"
             );
 
 
-        if (error) {
+        if (!clienteLogado) {
 
-            throw error;
+            mostrarErro(
+                "Seu cadastro de cliente não foi carregado."
+            );
+
+            return;
 
         }
 
 
-        alert(
-            "✅ Moto retirada do cadastro com sucesso!"
-        );
+        const marca =
+            document
+            .getElementById("marca")
+            .value
+            .trim();
 
 
-        await mostrarMotos();
-
-    }
-
-    catch (erro) {
-
-        console.error(
-            "ERRO AO EXCLUIR MOTO:",
-            erro
-        );
+        const modelo =
+            document
+            .getElementById("modelo")
+            .value
+            .trim();
 
 
-        alert(
-            "❌ Não foi possível retirar a moto.\n\n" +
-            (
-                erro.message ||
+        const ano =
+            document
+            .getElementById("ano")
+            .value
+            .trim();
+
+
+        const placa =
+            document
+            .getElementById("placa")
+            .value
+            .trim()
+            .toUpperCase();
+
+
+        const km =
+            document
+            .getElementById("km")
+            .value
+            .trim();
+
+
+        if (!marca) {
+
+            alert(
+                "⚠️ Informe a marca."
+            );
+
+            return;
+
+        }
+
+
+        if (!modelo) {
+
+            alert(
+                "⚠️ Informe o modelo."
+            );
+
+            return;
+
+        }
+
+
+        if (!placa) {
+
+            alert(
+                "⚠️ Informe a placa."
+            );
+
+            return;
+
+        }
+
+
+        botao.disabled = true;
+
+        botao.textContent =
+            "⏳ Cadastrando...";
+
+
+        mensagem.innerHTML = "";
+
+
+        try {
+
+            const {
+                error
+            } = await supabaseClient
+                .from("motos")
+                .insert({
+
+                    cliente_id:
+                        Number(
+                            clienteLogado.id
+                        ),
+
+                    marca:
+                        marca,
+
+                    modelo:
+                        modelo,
+
+                    ano:
+                        ano || null,
+
+                    placa:
+                        placa,
+
+                    km:
+                        km || null
+
+                });
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            document.getElementById(
+                "marca"
+            ).value = "";
+
+
+            document.getElementById(
+                "modelo"
+            ).value = "";
+
+
+            document.getElementById(
+                "ano"
+            ).value = "";
+
+
+            document.getElementById(
+                "placa"
+            ).value = "";
+
+
+            document.getElementById(
+                "km"
+            ).value = "";
+
+
+            mensagem.innerHTML = `
+                <div class="mensagem sucesso">
+                    ✅ Moto cadastrada com sucesso!
+                </div>
+            `;
+
+
+            await carregarMotos();
+
+        }
+
+        catch (erro) {
+
+            console.error(
+                "ERRO AO CADASTRAR:",
                 erro
-            )
-        );
+            );
+
+
+            mensagem.innerHTML = `
+                <div class="mensagem erro">
+
+                    ❌ Não foi possível cadastrar a moto.
+
+                    <br><br>
+
+                    ${escaparHTML(
+                        erro.message ||
+                        "Erro desconhecido."
+                    )}
+
+                </div>
+            `;
+
+        }
+
+        finally {
+
+            botao.disabled = false;
+
+            botao.textContent =
+                "💾 Cadastrar minha moto";
+
+        }
 
     }
+);
+
+
+function mostrarErro(texto) {
+
+    document.getElementById(
+        "nomeCliente"
+    ).innerHTML = `
+        <div class="mensagem erro">
+            ❌ ${escaparHTML(texto)}
+        </div>
+    `;
+
+
+    document.getElementById(
+        "listaMotos"
+    ).innerHTML = "";
 
 }
 
 
-/* =====================================================
-   INICIAR
-===================================================== */
+function escaparHTML(valor) {
 
-async function iniciar() {
-
-    await carregarClientes();
-
-    await mostrarMotos();
+    return String(valor)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 
 }
 

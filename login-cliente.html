@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Entrar - DANIEL RB MOTOS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0b0b0b;
+    color: white;
+    min-height: 100vh;
+}
+
+header {
+    background: #050505;
+    border-bottom: 1px solid #222;
+    padding: 25px 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+header p {
+    margin: 8px 0 0;
+    color: #999;
+}
+
+main {
+    max-width: 500px;
+    margin: auto;
+    padding: 30px 20px;
+}
+
+.login-box {
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 18px;
+    padding: 30px 25px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+}
+
+.login-box h2 {
+    margin: 0 0 10px;
+    text-align: center;
+    font-size: 25px;
+}
+
+.descricao {
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin: 15px 0 7px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid #444;
+    background: #0e0e0e;
+    color: white;
+    outline: none;
+    font-size: 15px;
+}
+
+input:focus {
+    border-color: #d40000;
+}
+
+.botao {
+    width: 100%;
+    height: 50px;
+    margin-top: 22px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e00000, #870000);
+    color: white;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.botao:hover {
+    opacity: 0.92;
+}
+
+.botao:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.mensagem {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+.mensagem.erro {
+    color: #ff5555;
+}
+
+.mensagem.sucesso {
+    color: #55dd88;
+}
+
+.criar-conta {
+    text-align: center;
+    margin-top: 24px;
+    color: #999;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.criar-conta a {
+    color: #ff3333;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.criar-conta a:hover {
+    color: white;
+}
+
+.voltar {
+    display: block;
+    text-align: center;
+    margin-top: 22px;
+    color: #888;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.voltar:hover {
+    color: white;
+}
+
+footer {
+    text-align: center;
+    padding: 30px 20px;
+    color: #777;
+    font-size: 13px;
+}
+
+.instagram {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 18px;
+    border-radius: 25px;
+    background: #151515;
+    color: white;
+    text-decoration: none;
+    border: 1px solid #333;
+}
+
+@media (max-width: 500px) {
+
+    .login-box {
+        padding: 25px 18px;
+    }
+
+    header h1 {
+        font-size: 22px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🏍️ DANIEL RB MOTOS</h1>
+
+<p>Área do Cliente</p>
+
+</header>
+
+<main>
+
+<div class="login-box">
+
+<h2>🔐 Entrar</h2>
+
+<div class="descricao">
+
+Entre na sua conta para acessar suas motos,
+serviços e histórico.
+
+</div>
+
+<form id="loginForm">
+
+<label for="email">
+E-mail
+</label>
+
+<input
+type="email"
+id="email"
+placeholder="Digite seu e-mail"
+autocomplete="email"
+required
+>
+
+<label for="senha">
+Senha
+</label>
+
+<input
+type="password"
+id="senha"
+placeholder="Digite sua senha"
+autocomplete="current-password"
+required
+>
+
+<button
+type="submit"
+class="botao"
+id="botaoLogin"
+>
+🔑 Entrar
+</button>
+
+</form>
+
+<div id="mensagem" class="mensagem"></div>
+
+<div class="criar-conta">
+
+Ainda não tem uma conta?
+
+<br>
+
+<a href="criar-conta.html">
+📝 Criar minha conta
+</a>
+
+</div>
+
+<a href="index.html" class="voltar">
+← Voltar para o início
+</a>
+
+</div>
+
+</main>
+
+<footer>
+
+DANIEL RB MOTOS<br>
+Oficina de motos
+
+<br>
+
+<a
+class="instagram"
+href="https://www.instagram.com/danielrbmotoss/"
+target="_blank"
+rel="noopener noreferrer"
+>
+📸 @DANIELRBMOTOSS
+</a>
+
+</footer>
+
+<script>
+
+const SUPABASE_URL =
+"https://niffgrhjmnizvusnrqyg.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_MM2ahV5R6hDEq6Kdi7Zt9g_CZBE4G7B";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+const loginForm =
+document.getElementById("loginForm");
+
+const botaoLogin =
+document.getElementById("botaoLogin");
+
+const mensagem =
+document.getElementById("mensagem");
+
+function mostrarMensagem(texto, tipo) {
+
+    mensagem.textContent = texto;
+
+    mensagem.className =
+        "mensagem " + tipo;
+
+}
+
+loginForm.addEventListener(
+"submit",
+async function(event) {
+
+    event.preventDefault();
+
+    const email =
+        document
+        .getElementById("email")
+        .value
+        .trim()
+        .toLowerCase();
+
+    const senha =
+        document
+        .getElementById("senha")
+        .value;
+
+    mensagem.className = "mensagem";
+    mensagem.textContent = "";
+
+    botaoLogin.disabled = true;
+    botaoLogin.textContent = "⏳ Entrando...";
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: senha
+            });
+
+        if (error) {
+
+            mostrarMensagem(
+                "❌ E-mail ou senha incorretos.",
+                "erro"
+            );
+
+            botaoLogin.disabled = false;
+            botaoLogin.textContent = "🔑 Entrar";
+
+            return;
+        }
+
+        if (data.session) {
+
+            mostrarMensagem(
+                "✅ Login realizado! Entrando...",
+                "sucesso"
+            );
+
+            setTimeout(function() {
+
+                window.location.href =
+                    "area-cliente.html";
+
+            }, 700);
+
+        }
+
+    } catch (erro) {
+
+        mostrarMensagem(
+            "❌ Não foi possível realizar o login.",
+            "erro"
+        );
+
+        botaoLogin.disabled = false;
+        botaoLogin.textContent = "🔑 Entrar";
+
+    }
+
+});
+
+</script>
+
+</body>
+
+</html>
